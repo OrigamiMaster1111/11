@@ -1,0 +1,14 @@
+//int main()
+//{
+//	int m = 0;
+//	int n = 0;
+//	int a = m;
+//	int b = n;
+//	int sum = 0;
+//	scanf("%d %d", &a, &b);
+//	sum = a + b;
+//	printf("sum=%d\n",sum);
+//	return 0;
+//
+//
+//}
