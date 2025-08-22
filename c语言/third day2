@@ -1,0 +1,10 @@
+int main()
+{
+	int a = 60;
+	int b = 25;
+	int c = 11;
+	c = a;
+	a = b;
+	b = c;
+	printf("%d %d", a, b);
+}
