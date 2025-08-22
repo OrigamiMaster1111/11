@@ -1,0 +1,24 @@
+//int main()
+//{
+//	int hour1, minute1 = 0;
+//	int hour2, minute2 = 0;
+//	scanf("%d %d", &hour1, &minute1);
+//	scanf("%d %d", &hour2, &minute2);
+//	int t1 = hour1 * 60 + minute1;
+//	int t2 = hour2 * 60 + minute2;
+//	int derta_t = t1 - t2;
+//	printf("时间差为%d小时%d分", derta_t/60, derta_t%60);
+//	return 0;
+//} 
+
+int main()
+{
+	double h1 = 0;
+	double h2 = 0;
+	printf("请输入第一段时间与第二段时间\n");
+	scanf("%lf %lf",&h1,&h2);
+	double t = h1 - h2;
+	int minutes = (int)(t * 60 + 0.5);
+	printf("时间差为%d分钟", minutes);
+	return 0;
+}
