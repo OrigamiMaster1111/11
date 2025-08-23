@@ -1,0 +1,28 @@
+int main()
+{
+	double t1 = 0;
+	double t2 = 0;
+	scanf("%lf %lf", &t1, &t2);
+	 double delta_t = t1 - t2;
+	 printf("dt=%f小时\n", delta_t);
+	 int minutes = delta_t * 60+0.5;
+	 printf("时间差为%d分钟", minutes); 
+     return 0;
+}
+
+//int main()
+//{
+//	float a = 0;
+//	float b = 0;
+//	scanf("%f %f",&a, &b);
+//	float sum = a + b;
+//	printf("sum=%f+%f=%f\n", a, b, sum);
+//	printf("sum++=%f\n", sum++);
+//	printf("sum2=%f\n",sum);
+//	printf("++sum=%f\n", ++sum);
+//	printf("sum3=++sum=%f\n",sum);
+//	float sum4 = (int)(sum);
+//	printf("sum4=%f\n", sum4);
+//	printf("sum4/=3\n    ↓\nsum5=sum4/3=%f\n", sum4/=3);
+//	return 0;
+//}、
