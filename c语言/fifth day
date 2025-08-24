@@ -1,0 +1,59 @@
+//int main()
+//{
+//    int cm = 0;
+//    scanf("%d", &cm);
+//    float a = cm / 30.48;
+//    int foot = a;
+//    int inch = (a-foot) * 12;
+//    printf("%d %d", foot, inch);
+//    return 0;
+//}
+
+//
+//int main()
+//{
+//    int cm = 0;
+//    scanf("%d", &cm);
+//    int foot = cm / 30.48;
+//    int inch = ((cm / 30.48) - foot) * 12;
+//    return 0;
+//}
+
+//int main()
+//{
+//    int t1 = 0;
+//    int t2 = 0;
+//    scanf("%d %d", &t1, &t2);
+//    int h = (int)(t2 / 100) - (int)(t1 / 100);
+//    printf("%d\n", h);
+//    int m = (t2 - (int)(t2 / 100)*100) - (t1 - (int)(t1 / 100)*100);
+//    int result = (h * 60 + m) / 60 * 100 + (h * 60 + m) % 60;
+//    printf("%d",result);
+//    return 0;
+//}
+
+//
+//int main()
+//{
+//    int t1 = 0;
+//    int delta = 0;
+//    scanf("%d %d", &t1, &delta);
+//    int t2 = t1 / 100 * 60 + t1 % 100 + delta;
+//    int result = (t2 % 1440 + 1440) % 1440;
+//    printf("%d%02d", result / 60, result % 60);
+//    return 0;
+//}
+
+int main()
+{
+	int a = 0;
+	int b = 0;
+	int c = 0;
+	int sum = 0;
+	scanf("%d", &sum);
+	a = sum / 100;
+	b = sum / 10 % 10;
+	c = sum % 10;
+	int end = c * 100 + b * 10 + a * 1;
+	printf("%d", end);
+}
