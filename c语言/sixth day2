@@ -1,0 +1,50 @@
+
+//int main()
+//{
+//	int t1 = 0;
+//	int dt = 0;
+//	scanf("%d %d",&t1,&dt);
+//	int dh = dt / 60;
+//	int dm = dt % 60;
+//	int h2 = t1 / 100 + dh;
+//	int m2 = t1 % 100 + dm;
+//	
+//	if (m2 < 0) {
+//		h2--;
+//		m2 = m2 + 60;
+//	}
+//	
+//	if (m2 >= 60) {
+//		h2 = h2 + m2/60;
+//		m2 = m2 % 60;
+//    }
+//
+//	if (h2 >= 24) {
+//		h2 = h2 % 24;
+//	}
+//
+//	if (h2 < 0) {
+//		h2 = 24 + h2;
+//	}
+//
+//	printf("当前时间为%d%02d", h2,m2);
+//}
+
+int main()
+{
+	int t1 = 0;
+	int dt = 0;
+	scanf("%d %d",&t1,&dt);
+	int tm = t1 / 100 * 60 + t1 % 100 + dt;
+	int eh = tm / 60%24;
+	if (eh<0) {
+		eh = 24 + eh;
+	}
+	int em = tm % 60;
+	if (em < 0) {
+		em = 60 + em;
+		eh--;
+	}
+	printf("%d%02d", eh, em);
+	return 0;
+}
