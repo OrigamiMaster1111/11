@@ -1,0 +1,28 @@
+int main()
+{
+	int a =0;
+	printf("请问您是否办理会员？\n一年会费：1000元\n连续两年享七折\n办理一年请按“1”；办理两年请按“2”\n");
+	printf("若不办理请按“0”\n\n");
+	int paid = 0;
+
+	scanf("%d",&a);
+	if (a == 0||a == 2||a == 1){
+		if (a == 1) {
+			paid = 1000;
+		}
+		else if (a == 2) {
+			paid = 1000 * 2 * 0.7;
+		}
+		else if (a == 0) {
+			paid = 0;
+		}
+		printf("需缴费：%d元", paid);
+	}
+
+	else {
+		printf("请输入正确的数字");
+	}
+	
+
+	return 0;
+}
