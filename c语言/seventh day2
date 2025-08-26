@@ -1,0 +1,43 @@
+int main()
+{
+	srand(time(0));
+	int a = rand()%100;
+	int x = 0;
+	int n = 0;
+
+	printf("欢迎游玩猜数字小游戏\n数字已经准备就绪啦！\n");
+	printf("请输入数字：");
+	
+	do {
+		scanf("%d", &x);
+		n++;
+		if (x > a) {
+			printf("大于目标数字，请继续尝试\n请输入数字：");
+		}
+		else if (x < a) {
+			printf("小于目标数字，请继续尝试\n请输入数字：");
+		}
+	} while (x != a);
+
+	printf("恭喜你！猜出正确数字\n您所用次数为%d。\n",n);
+
+	return 0;
+}
+//
+//int main()
+//{
+//	int sum = 0;
+//	int x = 0;
+//	int n = 0;
+//	
+//	scanf("%d",&x);
+//
+//	while (x != -1 && n != -1) {
+//		n++;
+//		sum += x;
+//		scanf("%d", &x);
+//	}
+//		printf("平均数为%f",1.0*sum/n);
+//
+//		return 0;
+//}
