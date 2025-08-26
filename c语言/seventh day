@@ -1,0 +1,109 @@
+//int main()
+//{
+//	int f = 0;
+//
+//	int x = 0;
+//	scanf("%d",&x);
+//
+//	if (x < 0) {
+//		f = x * 2;
+//	}	
+//	else if (x == 0) {
+//		f = 0;
+//	}
+//	else { f = 6 * x; }
+//	 
+//	printf("f = %d\n",f);
+//}
+
+//int main()
+//{
+//	int grades = 0;
+//	scanf("%d",&grades);
+//	grades = grades / 10;
+//	if (grades >= 10) {
+//		grades = 9;
+//	}
+//	
+//	switch (grades) {
+//	case 9:
+//		printf("A");
+//		break;
+//	case 8:
+//		printf("B");
+//		break;
+//	case 7:
+//		printf("C");
+//		break;
+//	case 6:
+//		printf("D");
+//		break;
+//	default:
+//		printf("E");
+//	}
+//	return 0;
+//}
+
+//int main()
+//{
+//	printf("请输入月份");
+//	int month = 0;
+//	scanf("%d", &month);
+//	
+//	switch (month) {
+//	case 1: printf("january\n"); break;
+//	case 2: printf("February"); break;
+//	case 3: printf("March"); break;
+//	case 4: printf("April"); break;
+//	case 5: printf("May"); break;
+//	case 6: printf("June"); break;
+//	case 7: printf("July"); break;
+//	case 8: printf("August"); break;
+//	case 9: printf("September"); break;
+//	case 10: printf("October"); break;
+//	case 11: printf("November"); break;
+//	case 12: printf("December"); break;
+//	default: printf("请输入正确的月份");
+//	}
+//	return 0;
+//}
+
+//int main()
+//{
+//	int a = 0;
+//	scanf("%d", &a);
+//
+//	if (a >= 100 && a < 1000) {
+//		printf("3");
+//	}
+//	else if (a >= 1000 && a < 10000) {
+//		printf("4");
+//	}
+//	else if (a >= 10 && a < 100) {
+//		printf("2");
+//	}
+//	else if (a >= 0 && a < 10) {
+//		printf("1");
+//	}
+//	else {
+//		printf("请输入4位以内的数字\n");
+//	}
+//	return 0;
+//}
+
+int main()
+{
+	int a = 0;
+	long long x = 0;
+	scanf("%lld",&x);
+	
+	a++;
+	x /= 10;
+	while(x > 0){
+		a++;
+		x /= 10;
+	}
+
+	printf("这是%d位数\n",a);
+	return 0;
+}
