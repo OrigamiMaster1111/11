@@ -1,0 +1,26 @@
+int main()
+{
+	int x;
+	int a;
+	int c = 0;
+	scanf("%d",&x);
+	
+	if (x > 1) {
+		for (a = 2;a < x;a++) {
+			if (x % a == 0) {
+				c = 1;
+				break;
+			}
+		}
+		if (c == 1) {
+			printf("不是素数\n");
+		}
+		else {
+			printf("是素数\n");
+		}
+	}
+	else {
+		printf("不是素数\n");
+	}
+	return 0;
+}
