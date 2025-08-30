@@ -1,0 +1,24 @@
+int main()
+{
+	int cnt;//计数器
+	int n = 2;//待判断数字
+	int c;//除数
+	int requirement;//要求数量
+
+	scanf("%d",&requirement);
+
+	for (cnt = 0;cnt < requirement;n++) {
+		int condition = 1;
+			for (c = 2;n > c;c++) {
+				if (n % c ==0) {
+						condition = 0;
+						break;
+				}
+			
+			}
+		if (condition == 1) {
+			printf("%d  ", n);
+			cnt++;
+		}
+	}
+}
