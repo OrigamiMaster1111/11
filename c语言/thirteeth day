@@ -1,0 +1,61 @@
+
+int main()
+{
+    // 定义各种货币的面值（元）
+    const double YIFEN = 0.01;
+    const double WUFEN = 0.05;
+    const double YIJIAO = 0.1;
+    const double WUJIAO = 0.5;
+    const double YIYUAN = 1;
+    const double WUYUAN = 5;
+    const double SHIYUAN = 10;
+    const double ERSHIYUAN = 20;
+    const double WUSHIYUAN = 50;
+    const double YIBAIYUAN = 100;
+
+    // 定义各种货币的数量（初始为0）
+    int yifen, wufen, yijiao, wujiao, yiyuan;
+    int wuyuan, shiyuan, ershiyuan, wushiyuan, yibaiyuan;
+
+    double price;
+    printf("请输入金额（元）：");
+    scanf("%lf", &price);
+
+    // 循环计算所有可能的组合（数量从0开始）
+    for (yifen = 0; yifen * YIFEN <= price; yifen++) {
+        for (wufen = 0; wufen * WUFEN <= price; wufen++) {
+            for (yijiao = 0; yijiao * YIJIAO <= price; yijiao++) {
+                for (wujiao = 0; wujiao * WUJIAO <= price; wujiao++) {
+                    for (yiyuan = 0; yiyuan * YIYUAN <= price; yiyuan++) {
+                        for (wuyuan = 0; wuyuan * WUYUAN <= price; wuyuan++) {
+                            for (shiyuan = 0; shiyuan * SHIYUAN <= price; shiyuan++) {
+                                for (ershiyuan = 0; ershiyuan * ERSHIYUAN <= price; ershiyuan++) {
+                                    for (wushiyuan = 0; wushiyuan * WUSHIYUAN <= price; wushiyuan++) {
+                                        for (yibaiyuan = 0; yibaiyuan * YIBAIYUAN <= price; yibaiyuan++) {
+                                            // 计算总金额
+                                            double total = yifen * YIFEN + wufen * WUFEN + yijiao * YIJIAO +
+                                                wujiao * WUJIAO + yiyuan * YIYUAN + wuyuan * WUYUAN +
+                                                shiyuan * SHIYUAN + ershiyuan * ERSHIYUAN +
+                                                wushiyuan * WUSHIYUAN + yibaiyuan * YIBAIYUAN;
+
+                                            // 考虑浮点精度误差，使用近似比较
+                                            if (total >= price - 0.001 && total <= price + 0.001) {
+                                                printf("可用%d个1分 + %d个5分 + %d个1角 + %d个5角 + %d个1元 + "
+                                                    "%d个5元 + %d个10元 + %d个20元 + %d个50元 + %d个100元 凑出%.2f元\n",
+                                                    yifen, wufen, yijiao, wujiao, yiyuan,
+                                                    wuyuan, shiyuan, ershiyuan, wushiyuan, yibaiyuan, price);
+                                                goto end;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    end:
+    return 0;
+}
