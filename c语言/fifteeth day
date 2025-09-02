@@ -1,0 +1,39 @@
+
+int main()
+{
+	int number;
+	int cnt;
+	scanf("%d",&number);
+	int n = number;
+	int another = number;
+	printf("\n");
+
+	if (number == 0) {
+		printf("0\n\n0");
+		return 0;
+	}
+
+	for (cnt = 0;n > 0;cnt++) {
+		n /= 10;
+    }
+
+	for (;number > 0;number /= 10) {
+		int i = number % 10;
+		printf("%d",i);
+		    if (number / 10 != 0) {
+			printf(" ");
+			}
+	}
+	
+	printf("\n\n");
+	
+	int m;
+	int c = pow(10,cnt - 1);
+
+	for (;c > 0;c /= 10) {
+		m = another / c;
+		printf("%d ",m);
+		another %= c;
+	}
+	return 0;
+}
