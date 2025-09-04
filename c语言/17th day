@@ -1,0 +1,30 @@
+int main()
+{
+	int a;
+	int b;
+	int min = 0;
+	int ret = 1;
+
+	if (scanf("%d %d", &a, &b) != 2) {
+		printf("输入错误，请输入两个整数！\n");
+		return 1;
+	}
+
+	if (a > b) {
+		min = b;
+	}
+	else {
+		min = a;
+	}
+
+	int i;
+	for (i = min;i < 1;i--) {
+		if (a % i == 0) {
+			if (b % i == 0) {
+				ret = i;
+				break;
+			}
+		}
+	}
+	printf("%d", ret);
+}
