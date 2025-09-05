@@ -1,0 +1,33 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+#include<stdio.h>
+#include<math.h>
+
+int main()
+{
+	int a;
+	scanf("%d",&a);
+	int b;
+	int c;
+	int d;
+	int max = a + 3;
+	int cnt = 0;
+
+	for (b = a;b <= max;b++) {
+		for (c = a;c <= max;c++) {
+			for (d = a;d <= max;d++) {
+				if (d != b && b != c && c != d) {
+					printf("%d%d%d", b, c, d);
+					cnt++;
+					if (cnt < 6) {
+						printf(" ");
+					}
+					else {
+						printf("\n");
+						cnt = 0;
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
