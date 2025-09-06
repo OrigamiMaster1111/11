@@ -1,0 +1,40 @@
+int main()
+{
+	int a;
+	int N;
+	scanf("%d",&N);
+	int M = N;
+
+	//a = pow(10, N - 1);
+	for (a = 1;M > 1;M--) {
+		a *= 10;
+	}
+
+	printf("a = %d\n",a);
+
+	int t = a;
+
+	for (;a < t*10;a++) {
+		int b = a;
+		long long sum;
+		for (sum = 0;b > 0;b /= 10) {
+			
+			//sum += pow(b % 10, N);
+			int part = b % 10;
+			long long power = 0;
+			int digit = 1;
+			
+			for (;power < N;power++) {
+				digit *= part;
+			}
+			
+			sum += digit;
+		
+		}
+				
+		if (sum == a) {
+				printf("%d\n", a);			
+		}
+	}
+	return 0;
+}
