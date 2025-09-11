@@ -1,0 +1,66 @@
+ #include<stdio.h>
+
+int main()
+{
+//    int a,b,c,d = 0; 
+//    printf("max ");                                               
+//    scanf("%d %d %d %d",&a,&b,&c,&d);
+//    int max,min;
+//
+//    max = a > b ? a : b;
+//    min = a < b ? a : b;
+//    
+//    max = max > c ? max : c;
+//    max = max < d ? d : max;
+//
+//    min = min < c ? min : c;
+//    min = min > d ? d : min;
+//    
+//    printf("max is %d,min is %d",max,min);
+    printf("max ");      
+    //int test1();
+    int test2();
+    //return 0; 
+}
+int test1()
+{
+    char n;
+
+    printf("Please enter the letter:");
+    scanf("%c",&n);
+
+    int a = 0;
+    a = n;
+
+    if(a >= 97 && a <= 122){
+       a -= 32;
+       char n = a;
+       printf("The capital form of this letter is %c",n);
+    }
+    else{
+       a += 32; 
+       char n = a;
+       printf("The lowercase form of this letter is %c",n);
+    }
+}
+
+int test2()
+{                                                                                 
+    int a,b,c,d = 0; 
+    printf("max ");                                               
+    scanf("%d %d %d %d",&a,&b,&c,&d);
+    int max,min;
+
+    max = a > b ? a : b;
+    min = a < b ? a : b;
+    
+    max = max > c ? max : c;
+    max = max < d ? d : max;
+
+    min = min < c ? min : c;
+    min = min > d ? d : min;
+    
+    printf("max is %d,min is %d",max,min);
+    
+    
+}
