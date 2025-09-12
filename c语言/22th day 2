@@ -1,0 +1,22 @@
+int main()
+{
+   int n = rand() % 1000; 
+   int number;
+   int cnt = 0;
+
+  do{ 
+		cnt++;   
+		scanf("%d",&number);
+			if( n < number){
+			printf("Bigger than it\n");
+		}
+		else if(n > number){
+			printf("Smaller than it\n");
+		}
+    }  while(n != number);
+
+	printf("Gratulation!");
+	printf("%d",cnt);
+
+	return 0;
+}
