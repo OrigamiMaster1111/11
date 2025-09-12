@@ -1,0 +1,17 @@
+int main()
+{
+	double R = 0;
+	double height = 0;
+	double volume, area;
+	double PI = 3.14;
+
+	printf("请输入要求的圆柱体的底面半径与高：");
+	scanf("%lf %lf", &R, &height);
+
+	volume = PI * R * R * height;
+	area = 2 * PI * R * height + 2 * PI * R * R;
+
+	printf("面积是 %f,体积是 %f", area, volume);
+
+	return 0;
+}
