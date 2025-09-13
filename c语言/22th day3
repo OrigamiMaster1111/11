@@ -1,0 +1,41 @@
+//素数求和
+int main()
+
+{
+
+  int m,n,i;
+  int cnt = 0;
+  int sum = 0;
+
+  scanf("%d %d",&m,&n);
+
+  printf("在%d到%d之间素数有:",m,n);
+
+  for(i = m;i <= n;i++){
+
+    int isPrime = 1;
+    int divisor;
+    
+    if(i <= 1){
+      isPrime = 0;
+    } 
+
+    for(divisor = 2;divisor < i;divisor++){
+      if(i % divisor == 0){
+       isPrime = 0;
+       break;
+      }   
+    } 
+ 
+    if(isPrime == 1){
+     cnt += 1;
+     sum += i;
+     printf("%d ",i);
+    } 
+  }
+
+  printf("\n一共有%d个素数，其和为:%d",cnt,sum);
+
+ return 0;
+
+}
