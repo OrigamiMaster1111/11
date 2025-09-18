@@ -1,0 +1,10 @@
+int main()
+{
+    double a = 2.0 / 3;
+    printf("%.30f\n", a);  // 使用%f输出double类型
+    
+    long double b = 2.0L / 3L;  // 使用L后缀指定long double类型
+    printf("%Lf", b);       // 使用%Lf输出long double类型
+    
+    return 0;
+}
