@@ -1,0 +1,65 @@
+// //返回基础值
+// int get_max(int a,int b){
+//     int max = a > b ? a : b; 
+//     return max;
+// }
+
+// int main(){
+//     int i = get_max(10,20);
+//     printf("%d",i);
+// }
+
+// //返回计算结果
+// double circle_area(double radius){
+//     double area = 3.14 * pow(radius,2.0);
+//     return area;
+// }
+
+// int main(){
+//     double a = circle_area(5);
+//     printf("%lf",a);
+// }
+
+// //提前返回
+// int is_even(int num){
+//     if(num % 2 == 0){
+//         return 1;    
+//     }else{
+//         return 0;
+//     }
+// }
+
+// int main() {
+//     int figure;
+//     scanf("%d", &figure);
+//     int result = is_even(figure); // 接收返回值
+//     if (result == 1) {
+//         printf("%d是偶数\n", figure);
+//     } else {
+//         printf("%d是奇数\n", figure);
+//     }
+//     return 0;
+// }
+
+//综合应用
+int calculate(int x,int y,char op){
+    int sum;
+    if(op == '+'){
+        sum = x + y;
+    } 
+    else if(op == '*'){
+        sum = x * y;        
+    }
+    else{
+        return -1;
+    }
+    return sum;
+}
+
+int main(){
+    int a = calculate(3,4,'+');
+    printf("%d\n",a);
+
+    int b = calculate(5,6,'*');
+    printf("%d\n",b);
+}
