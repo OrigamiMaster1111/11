@@ -1,0 +1,55 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+#include <stdio.h>
+#include <math.h>
+#include<stdlib.h>
+#include<time.h>
+#include<stdbool.h>
+
+// void test1();
+// void test2();
+
+// int main(){
+//    //test1();
+//    test2();
+//    return 0;
+// }
+
+// void test1(){
+//     int a;
+//     char c;
+//     float x,y;
+//     scanf("%f %d %c %f",&x,&a,&c,&y);
+//     printf("%c %d %.2f %.2f",c,a,x,y);
+// }
+
+// void test2(){
+//     int v;
+//     scanf("%d",&v);
+
+//     if(v > 60){
+//         printf("Speed: %d - Speeding",v);
+//     }    else{
+//         printf("Speed: %d - OK",v);
+//     }
+// }
+
+//int main(){
+//     int a,b,c;
+//     scanf("%d %d %d",&a,&b,&c);
+//     a == b ? printf("C") : a == c ? printf("B") : printf("A");
+//     return 0;
+// }
+
+int main(){
+    int year;
+    int time;
+    scanf("%d %d",&year,&time);
+    if(year < 5){
+        double salary = time > 40 ? 40*30 + (time - 40)*1.5*30 : time*30;
+        printf("%.2lf",salary);
+    }    else{
+        double salary = time > 40 ? 40*50 + (time - 40)*1.5*50 : time*50;
+        printf("%.2lf",salary);
+    }
+    return 0;
+}
