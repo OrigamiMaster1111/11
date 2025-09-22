@@ -1,0 +1,36 @@
+// int main(){
+//     double weight;
+//     scanf("%lf",&weight);
+//     double paid;
+//     if(weight <= 15){
+//         paid = 4*weight/3;
+//     } else{
+//         paid = 2.5*weight - 17.5;
+//     }
+//     printf("%.2lf",paid);
+// }
+
+int main(){
+    int a,b;
+    char n;
+    scanf("%d %c %d",&a,&n,&b);
+
+    if(n == '+'){
+        printf("%d",a + b);
+    }
+    else if(n == '-'){
+        printf("%d",a - b);
+    }
+    else if(n == '*'){
+        printf("%d",a * b);   
+    }
+    else if(n == '/'){
+        printf("%d",a / b);
+    }
+    else if(n == '%'){
+        printf("%d",a % b);
+    }
+    else{
+        printf("ERROR");
+    }
+}
