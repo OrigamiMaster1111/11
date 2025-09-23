@@ -1,0 +1,19 @@
+// int main(){
+//     int A,B;
+//     int cnt = 0;
+//     int sum = 0;
+//     scanf("%d %d",&A,&B);
+//     while(A <= B){        
+//         printf("%5d",A);
+//         cnt++;
+//         if(cnt % 5 == 0){
+//             printf("\n");
+//         } 
+//         sum += A;
+//         A++; 
+//     }
+//     if(cnt % 5 != 0){
+//         printf("\n");
+//     }
+//     printf("Sum = %d",sum);
+// }
