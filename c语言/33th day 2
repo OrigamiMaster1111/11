@@ -1,0 +1,22 @@
+// #define NUM 10
+
+// int main(){
+//     int a[NUM], i, n; 
+//     printf("数据个数："); 
+//     scanf("%d", &i); 
+    
+//     for ( n = 0; n < i; n++){
+//          printf("%d号：", n + 1); 
+//          scanf("%d", &a[n]);
+//     }
+    
+//     printf("{"); 
+
+//     for ( n = 0; n < i; n++){
+//          if(n < i - 1)
+//            printf("%d,", a[n]); 
+//          else 
+//            printf("%d", a[n]);
+//     }
+//      printf("}"); 
+// }
