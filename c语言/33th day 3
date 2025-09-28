@@ -1,0 +1,73 @@
+// //                    数组题
+// int main(){
+//     int i = 0;
+//     int v[5];
+    
+//     for ( ; i < 5; i++)
+//         v[i] = i;
+    
+//     for ( i = 0; i < 5; i++)
+//         printf("v[%d]=%d\n",i,v[i]);
+                
+//     return 0;
+// }
+
+
+
+// int main(){
+//     int i = 0;
+//     int v[5];
+//     int n;
+    
+//     for ( n = 5; i < 5; i++, n--)
+//         v[i] = n;
+    
+//     for ( i = 0; i < 5; i++)
+//         printf("v[%d]=%d\n",i,v[i]);
+                
+//     return 0;
+// }
+
+
+
+// int main(){
+//     int a[4] = {1,2,7};
+//     int b[4];
+//     int i, n = 0;
+
+//     for ( i = 3; i >= 0; i--, n++)
+//         b[n] = a[i];
+        
+//     puts(" a    b");
+//     puts("--------");
+    
+//     for ( i = 0; i < 4; i++)
+//         printf("%2d   %2d\n",a[i],b[i]);
+
+//     return 0;
+// }
+
+// #define NUM 5
+
+// int main(){
+//     int a[NUM];
+//     int i;
+
+//     for ( i = 0; i < NUM; i++){
+//         printf("a[%d]:",i);
+//         scanf("%d",&a[i]);
+//     }
+
+//     for ( i = NUM - 1; i >= NUM/2; i--){
+//         int temp = a[i];
+//         a[i] = a[NUM - i - 1];
+//         a[NUM - i - 1] = temp;
+//     }
+        
+//     puts("倒序为：");
+
+//     for( i = 0; i < NUM; i++)
+//         printf("%d\n",a[i]);
+
+//     return 0;
+// }
