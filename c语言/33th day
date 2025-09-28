@@ -1,0 +1,60 @@
+// #define NUMBER 100
+
+// int main(){
+//     int i,n,num,cnt = 0;
+//     int grades[NUMBER], distribution[11] = {0};
+
+//     printf("请输入学生人数：");
+    
+//     do {
+//         scanf("%d",&num);
+//         if (num > NUMBER || num < 1){
+//             printf("\a请输入1 ~ %d的人数\n",NUMBER);
+//             printf("请输入正确学生人数：");
+//         }
+//     } while (num > NUMBER || num < 1);
+
+//     puts("请输入成绩");
+
+//     for ( i = 0; i < num; i++){
+        
+//         do {
+//             printf("%d号: ",i + 1);
+//             scanf("%d",&grades[i]);
+
+//             if (grades[i] < 0 || grades[i] > 100){
+//                 printf("\a请输入0 ~ 100的分数\n");
+//             }
+//         } while (grades[i] < 0 || grades[i] > 100);
+
+//         distribution[ grades[i] / 10 ]++;
+//     }
+
+//     puts("---分布图---");
+//     puts("           1 2 3 4 5 6 7 8 9 10");
+
+//     printf("    100分: ");
+
+//     for ( n = 0; n < distribution[10]; n++,cnt++){
+//         if (cnt == 10){
+//             putchar('\n');
+//             cnt = 0;
+//             printf("           ");
+//         }
+//         printf("* ");       
+//     }
+
+//     for ( i = 9; i >= 0; i--){
+//         printf("\n%2d ~ %2d分: ",i*10,i*10 + 9);
+
+//         for ( n = 0,cnt = 0; n < distribution[i]; n++,cnt++){
+//              if (cnt == 10){
+//                 putchar('\n');
+//                 cnt = 0;
+//                 printf("           ");
+//             }
+//             printf("* ");
+//         }
+//     }
+//     return 0;
+// }
