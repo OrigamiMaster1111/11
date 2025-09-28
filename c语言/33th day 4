@@ -1,0 +1,54 @@
+#define NUMBER 100
+
+int main(){
+    int i,num;
+    int grades[NUMBER], distribution[11] = {0};
+
+    printf("请输入学生人数：");
+    do {
+        scanf("%d",&num);
+        if (num > NUMBER || num < 1){
+            printf("\a请输入1 ~ %d的人数\n",NUMBER);
+            printf("请输入正确学生人数：");
+        }
+    } while (num > NUMBER || num < 1);
+
+    puts("请输入成绩");
+    for (i = 0; i < num; i++){
+        do {
+            printf("%d号: ",i + 1);
+            scanf("%d",&grades[i]);
+            if (grades[i] < 0 || grades[i] > 100){
+                printf("\a请输入0 ~ 100的分数\n");
+            }
+        } while (grades[i] < 0 || grades[i] > 100);
+        distribution[ grades[i] / 10 ]++;
+    }
+
+    // ---------- 以下是修改的输出部分 ----------
+    puts("---分布图---");
+
+    // 1. 计算“最长星号列的高度”（确定纵向要画多少行）
+    int max_count = 0;
+    for (int i = 0; i <= 10; i++) {
+        if (distribution[i] > max_count) {
+            max_count = distribution[i];
+        }
+    }
+
+    // 2. 纵向逐行输出星号（每列占2字符）
+    for (int row = max_count - 1; row >= 0; row--) {
+        for (int grade_idx = 0; grade_idx <= 10; grade_idx++) {
+            // %2c：强制单个字符（*或空格）占2个字符宽度
+            printf("%2c", (row < distribution[grade_idx]) ? '*' : ' ');
+        }
+        printf("\n"); // 每行结束换行
+    }
+
+    // 3. 输出底部分数刻度（每段占2字符，与上方星号列对齐）
+    printf("%2s%2s%2s%2s%2s%2s%2s%2s%2s%2s%2s\n", 
+           "0", "10", "20", "30", "40", "50", "60", "70", "80", "90", "100");
+    // ---------- 输出部分结束 ----------
+
+    return 0;
+}
