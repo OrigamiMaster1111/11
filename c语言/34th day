@@ -1,0 +1,54 @@
+//                      切蛋糕题全错！！！
+// int main(){
+//     int N,i,cnt,j,n,sum = 0;
+//     scanf("%d",&N);
+
+//     if (N == 1){
+//         printf("2");
+//         return 0;
+//     }
+//     else if (N > 1 && N <= 5){
+//         printf("%d",2*N - 2);
+//         return 0;
+//     }
+//     else {
+//         sum = 8;
+//     }
+
+//     int add = 4;
+//     n = 2;
+
+//     for ( i = 6, cnt = 0, j = 0; cnt < N;){
+//         if (N - cnt < i && N - cnt > n && pow((int) sqrt(sum),2) != sum){
+//             while (cnt < N){
+//                 add++;
+//                 sum += add*(N - cnt);
+//                 cnt = N;
+//             }
+//         }
+//         else if (j < i){
+//             sum += add;
+//             j++;
+//             cnt += i;
+//         }
+//         else {
+//             i *= 2;
+//             add *= 2;
+//             n *= 2;
+//         }
+//     }
+//     printf("%d",sum);
+// }
+
+//                      正确解法
+int main(){
+    int x,y,N;
+    scanf("%d",&N);
+
+    x = N/2;
+    y = N - x;
+
+    int max = (x + 1)*(y + 1);
+
+    printf("%d",max);
+}
