@@ -1,0 +1,45 @@
+                        //图书馆卡编码
+int main(){
+    int code,front_CodeSum = 0,back_CodeSum = 0, cnt = 0;
+    scanf("%d",&code);
+    int x = code / 1000;
+
+    for ( ; x > 0 && cnt != 3; x /= 10, cnt++){
+        front_CodeSum += x%10;
+    }
+
+    for ( x = code%1000; x > 0; x /= 10){
+        back_CodeSum += x%10;
+    }
+
+    if( front_CodeSum == back_CodeSum){
+        printf("Yes");
+    }
+    else {
+        printf("No");
+    }
+    return 0;
+}
+
+//另外一种解法
+#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);  // 读取借书卡编号
+    char s[7];        // 用于存储补零后的6位字符串（含结束符）
+    sprintf(s, "%06d", n);  // 格式化为6位，不足前面补零
+    
+    // 计算前三位数字之和
+    int sum_front = (s[0] - '0') + (s[1] - '0') + (s[2] - '0');
+    // 计算后三位数字之和
+    int sum_back = (s[3] - '0') + (s[4] - '0') + (s[5] - '0');
+    
+    // 判断并输出结果
+    if (sum_front == sum_back) {
+        printf("YES");
+    } else {
+        printf("NO");
+    }
+    return 0;
+}
