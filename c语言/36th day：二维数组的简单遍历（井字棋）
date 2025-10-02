@@ -1,0 +1,112 @@
+                        //二维数组的简单遍历（井字棋）
+#define NUM 3
+
+int main(){
+    int board[NUM][NUM];
+    int h,v;
+    int sumOfx = 0,sumOfo = 0;
+
+    /*棋盘上1为×方的棋子，0为○方的棋子*/
+    for ( h = 0; h < NUM; h++){
+        scanf("%d %d %d",&board[h][0],&board[h][1],&board[h][2]);
+    }
+
+    /*打印棋盘*/
+    printf("棋盘如下\n");   
+    for ( h = 0; h < NUM; h++)
+        printf("%d %d %d\n",board[h][0],board[h][1],board[h][2]);
+    
+    /*行检查*/
+    for ( h = 0; h < NUM; h++){
+        sumOfx = 0;
+        sumOfo = 0;
+        for ( v = 0; v < NUM; v++){
+            if ( board[h][v] == 1 ){
+                sumOfx++;
+            }
+            else {
+                sumOfo++;
+            }
+
+            if ( sumOfo == NUM ){
+                printf("○方获胜");
+                return 0;
+            }
+            else if ( sumOfx == NUM ){
+                printf("×方获胜");
+                return 0;
+            }
+        }
+    }
+
+    /*列检查*/
+     for (v = 0; v < NUM; v++){
+        sumOfx = 0;
+        sumOfo = 0;
+        for (h = 0; h < NUM; h++){
+            if ( board[h][v] == 1 ){
+                sumOfx++;
+            } 
+            else {
+                sumOfo++;
+            }
+        }
+       
+        if ( sumOfo == NUM ){
+            printf("○方获胜");
+            return 0;
+        } 
+        else if ( sumOfx == NUM ){
+            printf("×方获胜");
+            return 0;
+        }
+    }
+    
+    /*对角检查*/    
+    sumOfo = sumOfx = 0;
+    
+    /*左上到右下*/
+    for ( h = 0; h < NUM; h++) {
+        if ( board[h][h] == 1 ) {  // 行索引=列索引
+            sumOfx++;
+        } 
+        else {
+            sumOfo++;
+        }
+    }
+    if (sumOfo == NUM) {
+        printf("○方获胜");
+        return 0;
+    } 
+    else if (sumOfx == NUM) {
+        printf("×方获胜");
+        return 0;
+    }
+    
+    /*左下到右上*/
+    sumOfo = sumOfx = 0;
+    for ( h = 0; h < NUM; h++){
+        v = NUM - 1 -h;
+            
+        if ( board[h][v] == 1 ){
+            sumOfx++;
+        }
+        else {
+            sumOfo++;
+        }
+    }
+    
+    if ( sumOfo == NUM ){
+        printf("○方获胜");
+        return 0;
+    }
+    else if ( sumOfx == NUM ){
+        printf("×方获胜");
+        return 0;
+    }
+    
+    
+    /*如果都不成立则平局*/
+    printf("平局，无人获胜");
+    return 0;
+}
