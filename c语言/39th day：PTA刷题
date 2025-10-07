@@ -1,0 +1,63 @@
+                            //刷题
+                            
+//蠕虫爬洞                            
+                            
+// int main(){
+//     int N,U,D;
+//     int time;
+//     int sum = 0;
+
+//     scanf("%d %d %d",&N,&U,&D);
+
+//     for ( time = 0; sum < N; ){
+//         sum += U;
+//         time++;
+//         if (sum >= N){
+//             break;
+//         }
+//         else {
+//             sum -= D;
+//             time++;
+//         }
+//     }
+
+//     printf("%d",time);
+// }
+
+
+
+// 二分法求多项式单根
+// int main(){
+//     double a1,a2,a3,a0;
+//     double a,b;
+
+//     scanf("%lf %lf %lf %lf",&a3,&a2,&a1,&a0);
+//     scanf("%lf %lf",&a,&b);
+// }
+
+
+
+//支票面额
+int main(){
+    int y = 0,f = 0,judge = 0;
+    int n;
+    scanf("%d",&n);
+
+    for ( ; y < 50; y++){
+        if ((199*y + n) % 98 == 0){
+            f = (199*y + n) / 98;
+            if (f > 0 && f < 100)
+                judge = 1;
+                break;
+        }
+    }
+
+    if (judge){
+        printf("%d.%d",y,f);
+    }
+    else {
+        printf("No Solution");
+    }
+
+    return 0;
+}
