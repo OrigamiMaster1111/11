@@ -1,0 +1,35 @@
+int main(){
+    int a[4][3], b[3][4],c[4][4];
+    int i, j;
+    int x, y;
+
+    for ( i = 0; i < 4; i++){
+        for ( j = 0; j < 3; j++){
+            printf("a[%d][%d] = ",i,j);
+            scanf("%d",&a[i][j]);
+        }
+    }
+
+    for ( i = 0; i < 3; i++){
+        for ( j = 0; j < 4; j++){
+            printf("b[%d][%d] = ",i,j);
+            scanf("%d",&b[i][j]);
+        }
+    }
+
+    putchar('\n');
+    
+    for ( i = 0; i < 4; i++){
+        for ( j = 0; j < 4; j++){
+            int k = 0, cnt = 0;
+            for ( ; k < 3; k++){
+                c[i][j] += a[i][k]*b[k][j];
+                printf("%6d",c[i][j]);
+                cnt++;              
+            }
+        }
+        putchar('\n');
+    }
+
+    return 0;
+}
