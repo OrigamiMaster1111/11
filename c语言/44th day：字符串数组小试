@@ -1,0 +1,24 @@
+//字符串数组
+int main(){
+    int month, judge = 0;
+    char *year[] = {
+        "January",   "February",   "March",    "April",
+        "May",       "June",       "July",     "August",
+        "September", "October",    "November", "December", 
+    };
+
+    while (!judge){
+        printf("请输入月份：");
+        scanf("%d",&month);
+
+        if ( month <= 12 && month >= 1){
+            printf("%s",year[month - 1]);
+            judge = 1;
+        }
+        else {
+            printf("\a请输入正确的月份！\n");
+        }
+    }
+
+    return 0;
+}
