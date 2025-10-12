@@ -1,0 +1,49 @@
+//2024 重庆移通学院校赛
+//第一题:⿏⿏能不能 AC 呢？
+// int main(){
+//     long a,b;
+//     scanf("%d %d",&a,&b);
+//     if (a == b){
+//         printf("AC");
+//     }
+//     else {
+//         printf("WA");
+//     };
+//     return 0;
+// }
+
+//第二题:⿏⿏出游计划
+// int main(){
+//     char week[8];
+//     int day;
+//     scanf("%d",&day);
+//     scanf("%7s",week);
+//     if (week[day - 1] == 'x'){
+//         printf("No");
+//     }
+//     else {
+//         printf("Yes");
+//     }
+
+//     return 0;
+// }
+
+//第三题:⿏⿏回答问题
+// int main(){
+//     int N, X, cnt = 0;
+//     scanf("%d %d",&N,&X);
+//     char topic[N + 1];
+//     scanf("%s",topic);
+
+//     for ( ; cnt < N; cnt++){
+//         if (topic[cnt] == 'o'){
+//             X++;
+//         }
+//         else if (X > 0 && topic[cnt] == 'x'){
+//             X--;
+//         }
+//     }
+
+//     printf("%d",X);
+//     return 0;
+// }
