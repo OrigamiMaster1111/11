@@ -1,0 +1,48 @@
+//第四题：⿏⿏整理书名
+int main(){
+    char name[200001], result[200002];
+    long long i, first = 1;
+    long res_len = 0;
+
+    result[0] = '\0';
+
+    while ( fgets(name, sizeof(name), stdin) ){
+        long long len = strlen(name);
+
+        if (name[0] == '\n' && len == 1){
+            break;
+        }
+        
+        if (len > 0 && name[len - 1] == '\n'){
+            name[len - 1] = '\0';
+            len--;
+        }
+
+        first = 1;
+
+        for ( i = 0; i < len; i++){
+            if (name[i] == '_'){
+                first = 1;
+            } 
+            else {
+                if (first){
+                    name[i] = toupper(name[i]);
+                    first = 0;
+                }
+                else {
+                    name[i] = tolower(name[i]);
+                }
+            }
+        }
+
+        if (res_len + len + 1 < sizeof(result)){
+            strcat(result,name);
+            strcat(result,"\n");
+            res_len += len + 1;
+        }
+    }
+
+    printf("%s",result);
+
+    return 0;
+}
