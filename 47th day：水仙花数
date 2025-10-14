@@ -1,0 +1,24 @@
+#include <stdio.h>
+
+int main() {
+    int num, hundreds, tens, units; // 三位数、百位、十位、个位
+    int count = 0; // 统计水仙花数个数
+
+    printf("三位数的水仙花数有：\n");
+    // 遍历所有三位数（100~999）
+    for (num = 100; num <= 999; num++) {
+        // 拆解各位数字
+        hundreds = num / 100;          // 百位：num除以100取整
+        tens = (num % 100) / 10;       // 十位：num取余100后再除以10取整
+        units = num % 10;              // 个位：num取余10
+
+        // 判断是否满足水仙花数条件
+        if (hundreds*hundreds*hundreds + tens*tens*tens + units*units*units == num) {
+            printf("%d ", num);
+            count++;
+        }
+    }
+
+    printf("\n\n三位数的水仙花数共有 %d 个\n", count);
+    return 0;
+}
