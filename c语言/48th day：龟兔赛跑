@@ -1,0 +1,35 @@
+// int main(){
+//     int waste, time, cnt = 0, judge = 1;
+//     int distance_r = 0, distance_t = 0;
+
+//     scanf("%d",&time);
+//     for ( waste = 0; waste < time; waste++){
+        
+//         distance_t += 3;
+//         if (judge){
+//             distance_r += 9;
+//         }
+//         else {
+//             cnt++;
+//         }
+
+//         if ((waste + 1)%10 == 0 && judge && waste > 0){
+//             if (distance_r > distance_t){
+//                 judge = 0;
+//             }
+//         }       
+
+//         if (cnt == 30){
+//             judge = 1;
+//             cnt = 0;
+//         }
+//     }
+    
+//     if (distance_r == distance_t){
+//         printf("-_- %d",distance_r);
+//         return 0;
+//     }
+//     distance_r > distance_t ? printf("^_^ %d",distance_r) : printf("@_@ %d",distance_t);
+    
+//     return 0;
+// }
