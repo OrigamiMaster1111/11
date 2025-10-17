@@ -1,0 +1,118 @@
+//阿拉伯数字转中文读法
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+const char num[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', }; // 假设a=零,b=一,...,j=九
+const char unit[] = {'S', 'B', 'Q', }; // 假设S=十,B=百,Q=千
+
+//处理四位数以内的转换（中文每四位为一个大单位：万、亿、个）
+void tackle_four_digit(const char *s){
+    int len = strlen(s);
+    int has_non_zero = 0; // 标记是否已遇到非零数字（用于跳过前导零）
+
+    for (int i = 0; i < len; i++){
+        int digit = s[i] - '0'; // 字符转数字
+        int pos = len - 1 - i; // 位置：千(3)、百(2)、十(1)、个(0)
+
+        if (digit != 0){
+            has_non_zero = 1; // 遇到非零，标记为“已出现非零”（结束前导零阶段）
+            printf("%c", num[digit]); // 输出数字（如“一”“二”）
+            
+            // 非个位需输出单位（十、百、千）
+            if (pos > 0){
+                printf("%c", unit[pos - 1]); // unit[0]=十（对应pos=1），以此类推
+            }
+        }
+        // 当前数字为0时的处理
+        else {
+            // 仅当“已遇到非零、非末尾位、且后续有非零数字”时，才输出“零”
+            if (has_non_zero && pos > 0) {
+                int has_following_non_zero = 0;
+                // 检查后续是否有非零数字（避免连续零多输出）
+                for (int j = i + 1; j < len; j++) {
+                    if (s[j] != '0') {
+                        has_following_non_zero = 1;
+                        break;
+                    }
+                }
+                if (has_following_non_zero) {
+                    printf("a"); // 输出“零”
+                }
+            }
+        }       
+    }  
+}
+
+int main(){
+    char input[12];
+    scanf("%s", input);
+
+    // 0作为特殊情况单独处理
+    if (strcmp(input, "0") == 0){
+        printf("a");
+        return 0;
+    }
+
+    // 将数字分为亿、万、个三组（每四位一组）
+    int len = strlen(input);
+    char part_yi[2] = {0};    // 亿节（最多1位，因输入最多11位）
+    char part_wan[5] = {0};   // 万节（最多4位）
+    char part_ge[5] = {0};    // 个节（最多4位）
+
+    // 按长度拆分三组
+    if (len > 8){ // 长度>8（含9-11位），包含亿节
+        part_yi[0] = input[0]; 
+        strncpy(part_wan, input + 1, 4); // 万节取第2-5位
+        strncpy(part_ge, input + 5, 4);  // 个节取第6-9位
+    }
+    else if (len > 4 && len <= 8){ // 长度5-8位，包含万节
+        strncpy(part_wan, input, len - 4); // 万节取前(len-4)位
+        strncpy(part_ge, input + (len - 4), 4); // 个节取后4位
+    }
+    else { // 长度1-4位，只有个节
+        strncpy(part_ge, input, len);
+    }
+    
+    // 处理亿位
+    if (strlen(part_yi) > 0){
+        tackle_four_digit(part_yi);
+        printf("Y"); // 假设Y=亿
+    }
+
+    // 处理万位
+    if (strlen(part_wan) > 0){
+        // 亿节存在且万节以0开头时，补零判断
+        if (strlen(part_yi) > 0 && part_wan[0] == '0'){
+            if (atoi(part_wan) > 0){ // 万节非全零
+                printf("a");
+                tackle_four_digit(part_wan);
+                printf("W"); // 假设W=万
+            }
+            else if (atoi(part_wan) == 0){ // 万节全零
+                printf("a");
+            }
+        }
+        else { // 正常处理万节
+            tackle_four_digit(part_wan);
+            printf("W");
+        }    
+    }
+
+    // 处理个位
+    if (strlen(part_ge) > 0){
+        // 万节存在且个节以0开头时，补零判断
+        if (strlen(part_wan) > 0 && part_ge[0] == '0'){
+            if (atoi(part_ge) > 0){ // 个节非全零
+                printf("a");
+                tackle_four_digit(part_ge);
+            }
+            // 个节全零则不输出
+        }
+        else { // 正常处理个节
+            tackle_four_digit(part_ge);
+        }
+    }
+
+    return 0;
+}
