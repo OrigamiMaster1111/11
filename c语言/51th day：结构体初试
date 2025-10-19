@@ -1,0 +1,32 @@
+//结构体初试
+typedef struct{
+    int year;//年份
+    int month;//月份
+    int day;//日
+} Birthday;
+
+typedef struct{
+    char *name;//名字
+    int code;//学号
+    int age;//年龄   
+    float score;//成绩
+    Birthday bir;//生日
+} Student;
+
+void printStudentInfo( Student *p, int len){
+    for ( int i = 0; i < len; i++){
+        printf("姓名：%-10s 学号：%10d 年龄：%2d\n 成绩：%-3f\n 生日：%4d——%2d——%2d\n\n",        
+        p[i].name, p[i].code, p[i].age, p[i].score, p[i].bir.year, p[i].bir.month, p[i].bir.day);
+    }
+}
+
+int main(){
+    Student s[2] = {
+        {"Yuwei", 2025218757, 18, 100, {2007, 01, 01}},
+        {"Origami", 2025218575, 17,  99, {2006, 11, 11}},
+    };
+
+    printStudentInfo( s, sizeof(s)/sizeof(s[0]));
+
+    return 0;
+}
