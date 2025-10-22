@@ -1,0 +1,19 @@
+typedef struct{
+    int data;
+    Node* next;
+}Node;
+
+Node* initList(){
+    Node* list = (Node*)malloc(sizeof(Node));
+    (*list).data = 0;
+    (*list).next = NULL;
+    return list;
+}
+
+void headInsert(Node* list, int data){
+    Node* node = (Node*)malloc(sizeof(Node));
+    list->data = data;
+    node->next = list->next;
+    list->next = node;
+    list->data++;
+}
