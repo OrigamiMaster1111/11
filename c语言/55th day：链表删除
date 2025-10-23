@@ -1,0 +1,25 @@
+// 删除链表中第一个数据为data的节点
+void deleteNode(Node* list, int data) {
+    // 1. 定义两个指针：pre跟踪前驱节点，p跟踪当前节点
+    Node* pre = list;       // pre初始指向头节点（前驱的初始位置）
+    Node* p = list->next;   // p初始指向第一个有效节点
+
+    // 2. 遍历链表，寻找要删除的节点
+    while (p != NULL) {
+        if (p->data == data) {  // 找到匹配节点
+            // 3. 断开连接：让前驱节点的next跳过当前节点，指向当前节点的下一个
+            pre->next = p->next;
+            // 4. 释放当前节点的内存（避免内存泄漏）
+            free(p);
+            // 5. 头节点计数减1（如果用data记录节点数）
+            list->data--;
+            return;  // 找到并删除后，直接退出函数
+        }
+        // 未找到，继续后移：pre跟着p走，p移向下一个节点
+        pre = p;
+        p = p->next;
+    }
+
+    // 如果循环结束都没找到，说明链表中没有该数据
+    printf("未找到数据为 %d 的节点，无需删除\n", data);
+}
