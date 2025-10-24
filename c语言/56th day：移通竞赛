@@ -1,0 +1,63 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+
+int main() {
+    int N;
+    scanf("%d", &N);
+    int** floor = (int**)malloc(N * sizeof(int*));
+    
+    for (int i = 0; i < N; i++) {
+        floor[i] = (int*)malloc(3 * sizeof(int));
+    }
+
+    int sum = 0;
+
+    for (int i = 0; i < N - 1; i++) {
+        scanf("%d %d %d", &floor[i][0], &floor[i][1], &floor[i][2]);
+    }
+
+    int i = 0;
+    while (i < N - 1) {
+            if (i < floor[i][2] - 1) {
+                int judgeTime = 0;
+                for ( int ret = i; ret < floor[i][2] - 1; ret++) {
+                    judgeTime += floor[ret][0];
+                }
+                if (judgeTime > floor[i][1]) {
+                    sum += floor[i][1];
+                    i = floor[i][2] - 1;
+                }
+                else {
+                    sum += floor[i][0];
+                    i++;
+                }
+                judgeTime = 0;
+            }
+            else {
+                sum += floor[i][0];
+                i++;
+            }
+     }
+    printf("%d", sum);
+    return 0;
+}
+
+
+// int main(){
+//     int h, m, t;
+//     scanf("%d %d %d",&h,&m,&t);
+
+//     if (t >= 60){
+//         h += t/60;
+//         m += t%60;
+//     }
+//     if (m >= 60){
+//         h += m/60;
+//         m = m%60;
+//     }
+//     if (h >= 24){
+//         h %= 24;
+//     }
+//     printf("%d %d",h,m);
+// }
