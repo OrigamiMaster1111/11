@@ -1,0 +1,57 @@
+                //strtok、fgets和strcmp的运用（移通竞赛题）
+int main(){
+    // 定义二维数组存储分割后的单词，最多1000个，每个单词最长3个字符（含结束符'\0'）
+    char words[1000][4];
+    // 记录实际存储的单词数量
+    int count = 0;
+    // 定义临时数组存储输入的整行字符串，最大长度4000
+    char temp[4000];
+
+    // 从标准输入读取一行字符串到temp中
+    fgets(temp, sizeof(temp), stdin);
+
+    // 使用strtok分割字符串，分隔符为空格、制表符、换行符，获取第一个单词
+    char *token = strtok(temp," \t\n");
+
+    // 循环分割剩余单词，存储到words数组中，直到没有更多单词或达到最大存储量
+    while (token != NULL && count < 1000){
+        // 将当前单词复制到words数组的第count个位置
+        strcpy(words[count],token);
+        // 单词数量加1
+        count++;
+        // 继续分割下一个单词
+        token = strtok(NULL," \t\n");
+    }
+
+    // 定义计数器，分别统计四种组合出现的次数
+    int shu_shu = 0, su_su = 0, shu_su = 0, su_shu = 0;
+
+    // 循环遍历所有相邻的单词对（i和i+1），避免越界
+    for ( int i = 0; i + 1 < count; i++){
+        // 判断第i个单词是否为"shu"
+        int shu_1 = (strcmp(words[i],"shu") == 0);
+        // 判断第i个单词是否为"su"
+        int su_1 = (strcmp(words[i],"su") == 0);
+
+        // 判断第i+1个单词是否为"shu"
+        int shu_2 = (strcmp(words[i+1],"shu") == 0);
+        // 判断第i+1个单词是否为"su"
+        int su_2 = (strcmp(words[i+1],"su") == 0);
+
+        // 根据单词组合更新对应计数器
+        if (shu_1 && shu_2)
+            shu_shu++;
+        else if (shu_1 && su_2)
+            shu_su++;
+        else if (su_1 && su_2)
+            su_su++;
+        else if (su_1 && shu_2)
+            su_shu++;
+    }
+    // 输出四种组合的统计结果
+    printf("黍黍出现了%d次\n", shu_shu);
+    printf("苏苏出现了%d次\n", su_su);
+    printf("薯酥出现了%d次\n", shu_su);
+    printf("溯姝出现了%d次\n", su_shu);
+    return 0;
+}
