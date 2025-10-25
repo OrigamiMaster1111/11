@@ -1,0 +1,112 @@
+// 定义链表节点结构体
+typedef struct Node{
+    int data;       // 节点存储的数据
+    struct Node* next;     // 指向后继节点的指针
+}Node;
+
+// 初始化链表（创建头节点）
+Node* initList(){
+    Node* list = (Node*)malloc(sizeof(Node));  // 为头节点分配内存
+    (*list).data = 0;                          // 头节点数据域用于存储链表长度
+    (*list).next = NULL;                       // 头节点初始无后继节点
+    return list;                               // 返回头节点指针
+}
+
+// 头插法插入节点
+void headInsert(Node* list, int data){
+    Node* node = (Node*)malloc(sizeof(Node));  // 创建新节点
+    node->data = data;                         // 为新节点赋值
+    node->next = list->next;                   // 新节点指向头节点原来的后继节点
+    list->next = node;                         // 头节点指向新节点，完成插入
+    list->data++;                              // 链表长度加1
+}
+
+// 尾插法插入节点
+void tailInsert(Node* list, int data){
+    Node* node = (Node*)malloc(sizeof(Node));  // 创建新节点
+    node->data = data;                         // 为新节点赋值
+    node->next = NULL;                         // 新节点作为尾节点，后继为NULL
+    Node* p = list->next;                      // 用于遍历的指针，从第一个有效节点开始
+
+    // 遍历找到最后一个节点
+    while ( p != NULL && p->next != NULL){
+        p = p->next;
+    }
+
+    // 如果链表为空（无有效节点），直接将新节点作为第一个节点
+    if (p == NULL){
+        list->next = node;
+    }
+    // 否则将新节点链接到最后一个节点后
+    else {
+        p->next = node;
+    }
+    list->data++;                              // 链表长度加1
+}
+
+// 删除指定数据的节点
+void deleteNode(Node* list, int data){
+    Node* pre = list;                          // 前驱节点指针，初始指向头节点
+    Node* p = list->next;                      // 当前节点指针，初始指向第一个有效节点
+
+    // 遍历链表查找目标节点
+    while (p!=NULL){
+        if (p->data == data){                  // 找到目标节点
+            pre->next = p->next;               // 前驱节点跳过当前节点
+            free(p);                           // 释放当前节点内存
+            list->data--;                      // 链表长度减1
+            return;                            // 完成删除，退出函数
+        }
+        pre = p;                               // 前驱指针后移
+        p = p->next;                           // 当前指针后移
+    }
+
+    // 遍历结束未找到目标节点，输出提示信息
+    printf("Don't find the node that include the data of “%d”\n",data);
+}
+
+// 打印链表所有元素
+void printList(Node* list){
+    int cnt = 1;                  // 节点序号计数器，从1开始
+    Node* temp = list->next;      // 临时指针，指向第一个有效节点（跳过头节点）
+    printf("此链表共有%d个元素\n",list->data);  // 打印链表总长度（头节点data存储的长度）
+
+    // 遍历所有有效节点并打印
+    while (temp != NULL){       
+        printf("%d节点: %d\n",cnt,temp->data);  // 打印当前节点的序号和数据
+        temp = temp->next;                       // 指针后移，指向 next 节点
+        cnt++;                                   // 序号计数器自增
+    }
+}
+
+// 释放整个链表的内存（包括所有节点和头节点）
+void freeList(Node* list) {
+    Node* temp;
+    Node* p = list->next;  // 从第一个有效节点开始
+    // 先释放所有有效节点
+    while (p != NULL) {
+        temp = p;          // 暂存当前节点
+        p = p->next;       // 指针后移
+        free(temp);        // 释放当前节点
+    }
+    // 最后释放头节点
+    free(list);
+}
+
+int main(){
+    Node* list = initList();      // 初始化链表（创建头节点）
+    headInsert(list,4);           // 头插法插入数据4（此时链表：4）
+    headInsert(list,3);           // 头插法插入数据3（此时链表：3 -> 4）
+    tailInsert(list,5);           // 尾插法插入数据5（此时链表：3 -> 4 -> 5）
+    headInsert(list,2);           // 头插法插入数据2（此时链表：2 -> 3 -> 4 -> 5）
+    headInsert(list,1);           // 头插法插入数据1（此时链表：1 -> 2 -> 3 -> 4 -> 5）
+    tailInsert(list,6);           // 尾插法插入数据6（此时链表：1 -> 2 -> 3 -> 4 -> 5 -> 6）
+    printList(list);              // 打印当前链表所有元素
+
+    deleteNode(list,10);          // 尝试删除数据10（不存在，会提示未找到）
+    deleteNode(list,6);           // 删除数据6（存在，删除后链表：1 -> 2 -> 3 -> 4 -> 5）
+    printList(list);              // 打印删除后的链表元素
+
+    freeList(list);               // 释放所有内存
+    return 0;                     // 程序正常结束
+}
