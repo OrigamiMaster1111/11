@@ -1,0 +1,52 @@
+// 在链表指定位置插入新节点
+// list：头节点（其data存链表长度），data：插入数据，n：插入位置（1开始，最大为长度+1）
+void anywhereInsert(Node* list, int data, int n) {
+    // 检查插入位置是否合法
+    if (n > list->data + 1 || n < 1) {
+        printf("Please enter the number within the range.\n");
+        return;
+    }
+    // 创建新节点并初始化数据
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = data;
+    // 找到插入位置的前一个节点
+    Node* p = list;
+    for (int cnt = 0; cnt < n - 1; cnt++) {
+        p = p->next;
+    }
+    // 插入新节点
+    node->next = p->next;
+    p->next = node;
+    // 更新链表长度
+    list->data++;
+}
+// 删除链表中指定位置的节点
+// list：头节点（其data存储链表长度），n：删除位置（从1开始，最大为当前链表长度）
+void deleteAnynode(Node* list, int n) {
+    // 检查删除位置是否合法（需在1到链表长度之间）
+    if (n < 1 || n > list->data) {
+        printf("Please enter the number within the range.\n");
+        return;
+    }
+
+    // 找到待删除节点的前一个节点（p最终指向待删节点的前驱）
+    int cnt = 0;
+    Node *p = list;  // 从链表头节点开始遍历
+    while (cnt < n-1) {  // 循环n-1次，定位到前驱节点
+        p = p->next;
+        cnt++;
+    }
+
+    // 记录前驱节点，后续用于修改指针连接
+    Node *temp = p;
+    // p移动到待删除节点（前驱节点的下一个节点）
+    p = p->next;   
+    // 将前驱节点与待删节点的后继节点连接（避免链表断裂）
+    temp->next = p->next;
+    // 释放待删除节点的内存
+    free(p);
+    // 更新链表长度（头节点data记录长度，删除后减1）
+    list->data--;
+    
+    return;
+}
