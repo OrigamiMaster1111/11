@@ -1,0 +1,137 @@
+//双链表
+
+// 双链表节点结构定义
+// 每个节点包含：数据域(data)、前驱指针(pre)、后继指针(next)
+typedef struct Node{
+    int data;               // 节点存储的数据
+    struct Node* pre;       // 指向当前节点的前一个节点（前驱指针）
+    struct Node* next;      // 指向当前节点的后一个节点（后继指针）
+} Node;
+
+Node* initList(){
+    // 为头节点分配内存
+    Node* list = (Node*)malloc(sizeof(Node));
+    list->data = 0;         // 初始化节点数量为0（无数据节点）
+    list->next = NULL;      // 头节点初始无后继节点
+    list->pre = NULL;       // 头节点无前驱节点（链表的起点）
+    return list;            // 返回头节点指针
+}
+
+void anyInsert(Node* list, int data, int n){
+    // 检查插入位置是否合法（超出当前节点数量+1或小于1均不合法）
+    if (n > list->data + 1 || n < 1) {
+        printf("Please enter the number within the range.\n");
+        return;
+    }
+    // 创建新节点并分配内存
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    Node* p = list;         // p用于定位到插入位置的前一个节点（初始指向头节点）
+    newNode->data = data;   // 给新节点赋值
+    // 移动p到第n-1个位置（即新节点的前驱节点）
+    for ( int cnt = 0; cnt < n-1; cnt++){
+        p = p->next;
+    }
+    // 调整指针完成插入：
+    newNode->next = p->next;    // 新节点的后继指向p原来的后继
+    newNode->pre = p;           // 新节点的前驱指向p
+    if (p->next != NULL){       // 若p原来有后继节点（非尾插）
+        p->next->pre = newNode; // 原后继节点的前驱指向新节点
+    }
+    p->next = newNode;          // p的后继指向新节点
+    list->data++;   // 头节点记录的总节点数+1
+}
+
+void deleteNode(Node* list, int n){
+    // 检查删除位置是否合法（超出当前节点数量或小于1均不合法）
+    if (n > list->data || n < 1) {
+        printf("Please enter the number within the range.\n");
+        return;
+    }
+    Node* del = list;       // del用于定位到要删除的节点（初始指向头节点）
+    // 移动del到第n个数据节点（循环n次：从list->next开始是第一个数据节点）
+    for ( int i = 0; i < n; i++){
+        del = del->next;
+    }
+    // 调整指针完成删除：
+    if (del->next != NULL){     // 若删除的不是尾节点
+        del->pre->next = del->next;  // 前驱节点的后继指向del的后继
+        del->next->pre = del->pre;  // 后继节点的前驱指向del的前驱
+    } else {                    // 若删除的是尾节点
+        del->pre->next = NULL;  // 前驱节点的后继置空（成为新的尾节点）
+    }   
+    
+    free(del);      // 释放被删除节点的内存
+    list->data--;   // 头节点记录的总节点数-1
+}
+
+void deleteNumber(Node* list, int number, bool judge){
+    Node* del = list;  // 临时指针，初始指向头节点（辅助判断空链表）
+    // 新增：标记是否删除过节点（0=未删除/目标值不存在，1=已删除/目标值存在）
+    int hadDeleted = 0; 
+    
+    // 检查链表是否为空：头节点的next为空，说明没有数据节点
+    if (del->next == NULL){
+        printf("The list is empty!\n");
+        return;
+    }
+    
+    del = list->next;  // 将del移动到第一个数据节点（遍历起点）
+    Node* nextNode;    // 提前保存下一个节点，避免删除后指针丢失
+    
+    // 遍历所有数据节点
+    while (del != NULL){
+        nextNode = del->next;  // 提前保存后驱节点（此时del有效，可安全访问）
+        
+        // 找到目标值，执行删除
+        if (del->data == number){
+            hadDeleted = 1;  // 标记：已找到并删除目标节点
+            // 调整双向链表指针，保证链表连续性
+            if (del->next != NULL){  // 非尾节点：需同时调整前后驱
+                del->pre->next = del->next;
+                del->next->pre = del->pre;
+            } else {                  // 尾节点：只需调整前驱的next
+                del->pre->next = NULL;
+            }
+            free(del);  // 释放当前节点（避免内存泄漏）
+            list->data--;  // 更新头节点记录的总节点数
+            if (!judge) break;  // 仅删第一个时，删除后退出
+        }
+        
+        del = nextNode;  // 移动到下一个节点，继续遍历
+    }
+    
+    // 修正：判断是否未删除过节点（即目标值不存在），输出提示
+    // 1. 修复引号嵌套（用单引号包裹%d，或双引号转义\"）
+    // 2. 修正变量名（data→number）
+    // 3. 修正逻辑（if(!hadDeleted)：未删除过才提示“不存在”）
+    if (!hadDeleted) {
+        printf("'%d' doesn't exist in the list.\n", number);
+    }
+}
+
+void printList(Node* list) {
+    Node* p = list;
+    while (p->next != NULL) {
+        p = p->next;
+        printf("%d->", p->data);
+     }
+    puts("NULL");
+}
+
+int main() {
+    Node* list = initList();
+    bool ALL = true, ONE = false;
+    anyInsert(list, 6, 1);
+    anyInsert(list, 4, 2);
+    anyInsert(list, 2, 1);
+    anyInsert(list, 2, 1);
+    anyInsert(list, 2, 1);
+    printList(list);
+    deleteNumber(list, 2, ALL);
+    printList(list);
+    anyInsert(list, 9, 3);
+    anyInsert(list, 9, 3);
+    anyInsert(list, 9, 3);
+    deleteNumber(list, 9, ONE);
+    printList(list);
+}
