@@ -1,0 +1,108 @@
+//双循环链表
+typedef struct Node {
+    struct Node* pre;
+    struct Node* next;
+    int data;
+} Node;
+
+Node* initList(){
+    Node* list = (Node*)malloc(sizeof(Node));
+    list->data = 0;
+    list->pre = list;
+    list->next = list;
+    return list;
+}
+
+// 循环双链表插入函数
+// 参数：list-头节点（自循环，pre和next均指向自身）；data-待插入数据；judge_num-插入位置（0表示尾插，1~list->data+1表示指定位置后插）
+void anyInsert(Node* list, int data, int judge_num){
+    // 检查插入位置合法性：judge_num不能小于0或大于节点总数+1
+    if (judge_num > list->data+1 || judge_num < 0){
+        puts("Please enter the number within the range of the list.");
+        return;
+    }
+    // 创建新节点并分配内存
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    // 给新节点的数据域赋值
+    newNode->data = data;
+    // p用于定位插入位置的参考节点（初始指向头节点）
+    Node* p = list;
+    // 判断是否为尾插（judge_num=0）
+    if (judge_num == 0){
+        // 新节点的后继指向头节点（维持循环特性）
+        newNode->next = list;
+        // 原尾节点的后继指向新节点（前向关联新节点）
+        list->pre->next = newNode;
+        // 新节点的前驱指向原尾节点（反向关联原尾节点）
+        newNode->pre = list->pre;
+        // 头节点的前驱指向新节点（更新尾节点为新节点）
+        list->pre = newNode;
+    } else {
+        // 循环定位到第judge_num个数据节点（从list->next开始为第1个节点）
+        for ( int i = 0; i < judge_num; i++){
+            p = p->next;
+        }
+        // 新节点的后继指向p的原后继（前向关联p的原后继）
+        newNode->next = p->next;
+        // 新节点的前驱指向p（反向关联p）
+        newNode->pre = p;
+        // p的原后继的前驱指向新节点（反向关联新节点）
+        p->next->pre = newNode;
+        // p的后继指向新节点（前向关联新节点）
+        p->next = newNode;      
+    }
+    // 头节点记录的节点总数加1
+    list->data++;
+}
+
+// 循环双链表删除节点函数
+// 参数：
+//   list：循环双链表的头节点（哨兵节点）
+//   numORnode：删除模式（-1=删除所有与data相同的节点；0=只删除第一个与data相同的节点；≥1=删除第numORnode个数据节点）
+//   data：目标数据（仅numORnode为-1或0时有效，用于匹配节点）
+void deleteAnyNode(Node* list, int numORnode, int data){
+    // 检查numORnode合法性：不能小于-1或大于当前节点总数，不合法则提示并退出
+    if (numORnode < -1 || numORnode > list->data){
+        printf("Please enter the right number!\n");
+        return;
+    }
+    Node* del = list->next;  // 初始化del指向第一个数据节点（从第一个节点开始检查）
+    int haddeleted = 0;      // 标记是否成功删除过节点（用于后续提示）
+    int allNode = list->data;  // 保存初始节点总数（避免删除过程中节点数变化影响遍历范围）
+
+    // 处理numORnode为-1（全删匹配节点）或0（只删第一个匹配节点）的情况
+    if ( numORnode < 1){
+        // 遍历所有数据节点（循环次数为初始节点总数-1，配合初始del位置覆盖所有节点）
+        for ( int i = 1; i < allNode; i++){
+            // 若当前节点数据与目标data匹配
+            if (del->data == data){
+                Node* temp = del;  // 保存当前节点地址（用于释放内存）
+                // 调整前后节点指针，移除当前节点（维持双向循环）
+                del->pre->next = del->next;
+                del->next->pre = del->pre;
+                del = del->next;  // 提前移动del到下一个节点（避免访问已释放内存）
+                free(temp);       // 释放当前节点的内存
+
+                // 若numORnode=0（只删第一个），删除后直接退出循环
+                if (!numORnode) break;
+                haddeleted = 1;   // 标记已删除节点
+                list->data--;     // 更新节点总数（减1）
+            }
+        }
+        // 若未删除任何节点，提示未找到目标数据
+        if (!haddeleted){
+            printf("Didn't find \"%d\" in the list!\n",data);
+        }
+    } else {
+        // 处理numORnode≥1的情况：删除第numORnode个数据节点
+        // 循环numORnode-1次，将del定位到第numORnode个数据节点
+        for ( int j = 1; j < numORnode; j++){
+            del = del->next;
+        }
+        // 调整前后节点指针，移除目标节点（维持双向循环）
+        del->pre->next = del->next;
+        del->next->pre = del->pre;
+        free(del);  // 释放目标节点的内存
+        list->data--;  // 更新节点总数（减1）
+    }
+}
