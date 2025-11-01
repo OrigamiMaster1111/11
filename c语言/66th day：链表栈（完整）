@@ -1,0 +1,246 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <limits.h>
+
+// 链表节点结构体：存储栈的单个元素
+typedef struct Node {
+    int data;               // 存储元素的值
+    struct Node* next;      // 指向当前元素下方的元素（靠近栈底）
+} Node;
+
+// 栈结构体：管理栈的核心信息
+typedef struct Stack {
+    Node* top;              // 栈顶指针：指向栈顶元素（空栈时为NULL）
+    int cnt;                // 元素计数器：记录栈中元素的数量
+} Stack;
+
+// 初始化栈
+Stack* initStack() {
+    // 为栈结构体分配内存
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    // 内存分配失败时提示并返回NULL
+    if (stack == NULL) {
+        printf("内存分配失败，栈初始化失败\n");
+        return NULL;
+    }
+    // 空栈的栈顶指针为NULL
+    stack->top = NULL;
+    // 空栈的元素数量为0
+    stack->cnt = 0;
+    return stack;
+}
+
+// 压栈操作：向栈顶添加元素
+bool push(Stack* stack, int data) {
+    // 若栈无效（未初始化或已销毁），提示错误并返回失败
+    if (stack == NULL) {
+        printf("栈无效，无法压栈！\n");
+        return false;
+    }
+
+    // 创建新节点并分配内存
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    // 内存不足时提示错误并返回失败
+    if (newNode == NULL) {
+        printf("内存不足，压栈失败\n");
+        return false;
+    }
+    // 新节点存储数据
+    newNode->data = data;
+    // 新节点的next指向原栈顶（原栈顶成为下方元素）
+    newNode->next = stack->top;
+    // 更新栈顶为新节点
+    stack->top = newNode;
+    // 元素数量加1
+    stack->cnt++;
+
+    return true;
+}
+
+// 弹栈操作：从栈顶移除元素并返回其值
+int pop(Stack* stack) {
+    // 栈无效或为空时，提示错误并返回INT_MIN（失败标记）
+    if (stack == NULL || stack->top == NULL) {
+        printf("栈无效或为空，无法弹栈\n");
+        return INT_MIN;
+    }
+
+    // 暂存原栈顶节点（避免释放后丢失地址）
+    Node* topNode = stack->top;
+    // 获取原栈顶元素的值
+    int data = topNode->data;
+    // 更新栈顶为原栈顶的下一个节点
+    stack->top = topNode->next;
+    // 释放原栈顶节点的内存（避免泄漏）
+    free(topNode);
+    // 元素数量减1
+    stack->cnt--;
+
+    return data;
+}
+
+// 获取栈顶元素值（不删除元素）
+int getTop(Stack* stack) {
+    // 栈无效或为空时，提示错误并返回INT_MIN（失败标记）
+    if (stack == NULL || stack->top == NULL) {
+        printf("栈无效或为空，无法取栈顶\n");
+        return INT_MIN;
+    }
+    // 返回栈顶元素的值
+    return stack->top->data;
+}
+
+// 判断栈是否为空
+bool isEmpty(Stack* stack) {
+    // 栈无效时，提示错误并返回false（无效≠空）
+    if (stack == NULL) {
+        printf("栈无效，无法判断是否为空\n");
+        return false;
+    }
+    // 栈有效时，栈顶为NULL则为空栈（返回true），否则非空（返回false）
+    return stack->top == NULL;
+}
+
+// 从栈顶到栈底打印所有元素
+void printStack(Stack* stack) {
+    // 栈无效时提示错误并返回
+    if (stack == NULL) {
+        puts("错误：栈无效（未初始化或已销毁）\n");
+        return;
+    }
+
+    // 栈为空时提示并返回
+    if (stack->cnt == 0) {
+        puts("此栈为空栈\n");
+        return;
+    }
+
+    // 从栈顶开始遍历
+    Node* p = stack->top;
+    // 记录“栈顶下第n个元素”的计数（从2开始，因为栈顶是第1个）
+    int n = 2;
+    // 打印栈顶元素
+    printf("%d <-- 栈顶元素\n", p->data);
+
+    // 遍历打印栈顶下方的元素（直到栈底）
+    while (p->next != NULL) {
+        // 移动到下一个元素（靠近栈底方向）
+        p = p->next;
+        // 打印当前元素及位置
+        printf("%d <-- 栈顶下第%d个元素\n", p->data, n);
+        // 计数递增
+        n++;
+    }
+
+    // 打印栈底元素
+    printf("%d <-- 栈底元素\n", p->data);
+    // 打印元素总数
+    printf("此栈共%d个元素\n\n", stack->cnt);
+}
+
+// 从栈底到栈顶打印所有元素
+void rePrintStack(Stack* stack) {
+    // 栈无效时提示错误并返回
+    if (stack == NULL) {
+        puts("错误：栈无效（未初始化或已销毁）\n");
+        return;
+    }
+
+    // 栈为空时提示并返回
+    if (stack->cnt == 0) {
+        puts("此栈为空栈\n");
+        return;
+    }
+
+    // 动态分配数组：暂存所有元素（避免栈溢出）
+    int* data = (int*)malloc(stack->cnt * sizeof(int));
+    // 内存分配失败时提示并返回
+    if (data == NULL) {
+        puts("内存分配失败，无法打印\n");
+        return;
+    }
+
+    // 从栈顶开始遍历
+    Node* p = stack->top;
+    int i;
+    // 将元素从栈顶到栈底存入数组（data[0]是栈顶，data[cnt-1]是栈底）
+    for (i = 0; i < stack->cnt; i++) {
+        data[i] = p->data;
+        // 移动到下一个元素
+        p = p->next;
+    }
+
+    // 栈底上一个元素的索引（初始为cnt-2）
+    int n = i - 2;
+    // 记录“栈底上第n个元素”的计数（从1开始）
+    int step = 1;
+    // 打印栈底元素（数组最后一个元素）
+    printf("%d <-- 栈底元素\n", data[stack->cnt - 1]);
+
+    // 遍历打印栈底到栈顶之间的元素
+    while (n > 0) {
+        printf("%d <-- 栈底上第%d个元素\n", data[n], step);
+        // 索引递减（向栈顶方向移动）
+        n--;
+        // 计数递增
+        step++;
+    }
+
+    // 打印栈顶元素（数组第一个元素）
+    printf("%d <-- 栈顶元素\n", data[0]);
+    // 打印元素总数
+    printf("此栈共%d个元素\n\n", stack->cnt);
+    // 释放动态数组内存（避免泄漏）
+    free(data);
+}
+
+// 销毁栈：释放所有节点和栈结构体的内存
+void destroyStack(Stack* stack) {
+    // 栈无效时直接返回
+    if (stack == NULL) return;
+
+    // 循环弹栈，释放所有节点内存
+    while (!isEmpty(stack)) {
+        pop(stack);
+    }
+
+    // 释放栈结构体内存
+    free(stack);
+}
+
+// 主函数测试
+int main() {
+    Stack* stack = initStack();
+    if (stack == NULL) return 1;
+
+    printf("初始化后，栈是否为空？%s\n", isEmpty(stack) ? "是" : "否");
+
+    push(stack, 10);
+    push(stack, 20);
+    push(stack, 30);
+    printf("\n=== 压栈后（10,20,30）===\n");
+    printStack(stack);
+
+    printf("栈是否为空？%s\n", isEmpty(stack) ? "是" : "否");
+    printf("栈顶元素：%d\n", getTop(stack));
+
+    printf("\n=== 反向打印 ===\n");
+    rePrintStack(stack);
+
+    printf("弹栈元素：%d\n", pop(stack));
+    printf("=== 弹栈后 ===\n");
+    printStack(stack);
+
+    pop(stack);
+    pop(stack);
+    printf("\n=== 弹栈至空 ===\n");
+    printf("栈是否为空？%s\n", isEmpty(stack) ? "是" : "否");
+
+    Stack* invalidStack = NULL;
+    printf("\n测试无效栈：");
+    isEmpty(invalidStack);
+
+    destroyStack(stack);
+    return 0;
+}
