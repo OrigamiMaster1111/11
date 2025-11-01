@@ -1,0 +1,171 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// 栈结构体定义：包含存储元素的数组、栈顶索引和最大容量
+typedef struct Stack {
+    int* data;       // 存储栈元素的数组
+    int top;         // 栈顶索引（-1表示栈空）
+    int capacity;    // 栈的最大容量
+} Stack;
+
+// 初始化栈：创建一个指定容量的空栈
+// 成功返回栈指针，失败返回NULL
+Stack* initStack(int capacity) {
+    // 为栈结构体分配内存
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    if (stack == NULL) {  // 内存分配失败处理
+        printf("内存分配失败！\n");
+        return NULL;
+    }
+    
+    // 为栈元素数组分配内存
+    stack->data = (int*)malloc(capacity * sizeof(int));
+    if (stack->data == NULL) {  // 数组内存分配失败时，释放已分配的栈结构体
+        printf("数组内存分配失败！\n");
+        free(stack);
+        return NULL;
+    }
+
+    stack->top = -1;       // 初始栈空，栈顶索引为-1
+    stack->capacity = capacity;  // 记录栈容量
+    return stack;
+}
+
+// 入栈操作：将元素存入栈顶
+// 若栈已满则提示无法入栈
+void push(Stack* stack, int value) {
+    // 检查栈是否已满（栈顶索引+1等于容量时满）
+    if (stack->top == stack->capacity - 1) {
+        printf("栈已满，无法入栈！\n");
+        return;
+    }
+
+    // 栈顶索引先+1，再存入元素
+    stack->data[++stack->top] = value;
+    printf("入栈成功：%d\n", value);
+}
+
+// 出栈操作：取出栈顶元素并移除
+// 栈空时提示无法出栈，返回-1；否则返回出栈元素
+int pop(Stack* stack) {
+    // 检查栈是否为空（栈顶索引为-1时空）
+    if (stack->top == -1) {
+        printf("栈为空，无法出栈！\n");
+        return -1;
+    }
+
+    // 取出栈顶元素，栈顶索引再-1
+    int topValue = stack->data[stack->top--];
+    printf("出栈成功：%d\n", topValue);
+    return topValue;
+}
+
+// 查看栈顶元素：返回栈顶元素但不移除
+// 栈空时提示无栈顶元素，返回-1
+int peek(Stack* stack) {
+    // 检查栈是否为空
+    if (stack->top == -1) {
+        printf("栈为空，无栈顶元素！\n");
+        return -1;
+    }
+
+    // 返回栈顶索引对应的元素
+    return stack->data[stack->top];
+}
+
+// 判断栈是否为空：栈空返回1（真），非空返回0（假）
+int isEmpty(Stack* stack) {
+    return stack->top == -1;
+}
+
+// 判断栈是否已满：栈满返回1（真），未满返回0（假）
+int isFull(Stack* stack) {
+    return stack->capacity == stack->top + 1;
+}
+
+// 销毁栈：释放栈占用的内存（先释放元素数组，再释放栈结构体）
+void destroyStack(Stack* stack) {
+    if (stack != NULL) {  // 避免对空指针操作
+        free(stack->data);  // 释放元素数组
+        free(stack);        // 释放栈结构体
+        puts("栈已销毁\n");
+    }
+}
+
+// 从栈顶到栈底打印栈元素：依次输出栈顶、栈顶下的元素、栈底
+void printOrderStack(Stack* stack) {
+    if (stack->top == -1) {  // 栈空时提示
+        puts("该栈为空!");
+        return;
+    }
+
+    int step = 1;  // 记录栈顶下元素的距离（从1开始）
+    // 打印栈顶元素
+    printf("%d <-- 栈顶元素\n", stack->data[stack->top]);
+    // 打印栈顶到栈底之间的元素（不包含栈底）
+    for (int i = stack->top - 1; i > 0; i--) {
+        printf("%d <-- 栈顶下第%d个元素\n", stack->data[i], step);
+        step++;
+    }
+    // 打印栈底元素
+    printf("%d <-- 栈底元素\n", stack->data[0]);
+}
+
+// 从栈底到栈顶打印栈元素：依次输出栈底、栈底上的元素、栈顶
+void printReStack(Stack* stack) {
+    if (stack->top == -1) {  // 栈空时提示
+        puts("该栈为空!");
+        return;
+    }
+
+    // 打印栈底元素
+    printf("%d <-- 栈底元素\n", stack->data[0]);
+    // 打印栈底到栈顶之间的元素（不包含栈顶）
+    for (int i = 1; i < stack->top; i++) {
+        printf("%d <-- 栈底上第%d个元素\n", stack->data[i], i);
+    }
+    // 打印栈顶元素
+    printf("%d <-- 栈顶元素\n", stack->data[stack->top]);
+}
+
+// 测试主函数
+int main() {
+    Stack* stack = initStack(5);
+    if (stack == NULL) {
+        return 1;
+    }
+
+    push(stack, 10);
+    push(stack, 20);
+    push(stack, 30);
+    push(stack, 40);
+    push(stack, 50);
+    push(stack, 60);
+
+    printf("\n从栈顶到栈底打印：\n");
+    printOrderStack(stack);
+
+    printf("\n从栈底到栈顶打印：\n");
+    printReStack(stack);
+
+    printf("\n当前栈顶元素：%d\n", peek(stack));
+
+    pop(stack);
+    pop(stack);
+    printf("\n出栈两次后，从栈顶到栈底打印：\n");
+    printOrderStack(stack);
+
+    printf("\n栈是否为空：%s\n", isEmpty(stack) ? "是" : "否");
+    printf("栈是否已满：%s\n", isFull(stack) ? "是" : "否");
+
+    pop(stack);
+    pop(stack);
+    pop(stack);
+    pop(stack);
+
+    printf("\n空栈打印：\n");
+    printOrderStack(stack);
+
+    destroyStack(stack);
+    return 0;
+}
