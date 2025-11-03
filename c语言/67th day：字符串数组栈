@@ -1,0 +1,234 @@
+                        //字符串数组栈
+// 定义字符串栈的结构体
+typedef struct Stack {
+    char** str;       // 存储字符串指针的数组（每个元素指向一个字符串）
+    int top;          // 栈顶索引（-1表示空栈，0为第一个元素位置）
+    int capacity;     // 栈的最大容量（最多可存储的字符串数量）
+} Stack;
+
+// 初始化栈：创建指定容量的栈并返回指针
+Stack* initStack(int capacity) {
+    // 为栈结构体分配内存（大小为Stack结构体的字节数）
+    Stack* stack = (Stack*)malloc(sizeof(Stack));
+    // 检查内存分配是否成功
+    if (stack == NULL) {
+        printf("栈内存分配失败\n");
+        return NULL;
+    }
+
+    // 为存储字符串指针的数组分配内存（容量为capacity，每个元素是char*类型）
+    stack->str = (char**)malloc(capacity * sizeof(char*));
+    // 检查字符串指针数组的内存分配是否成功
+    if (stack->str == NULL) {
+        puts("数组内存分配失败\n");
+        free(stack);  // 释放已分配的栈结构体，避免内存泄漏
+        return NULL;
+    }
+
+    stack->top = -1;       // 初始化栈顶为-1（空栈状态）
+    stack->capacity = capacity;  // 记录栈的最大容量
+    return stack;
+}
+
+// 压栈操作：将字符串添加到栈顶
+bool push(Stack* stack, const char* str) {
+    // 检查栈是否有效（非空）或输入字符串是否为空
+    if (stack == NULL || str == NULL) {
+        puts("栈无效或字符串为空\n");
+        return false;
+    }
+
+    // 检查栈是否已满（栈顶索引达到最大容量-1）
+    if (stack->top == stack->capacity - 1) {
+        puts("栈已满，无法压栈\n");
+        return false;
+    }
+
+    // 为新字符串分配内存（长度为原字符串长度+1，预留'\0'结束符位置）
+    char* newStr = (char*)malloc(strlen(str) + 1);
+    // 检查字符串内存分配是否成功
+    if (newStr == NULL) {
+        puts("字符串内存分配失败\n");
+        return false;
+    }
+    strcpy(newStr, str);  // 将输入字符串拷贝到新分配的内存（深拷贝，避免外部修改影响）
+    stack->top++;         // 栈顶索引上移（指向新的栈顶位置）
+    stack->str[stack->top] = newStr;  // 将新字符串的指针存入栈顶位置
+    return true;
+}
+
+// 弹栈操作：移除栈顶字符串并返回其指针（需外部手动释放）
+char* pop(Stack* stack) {
+    // 栈无效时返回NULL
+    if (stack == NULL) return NULL;
+    // 栈为空时提示并返回NULL
+    if (stack->top == -1) {
+        puts("栈内无元素\n");
+        return NULL;
+    }
+
+    char* getStr = stack->str[stack->top];  // 暂存栈顶字符串的指针
+    free(stack->str[stack->top]);           // 释放栈顶字符串的内存（避免泄漏）
+    stack->top--;                           // 栈顶索引下移（指向新的栈顶）
+    return getStr;  // 返回弹出的字符串指针（外部使用后需free）
+}
+
+// 从栈底到栈顶打印所有字符串
+void rePrintStack(Stack* stack) {
+    // 栈无效时提示
+    if (stack == NULL) {
+        puts("栈无效\n");
+        return;
+    }
+
+    // 栈为空时提示
+    if (stack->top == -1) {
+        puts("栈为空\n");
+        return;
+    }
+
+    printf("=== 从栈底到栈顶打印 ===\n");
+    // 只有1个元素时（栈底和栈顶为同一元素）
+    if (stack->top == 0) {
+        printf("栈底和栈顶元素为同一元素：%s\n", stack->str[0]);
+    }
+    // 有2个元素时（分别打印栈底和栈顶）
+    else if (stack->top == 1) {
+        printf("栈底元素为：%s\n栈顶元素为：%s\n", stack->str[0], stack->str[1]);
+    }
+    // 3个及以上元素时（依次打印栈底、中间元素、栈顶）
+    else {
+        printf("%s <-- 栈底元素\n", stack->str[0]);
+        // 打印栈底到栈顶之间的中间元素（栈底上第1个到第top-1个）
+        for (int cnt = 1; cnt < stack->top; cnt++) {
+            printf("%s <-- 栈底上第%d个元素\n", stack->str[cnt], cnt);
+        }
+        printf("%s <-- 栈顶元素\n", stack->str[stack->top]);
+    }
+}
+
+// 从栈顶到栈底打印所有字符串
+void printStack(Stack* stack) {
+    // 栈无效时提示
+    if (stack == NULL) {
+        puts("栈无效\n");
+        return;
+    }
+
+    // 栈为空时提示
+    if (stack->top == -1) {
+        puts("栈为空\n");
+        return;
+    }
+
+    // 只有1个元素时（栈底和栈顶为同一元素）
+    if (stack->top == 0) {
+        printf("%s <-- 同为栈底与栈顶元素\n", stack->str[0]);
+    }
+    // 有2个元素时（分别打印栈顶和栈底）
+    else if (stack->top == 1) {
+        printf("%s <-- 栈顶元素\n%s <-- 栈底元素\n", stack->str[1], stack->str[0]);  // 修正拼写错误：pritntf→printf
+    }
+    // 3个及以上元素时（依次打印栈顶、中间元素、栈底）
+    else {
+        printf("%s <-- 栈顶元素\n", stack->str[stack->top]);
+        // 打印栈顶到栈底之间的中间元素（栈顶下第1个到第top-1个）
+        // cnt记录序号，i从栈顶下一个元素开始递减到1（跳过栈底）
+        for (int cnt = 1, i = stack->top - 1; i > 0; i--, cnt++) {
+            printf("%s <-- 栈顶下第%d个元素\n", stack->str[i], cnt);
+        }
+        printf("%s <-- 栈底元素\n", stack->str[0]);
+    }
+}
+
+// 销毁栈：释放所有分配的内存（避免泄漏）
+void destroyStack(Stack* stack) {
+    // 栈无效时直接返回
+    if (stack == NULL) return;
+
+    // 释放栈中每个字符串的内存
+    for (int i = 0; i <= stack->top; i++) {
+        free(stack->str[i]);
+    }
+    free(stack->str);  // 释放存储字符串指针的数组
+    free(stack);       // 释放栈结构体本身
+}
+
+int main() {
+    // 1. 初始化栈（容量为3）
+    printf("=== 测试初始化栈 ===\n");
+    Stack* stack = initStack(3);
+    if (stack != NULL) {
+        printf("栈初始化成功（容量：%d）\n\n", stack->capacity);
+    } else {
+        printf("栈初始化失败，程序退出\n");
+        return 1; // 初始化失败则退出
+    }
+
+    // 2. 测试压栈（正常情况）
+    printf("=== 测试压栈操作 ===\n");
+    push(stack, "apple");   // 压入第1个元素
+    push(stack, "banana");  // 压入第2个元素
+    push(stack, "cherry");  // 压入第3个元素（栈满）
+    push(stack, "date");    // 尝试压入第4个元素（测试栈满）
+    printf("\n");
+
+    // 3. 测试正序打印（栈顶→栈底）
+    printf("=== 测试正序打印（栈顶到栈底） ===\n");
+    printStack(stack);
+    printf("\n");
+
+    // 4. 测试逆序打印（栈底→栈顶）
+    printf("=== 测试逆序打印（栈底到栈顶） ===\n");
+    rePrintStack(stack);
+    printf("\n");
+
+    // 5. 测试弹栈（正常情况）
+    printf("=== 测试弹栈操作 ===\n");
+    char* popStr = pop(stack);
+    if (popStr != NULL) {
+        printf("弹出的元素：%s\n", popStr);
+        free(popStr); // 释放弹栈返回的字符串内存
+    }
+    // 弹栈后打印栈状态
+    printf("弹栈后栈内元素：\n");
+    printStack(stack);
+    printf("\n");
+
+    // 6. 测试连续弹栈至空
+    printf("=== 测试连续弹栈至空 ===\n");
+    popStr = pop(stack); // 弹出第2个元素
+    if (popStr != NULL) {
+        printf("弹出的元素：%s\n", popStr);
+        free(popStr);
+    }
+    popStr = pop(stack); // 弹出第1个元素（栈空）
+    if (popStr != NULL) {
+        printf("弹出的元素：%s\n", popStr);
+        free(popStr);
+    }
+    pop(stack); // 尝试弹空栈（测试栈空提示）
+    printf("\n");
+
+    // 7. 测试空栈打印
+    printf("=== 测试空栈打印 ===\n");
+    printStack(stack);    // 正序打印空栈
+    rePrintStack(stack);  // 逆序打印空栈
+    printf("\n");
+
+    // 8. 测试无效栈（NULL指针）操作
+    printf("=== 测试无效栈操作 ===\n");
+    Stack* invalidStack = NULL;
+    printStack(invalidStack);    // 打印无效栈
+    rePrintStack(invalidStack);  // 逆序打印无效栈
+    pop(invalidStack);           // 弹栈无效栈
+    push(invalidStack, "test");  // 压栈无效栈
+    printf("\n");
+
+    // 9. 销毁栈（测试内存释放）
+    printf("=== 测试销毁栈 ===\n");
+    destroyStack(stack);
+    printf("栈已销毁（后续操作不会导致内存泄漏）\n");
+
+    return 0;
+}
