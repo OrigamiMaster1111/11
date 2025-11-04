@@ -1,0 +1,75 @@
+// 第一段代码
+#include <stdio.h>
+
+int main(){
+    int a[3][3] = {
+        { 1, 2, 3,},
+        { 4, 5, 6,},
+        { 7, 8, 9,},
+    };
+    int i = 0, j = 0;
+    int sum = 0;
+    for ( ; i < 3, j < 3; i++, j++){
+        sum += a[i][j];
+    }
+    printf("%d\n",sum);
+
+    i = 2, j = 0;
+    for ( sum = 0; i >= 0, j < 3; i--, j++){
+        sum += a[i][j];
+    }
+    printf("%d\n",sum);
+}
+
+// 第二段代码
+int main(){
+    int a[3][4] = {
+        {0,1,2,3},
+        {4,5,6,7},
+        {8,9,10,11},
+    };
+    int b[4][3];
+    int i = 0, j = 0;
+
+    for ( i = 0; i < 3; i++){
+        for ( j = 0; j < 4; j++){
+            b[j][i] = a[i][j];
+        }
+    }
+
+    for ( i = 0, j = 0; j < 4; i++, j++){
+        if (i != 3) printf("%-2d %-2d %-2d %-2d    ",a[i][0],a[i][1],a[i][2],a[i][3]);
+        else printf("                ");
+        printf ("%-2d %-2d %-2d\n",b[j][0],b[j][1],b[j][2]);
+    }
+}
+
+// 第三段代码
+int main(){
+    int rows;
+    scanf("%d",&rows);
+    int cols = rows;
+    int triangle[rows][cols];
+
+    int i = 0, j;
+    for ( ; i < rows; i++){
+        triangle[i][0] = 1;
+        triangle[i][i] = 1;
+    }
+
+    for ( i = 2; i < rows; i++){
+        for ( j = 1; j < i; j++){
+            triangle[i][j] = triangle[i-1][j] + triangle[i-1][j-1];
+        }
+    }
+
+    for ( i = 0; i < rows; i++){
+        for ( j = 0; j < rows - i - 1; j++){
+            printf(" ");
+        }
+        for ( j = 0; j <= i;j++){
+            printf("%d ",triangle[i][j]);
+        }
+        printf("\n");
+    }
+}
