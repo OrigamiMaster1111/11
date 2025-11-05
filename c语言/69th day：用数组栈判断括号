@@ -1,117 +1,121 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>  // 新增：因为要使用bool类型（true/false），必须包含这个头文件
+#include <stdbool.h>
 
+// 栈结构体定义
 typedef struct {
-    char* bracket;   // 存储括号的数组
-    int capacity;    // 栈的最大容量
-    int top;         // 栈顶索引（-1表示空栈）
+    char* bracket;
+    int capacity;
+    int top;
 } Stack;
 
-Stack* initStack(int capacity){
-    // 新增：检查容量是否合法（不能<=0，否则栈无效）
+// 初始化栈
+Stack* initStack(int capacity) {
+    // 检查容量合法性
     if (capacity <= 0) {
-        printf("栈容量不能小于等于0\n");
+        printf("栈初始化失败：容量必须大于0\n");
         return NULL;
     }
+    // 分配栈结构体内存
     Stack* stack = (Stack*)malloc(sizeof(Stack));
-    // 新增：检查malloc是否成功（防止内存分配失败导致崩溃）
     if (stack == NULL) {
-        printf("栈结构体内存分配失败\n");
+        printf("栈初始化失败：内存分配失败\n");
         return NULL;
     }
+    // 分配括号数组内存
     stack->bracket = (char*)malloc(capacity * sizeof(char));
-    // 新增：检查括号数组的内存分配是否成功
     if (stack->bracket == NULL) {
-        printf("括号数组内存分配失败\n");
-        free(stack);  // 先释放已分配的栈结构体，避免内存泄漏
+        printf("栈初始化失败：括号数组内存分配失败\n");
+        free(stack); // 释放已分配的栈结构体
         return NULL;
     }
-    stack->top = -1;  // 初始化栈顶为-1（空栈）
+    stack->top = -1; // 空栈
     stack->capacity = capacity;
     return stack;
 }
 
-// 原函数返回类型是void，但实际要返回true/false，所以改为bool
-bool check_pop_push(Stack* stack, const char* newChar){
-    // 新增：检查入参是否合法（防止传入空指针导致崩溃）
+// 括号匹配检查函数（带安全判断）
+bool check_pop_push(Stack* stack, const char* newChar) {
     if (stack == NULL || newChar == NULL) {
-        printf("入参为空指针，无效\n");
+        printf("错误：栈或输入字符串为空指针\n");
         return false;
     }
-    
+
     int i = 0;
-    // 原循环条件是while(newChar != '\0')，错误！
-    // 原因：newChar是字符串首地址（指针），永远不会等于'\0'（字符）
-    // 修正：遍历字符串的每个字符，判断当前字符是否为结束符'\0'
-    while (newChar[i] != '\0') {  
-        char currentChar = newChar[i];  // 取出当前遍历的字符，方便后续使用
-        
-        // 原代码写的是newChar == '('，错误！
-        // 原因：newChar是指针，应该用newChar[i]（第i个字符）判断
-        if (currentChar == '(' || currentChar == '[' || currentChar == '{') {  
-            // 新增：入栈前检查栈是否已满（防止数组越界）
-            // 栈顶+1如果大于等于容量，说明栈满了
+    while (*(newChar + i) != '\0') {
+        char current_char = *(newChar + i);
+
+        if (current_char == '(' || current_char == '[' || current_char == '{') {
+            // 栈满检查
             if (stack->top + 1 >= stack->capacity) {
-                printf("栈已满，无法入栈\n");
+                printf("错误：栈已满，无法入栈'%c'\n", current_char);
                 return false;
             }
-            stack->top++;  // 栈顶上移（入栈）
-            // 原代码是stack->bracket[stack->top] = newChar + i，错误！
-            // 原因：newChar + i是地址（指针），应该存入字符newChar[i]
-            stack->bracket[stack->top] = currentChar;  
-        } 
-        // 处理右括号的情况
-        else if (currentChar == ')' || currentChar == ']' || currentChar == '}') {  
-            // 新增：出栈前检查栈是否为空（如果空栈遇到右括号，肯定不匹配）
+            stack->top++;
+            stack->bracket[stack->top] = current_char;
+        } else if (current_char == ')' || current_char == '}' || current_char == ']') {
+            // 栈空检查（右括号无匹配）
             if (stack->top == -1) {
-                printf("右括号'%c'没有对应的左括号\n", currentChar);
+                printf("错误：右括号'%c'无匹配左括号\n", current_char);
                 return false;
             }
-            // 取出栈顶的左括号，判断是否匹配
-            char topChar = stack->bracket[stack->top];
-            // 原代码用'stack->bracket[stack->top]'+1判断，错误！
-            // 原因：只有'()'的ASCII码差1（')'-'('=1），但'[]'差2（']'-'['=2），'{}'差2（'}'-'{'=2），所以不能用+1判断
-            // 修正：显式判断每种括号的匹配关系
-            if ( (currentChar == ')' && topChar == '(') || 
-                 (currentChar == ']' && topChar == '[') || 
-                 (currentChar == '}' && topChar == '{') ) {
-                stack->top--;  // 匹配成功，栈顶下移（出栈）
+            char top_char = stack->bracket[stack->top];
+            // 匹配判断
+            if ((top_char == '(' && current_char == ')') || 
+                (top_char == '{' && current_char == '}') || 
+                (top_char == '[' && current_char == ']')) {
+                stack->top--;
             } else {
-                printf("不匹配：栈顶是'%c'，当前是'%c'\n", topChar, currentChar);
+                printf("错误：不匹配 - 栈顶'%c' vs 当前'%c'\n", top_char, current_char);
                 return false;
             }
-        } 
-        // 新增：处理非括号字符（如果输入了其他字符，直接报错）
-        else {
-            printf("无效字符：'%c'（只能输入括号）\n", currentChar);
+        } else {
+            printf("错误：无效字符'%c'\n", current_char);
             return false;
         }
-        i++;  // 原代码漏了i++，会导致死循环（永远只遍历第0个字符），这里必须加
+        i++;
     }
 
-    // 遍历完所有字符后，检查栈是否为空
-    if (stack->top == -1) {  // 栈空：所有括号都匹配
-        printf("所有括号都匹配！\n");
+    // 最终检查栈是否为空
+    if (stack->top == -1) {
+        printf("测试结果：所有括号匹配成功！\n\n");
         return true;
-    } else {  // 栈非空：有左括号没匹配到右括号
-        printf("有未匹配的左括号\n");
+    } else {
+        printf("错误：存在未匹配的左括号（剩余%d个）\n\n", stack->top + 1);
         return false;
     }
 }
 
-// 测试代码（可以直接运行看效果）
+// 主函数：测试用例
 int main() {
-    Stack* stack = initStack(10);  // 创建一个容量为10的栈
-    if (stack != NULL) {
-        check_pop_push(stack, "()[]{}");  // 测试用例1：应该输出"所有括号都匹配！"
-        check_pop_push(stack, "([)]");    // 测试用例2：应该输出"不匹配"
-        check_pop_push(stack, "(()");     // 测试用例3：应该输出"有未匹配的左括号"
+    // 初始化栈（容量10，足够测试一般情况）
+    Stack* stack = initStack(10);
+    if (stack == NULL) {
+        return 1; // 栈初始化失败，退出程序
     }
-    // 释放内存（防止内存泄漏）
-    if (stack != NULL) {
-        free(stack->bracket);  // 先释放括号数组
-        free(stack);           // 再释放栈结构体
-    }
+
+    // 测试用例1：正常匹配（正确情况）
+    printf("测试用例1：\"()[]{}\"\n");
+    check_pop_push(stack, "()[]{}");
+
+    // 测试用例2：括号不匹配（类型错误）
+    printf("测试用例2：\"([)]\"\n");
+    check_pop_push(stack, "([)]");
+
+    // 测试用例3：右括号多余（无对应左括号）
+    printf("测试用例3：\"())\"\n");
+    check_pop_push(stack, "())");
+
+    // 测试用例4：左括号多余（无对应右括号）
+    printf("测试用例4：\"(({\"\n");
+    check_pop_push(stack, "(({");
+
+    // 测试用例5：包含无效字符
+    printf("测试用例5：\"(a)[b]\"\n");
+    check_pop_push(stack, "(a)[b]");
+
+    // 释放内存（避免内存泄漏）
+    free(stack->bracket); // 先释放括号数组
+    free(stack);          // 再释放栈结构体
     return 0;
 }
