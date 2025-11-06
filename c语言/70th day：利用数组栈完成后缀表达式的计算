@@ -1,0 +1,186 @@
+// 栈结构体：存储后缀表达式中的操作数
+typedef struct {
+    int capacity;  // 栈的最大容量
+    int top;       // 栈顶索引（-1表示空栈）
+    int* data;     // 存储操作数的动态数组
+} Stack;
+
+// 初始化栈
+Stack* initStack(int capacity) {
+    Stack* stack = (Stack*)malloc(sizeof(Stack));  // 为栈结构体分配内存
+    if (stack == NULL) {  // 检查内存分配是否失败
+        printf("内存分配失败（栈结构体）\n");
+        return NULL;
+    }
+
+    stack->data = (int*)malloc(capacity * sizeof(int));  // 为操作数数组分配内存
+    if (stack->data == NULL) {  // 检查数组内存分配是否失败
+        printf("内存分配失败（操作数数组）\n");
+        free(stack);  // 释放已分配的结构体，避免内存泄漏
+        return NULL;
+    }
+    stack->top = -1;  // 初始化栈顶为-1（空栈）
+    stack->capacity = capacity;  // 设置栈容量
+    return stack;
+}
+
+// 入栈操作
+void push(Stack* stack, int value) {
+    if (stack->top + 1 >= stack->capacity) {  // 检查栈是否已满（避免溢出）
+        printf("栈已满（溢出），无法入栈！\n");
+        return;
+    }
+    stack->top++;  // 栈顶索引上移
+    stack->data[stack->top] = value;  // 将值存入栈顶
+}
+
+// 出栈操作
+int pop(Stack* stack) {
+    if (stack->top == -1) {  // 检查栈是否为空（避免空栈出栈）
+        printf("栈为空，无法出栈\n");
+        return INT_MIN;  // 返回INT_MIN标记错误
+    }
+    int value = stack->data[stack->top];  // 取出栈顶元素
+    stack->top--;  // 栈顶索引下移
+    return value;
+}
+
+// 判断栈是否为空
+int isEmpty(Stack* stack) {
+    return stack->top == -1;  // 栈顶为-1时为空
+}
+
+// 释放栈内存
+void freeStack(Stack* stack) {
+    if (stack != NULL) {  // 避免空指针操作
+        free(stack->data);  // 先释放操作数数组
+        free(stack);        // 再释放栈结构体
+    }
+}
+
+// 后缀表达式求值
+int evalPostfix(const char* expr) {
+    Stack* stack = initStack(100);  // 初始化容量为100的栈
+    if (stack == NULL) {  // 检查栈初始化是否失败
+        return -1;
+    }
+
+    int i = 0;  // 遍历表达式的索引
+    int len = strlen(expr);  // 获取表达式长度
+
+    while (i < len) {  // 遍历表达式每个字符
+        if (expr[i] == ' ' || expr[i] == ',') {  // 跳过空格或逗号（分隔符）
+            i++;
+            continue;
+        }
+
+        // 处理数字（包括多位数和负数）
+        if (isdigit(expr[i]) || (expr[i] == '-' && isdigit(expr[i + 1]))) {
+            int num = 0;    // 存储解析的数字
+            int sign = 1;   // 符号（1为正，-1为负）
+
+            if (expr[i] == '-') {  // 处理负数
+                sign = -1;
+                i++;  // 跳过负号
+            }
+
+            // 解析多位数（如"123"→123）
+            while (i < len && isdigit(expr[i])) {
+                num = num * 10 + (expr[i] - '0');  // 字符转数字（'0'的ASCII为48）
+                i++;  // 移动到下一个数字字符
+            }
+
+            num *= sign;  // 应用符号
+            push(stack, num);  // 数字入栈
+        }
+        // 处理运算符
+        else {
+            if (isEmpty(stack)) {  // 检查是否有足够操作数
+                printf("表达式错误：运算符'%c'前无足够操作数\n", expr[i]);
+                freeStack(stack);
+                return -1;
+            }
+            int b = pop(stack);  // 弹出右操作数
+
+            if (isEmpty(stack)) {  // 再次检查操作数
+                printf("表达式错误：运算符'%c'前无足够操作数\n", expr[i]);
+                freeStack(stack);
+                return -1;
+            }
+            int a = pop(stack);  // 弹出左操作数
+
+            int result;  // 运算结果
+            switch (expr[i]) {  // 根据运算符计算
+            case '+':
+                result = a + b;
+                break;
+            case '-':
+                result = a - b;
+                break;
+            case '/':
+                if (b == 0) {  // 检查除数为0
+                    printf("错误：除数不能为零\n");
+                    freeStack(stack);
+                    return -1;
+                }
+                result = a / b;
+                break;
+            case '*':
+                result = a * b;
+                break;
+            default:  // 未知运算符
+                printf("错误：未知运算符'%c'\n", expr[i]);
+                freeStack(stack);
+                return -1;
+            }
+
+            push(stack, result);  // 结果入栈
+            i++;  // 移动到下一个字符
+        }
+    }
+
+    if (stack->top != 0) {  // 最终栈应只有一个结果
+        printf("表达式错误：操作数数量不匹配\n");
+        freeStack(stack);
+        return -1;
+    }
+
+    int finalResult = pop(stack);  // 取出最终结果
+    freeStack(stack);  // 释放栈
+    return finalResult;
+}
+
+// 测试主函数
+int main() {
+    // 测试用例1：基本加法
+    const char* expr1 = "3 4 +";
+    printf("测试1: %s → 结果: %d（预期:7）\n", expr1, evalPostfix(expr1));
+
+    // 测试用例2：乘法+加法
+    const char* expr2 = "5 3 4 * +";
+    printf("测试2: %s → 结果: %d（预期:17）\n", expr2, evalPostfix(expr2));
+
+    // 测试用例3：包含负数
+    const char* expr3 = "3 -4 +";
+    printf("测试3: %s → 结果: %d（预期:-1）\n", expr3, evalPostfix(expr3));
+
+    // 测试用例4：除法
+    const char* expr4 = "8 2 /";
+    printf("测试4: %s → 结果: %d（预期:4）\n", expr4, evalPostfix(expr4));
+
+    // 测试用例5：除数为0（错误）
+    const char* expr5 = "5 0 /";
+    printf("测试5: %s → 结果: ", expr5);
+    evalPostfix(expr5);  // 预期：输出"错误：除数不能为零"
+
+    // 测试用例6：操作数不匹配（错误）
+    const char* expr6 = "3 +";
+    printf("测试6: %s → 结果: ", expr6);
+    evalPostfix(expr6);  // 预期：输出"表达式错误：运算符'+'前无足够操作数"
+
+    // 测试用例7：复杂表达式（逗号分隔）
+    const char* expr7 = "10,6,9,3,+, -11,*, /,*,17,+,5,+";
+    printf("测试7: %s → 结果: %d（预期:22）\n", expr7, evalPostfix(expr7));
+
+    return 0;
+}
