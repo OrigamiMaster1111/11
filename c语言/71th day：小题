@@ -1,0 +1,27 @@
+int main(){
+//     int a, b, c;
+//     scanf("%d %d %d",&a,&b,&c);
+//     if (a > b){
+//         if (a > c && b < c){
+//             printf("最重的的小猪是a:%d\n最轻的小猪是b:%d\n",a,b);
+//         } else if (a < c){
+//             printf("最重的小猪是c:%d\n最轻的小猪是b:%d\n",c,b);
+//         } else {
+//             printf("最重的小猪是a:%d\n最轻的小猪是c:%d\n",a,c);
+//         }
+//     } else {
+//         //此时b > a
+//         if (b > c && a < c){
+//             printf("最重的的小猪是b:%d\n最轻的小猪是a:%d\n",b,a);
+//         } else if (a > c){
+//             printf("最重的小猪是b:%d\n最轻的小猪是c:%d\n",b,c);
+//         } else {
+//             printf("最重的小猪是c:%d\n最轻的小猪是a:%d\n",c,a);
+//         }
+//     }
+//     if (a == b || b == c || a == c) {
+//         printf("存在至少两只小猪体重相同。\n");
+//     } else {
+//         printf("不存在至少两只小猪体重相同。\n");
+//     }
+// }
