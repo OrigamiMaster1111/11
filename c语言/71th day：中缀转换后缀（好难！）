@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 100
+
+typedef struct {
+    int top;
+    char items[MAX];
+} Stack;
+
+void initStack(Stack* stack) {
+    stack->top = -1;
+}
+
+int isEmpty(Stack* stack) {
+    return stack->top == -1;
+}
+
+void push(Stack* stack, char c) {
+    if (stack->top < MAX - 1) {
+        stack->items[++stack->top] = c;
+    }
+}
+
+char pop(Stack* s) {
+    if (!isEmpty(s)) {
+        return s->items[s->top--];
+    }
+    return '\0';
+}
+
+char peek(Stack* s) {
+    if (!isEmpty(s)) {
+        return s->items[s->top];
+    }
+    return '\0';
+}
+
+int precedence(char op) {
+    if (op == '+' || op == '-') return 1;
+    if (op == '*' || op == '/') return 2;
+    return 0;
+}
+
+char* infixToPostfix(char* infix) {
+    Stack s;
+    initStack(&s);
+    int i = 0, j = 0;
+    int len = strlen(infix);
+    char* postfix = (char*)malloc(len * 2 + 1);
+    if (postfix == NULL) return NULL;
+
+    while (infix[i] != '\0') {
+        char c = infix[i];
+
+        // 处理操作数（字母或数字）
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+            // 连续读取所有相邻的操作数
+            while (infix[i] != '\0' && 
+                   ((infix[i] >= 'a' && infix[i] <= 'z') || 
+                    (infix[i] >= 'A' && infix[i] <= 'Z') || 
+                    (infix[i] >= '0' && infix[i] <= '9'))) {
+                postfix[j++] = infix[i++];
+            }
+            postfix[j++] = ' ';  // 加空格分隔
+        }
+        // 处理左括号
+        else if (c == '(') {
+            push(&s, c);
+            i++;
+        }
+        // 处理右括号
+        else if (c == ')') {
+            while (!isEmpty(&s) && peek(&s) != '(') {
+                postfix[j++] = pop(&s);
+                postfix[j++] = ' ';
+            }
+            pop(&s);  // 弹出左括号
+            i++;
+        }
+        // 处理运算符（+、-、*、/）
+        else if (c == '+' || c == '-' || c == '*' || c == '/') {
+            while (!isEmpty(&s) && precedence(peek(&s)) >= precedence(c)) {
+                postfix[j++] = pop(&s);
+                postfix[j++] = ' ';
+            }
+            push(&s, c);
+            i++;
+        }
+        // 非法字符处理
+        else {
+            free(postfix);
+            return NULL;
+        }
+    }
+
+    // 弹出栈中剩余运算符
+    while (!isEmpty(&s)) {
+        postfix[j++] = pop(&s);
+        postfix[j++] = ' ';
+    }
+
+    // 处理末尾空格
+    if (j > 0 && postfix[j-1] == ' ') {
+        postfix[j-1] = '\0';
+    } else {
+        postfix[j] = '\0';
+    }
+    return postfix;
+}
+
+int main() {
+    char infix[MAX];
+    printf("请输入中缀表达式：");
+    if (fgets(infix, MAX, stdin) != NULL) {
+        infix[strcspn(infix, "\n")] = '\0';  // 移除换行符
+        char* postfix = infixToPostfix(infix);
+        if (postfix != NULL) {
+            printf("后缀表达式：%s\n", postfix);
+            free(postfix);
+        }
+    }
+    return 0;
+}
