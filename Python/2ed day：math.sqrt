@@ -1,0 +1,8 @@
+import math
+a = 10
+b = 50
+c = 10
+x1 = (-b + (b**2 - 4*a*c) ** 1/2) / (2*a)
+x2 = (-b - math.sqrt(b**2 - 4*a*c)) / (2*a)
+print(x1)
+print(x2)
