@@ -1,0 +1,24 @@
+namespace spaceA {
+    int year = 2007;
+    
+    namespace spaceB {
+        int month = 1;
+        
+        namespace spaceC {
+            int day = 1;
+        }
+    }
+}
+
+using namespace spaceA;
+using namespace spaceB;
+
+// int main(){
+//     cout << "陈宇威生日是：" << spaceA::year << "年" 
+//          << spaceA::spaceB::month << "月" 
+//          << spaceA::spaceB::spaceC::day << "号" << endl;
+// }
+
+int main(){
+    cout << spaceA::year << spaceB::month << endl;
+}
