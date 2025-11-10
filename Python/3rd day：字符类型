@@ -1,0 +1,16 @@
+s = "Keep fight!"
+b = len(s)
+print(b)
+print(s[1])
+print(s[6])
+print(s[9])
+
+c1 = True
+c2 = False
+
+n = None
+print(type(b))
+print(type(s))
+print(type(c1))
+print(type(c2))
+print(type(n))
