@@ -1,0 +1,23 @@
+string getSeasonName(const string & seasonName){
+// 	if (seasonName == "chuntian") return "SPR";
+// 	if (seasonName == "xiatian") return "SUM";
+//     if (seasonName == "qiutian") return "AUT";
+// 	if (seasonName == "dongtian") return "WIN";
+// 	return "输入错误";
+// }
+
+// int main(){
+// 	cout << "请写下你最喜欢的季节：" << endl;
+// 	string season;
+
+// 	while (cin >> season){
+// 		cout << season << "的英语缩写是" << getSeasonName(season) << endl;
+// 	}
+// 	return 0;
+// }
+
+int main(){
+    const int a = 10;
+    int const *p = &a;
+    cout << a << *p << endl;
+}
