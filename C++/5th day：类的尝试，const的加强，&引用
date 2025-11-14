@@ -1,0 +1,35 @@
+// int main(){
+//     const int a = 10;
+//     int const *p = &a;
+
+//     cout << a << *p << endl;
+// }
+
+int main(){
+    int a = 14;
+    int *p = &a;
+    int &again = a;
+
+    cout << p << " " << &p << endl;
+    p = &again;
+    cout << p << " " << &p << endl;
+}
+
+int main(){
+    class Point3d {
+        public:
+            Point3d(float x, float y, float z): x(x), y(y), z(z) {}
+            void print(){
+                cout << "三维坐标：（" << x << "," << y << "," << z << ")" << endl;
+            }
+        private:
+            float x;
+            float y;
+            float z;
+    };
+
+    Point3d p(1.5f, 2.5f, 3.5f);
+    p.print();
+
+    return 0;
+}
