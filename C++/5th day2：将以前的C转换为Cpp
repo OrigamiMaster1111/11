@@ -1,0 +1,21 @@
+int main(){
+    int a = 0;
+
+    cout << "请问您是否办理会员？" << endl
+         << "一年会费：1000元" << endl
+         << "连续两年享七折" << endl
+         << "办理一年请按“1”；办理两年请按“2”" << endl;
+    cout << "若不办理请按“0”" << endl << endl;
+
+    int paid = 0;
+
+    cin >> a;
+
+    if (a == 1) paid = 1000;
+    if (a == 2) paid = 1000 * 2 * 0.7;
+    if (a == 0) paid = 0;
+
+    cout << "需缴费：" << paid << "元" << endl;
+
+    return 0;
+}
