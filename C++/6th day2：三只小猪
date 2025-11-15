@@ -1,0 +1,25 @@
+// int main() {
+//     int a = 0, b = 0, c = 0, max;
+//     char max_pig;
+
+//     cin >> a;
+//     max = a;
+//     max_pig = 'A';
+
+//     // 处理B：若B更重，同时更新max和max_pig
+//     cin >> b;
+//     if (b > max) {
+//         max = b;       // 赋值实际重量b
+//         max_pig = 'B'; // 更新标识为B
+//     }
+
+//     // 处理C：若C更重，同时更新max和max_pig
+//     cin >> c;
+//     if (c > max) {
+//         max = c;       // 赋值实际重量c
+//         max_pig = 'C'; // 更新标识为C
+//     }
+
+//     cout << "最重的小猪是：" << max_pig << "，重量为：" << max << endl;
+//     return 0;
+// }
