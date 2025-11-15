@@ -1,0 +1,32 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class car {
+    public:
+        car(float x, string y, string z): speed(x), color(y), model(z){}
+        void printSpecific(){
+            cout << "speed:" << speed << endl <<
+            "color:" << color << endl <<
+            "model:" << model << endl; 
+        }
+
+    private:
+        float speed;
+        string color;
+        string model;
+};
+
+#include "Car.h"
+int main(){
+    float speed;
+    string model, color;
+    
+    cout << "Please enter the speed, color and model:" << endl;
+    cin >> speed >> color;
+    cin.ignore();
+    getline(cin, model);
+    
+    car newCar(speed, color, model);
+    newCar.printSpecific();
+}
