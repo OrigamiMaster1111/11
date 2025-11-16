@@ -1,0 +1,80 @@
+// 定义学生结构体：存储学生的姓名和成绩
+struct Student{
+    string name;  // 学生姓名（支持带空格）
+    int score;    // 学生成绩（整数）
+};
+
+// 定义老师结构体：存储老师姓名和所带的5名学生
+struct Teacher{
+    string name;        // 老师姓名（支持带空格）
+    Student student[5]; // 包含5个Student类型的数组，存储学生信息
+};
+
+// 函数功能：向Teacher数组中填充老师和学生的信息
+// 参数：p - 指向Teacher数组的指针；n - 老师的数量
+void fillInformation(Teacher *p, int n){
+    // 外层循环：遍历每一位老师（共n位）
+    // cnt1：当前老师的索引（从0到n-1）；i与cnt1同步，用于指针偏移（可简化为直接用cnt1）
+    int i = 0;
+    for (int cnt1 = 0; cnt1 < n; cnt1++,i++){
+        // 提示输入第cnt1+1位老师的姓名（+1是因为索引从0开始，用户习惯从1开始）
+        cout << "请输入第" << cnt1+1 << "位老师的姓名：" << endl;
+        // 用getline读取老师姓名（支持带空格），(p+i)等价于&p[i]，指向第i位老师
+        getline(cin, (p+i)->name);
+
+        // 提示输入当前老师带领的5名学生的信息
+        cout << "请输入五位学生的名字" << endl;
+        // 内层循环：遍历当前老师的5名学生
+        for (int cnt2 = 0; cnt2 < 5; cnt2++){
+            // 提示输入第cnt2+1位学生的姓名
+            cout << "第" << cnt2+1 << "位：";
+            // 用getline读取学生姓名（支持带空格），student[cnt2]是第cnt2位学生
+            getline(cin, (p+i)->student[cnt2].name);
+            // 提示输入该学生的成绩
+            cout << "成绩是：";
+            // 用cin读取成绩（整数），存储到当前学生的score成员
+            cin >> (p+i)->student[cnt2].score;
+            // 清除输入成绩后残留的换行符（避免影响下一次getline读取姓名）
+            cin.ignore();
+        }
+    }
+}
+
+// 函数功能：打印所有老师和对应学生的信息
+// 参数：p - 指向Teacher数组的指针；n - 老师的数量
+void printAllInformation(Teacher *p, int n){
+    // 外层循环：遍历每一位老师（共n位）
+    for (int i = 0; i < n; i++){
+        // 打印当前老师的序号和姓名，(p+i)指向第i位老师
+        cout << endl << "第" << i+1 << "队的" << "领队老师是：" << (p+i)->name << endl;
+        // 提示接下来打印该老师带领的学生信息
+        cout << "所带领的5名学生为:" << endl;
+        // 内层循环：遍历当前老师的5名学生
+        for (int cnt = 0; cnt < 5; cnt++){
+            // 打印第cnt+1位学生的姓名
+            cout << cnt+1 << "号:" << (p+i)->student[cnt].name << endl;
+            // 打印该学生的成绩
+            cout << "成绩为:" << (p+i)->student[cnt].score << endl;
+        }
+    }
+}
+
+int main(){
+    int n;  // 存储老师的数量
+    // 提示用户输入老师的数量
+    cin >> n;
+    // 清除输入n后残留的换行符（避免影响后续getline读取老师姓名）
+    cin.ignore();
+    // 用智能指针unique_ptr管理动态分配的Teacher数组（大小为n）
+    // 优势：离开作用域时自动释放内存，避免内存泄漏
+    unique_ptr<Teacher[]> p(new Teacher[n]);
+    // 注释的代码是用裸指针管理内存的方式（需要手动delete[]，容易遗漏）
+    // Teacher *p = new Teacher[n];
+
+    // 调用fillInformation函数，传入智能指针管理的裸指针（p.get()）和老师数量n，填充信息
+    fillInformation(p.get(), n);
+    // 调用printAllInformation函数，打印所有信息
+    printAllInformation(p.get(), n);
+
+    return 0;  // 程序正常结束
+}
