@@ -1,0 +1,68 @@
+#include <iostream>
+using namespace std;
+
+//菜单界面
+void showMenu(){
+    cout << "——————————————————————"/*16格*/ << endl;
+    cout << "|   -通讯录管理系统- |" << endl;
+    cout << "|    ① 添加联系人    |" << endl;
+    cout << "|    ② 显示联系人    |" << endl;
+    cout << "|    ③ 删除联系人    |" << endl;
+    cout << "|    ④ 查找联系人    |" << endl;
+    cout << "|    ⑤ 修改联系人    |" << endl;
+    cout << "|    ⑥ 清空联系人    |" << endl;
+    cout << "|    ⑦ 退出通讯录    |" << endl;
+    cout << "——————————————————————"/*16格*/ << endl;
+}
+
+//联系人类
+class Contact{
+    private:
+        string name;
+        char gender;
+        string birthday;
+        string phone;
+        string address;
+
+    public:
+    Contact():
+        name(""), gender(' '), birthday(""), phone(""), address(""){}
+    
+    Contact(string n, char g, string b, string p, string a):
+        name("n"), gender('g'), birthday("b"), phone("p"), address("a"){}    
+
+    
+}
+
+
+int main(){
+    int select = 0;
+    showMenu();
+
+    cin >> select;
+
+    while (true){
+        switch (select)
+        {
+            case 1://添加联系人
+
+            case 2://显示联系人
+            
+            case 3://删除联系人
+
+            case 4://查找联系人
+
+            case 5://修改联系人
+
+            case 6://清空联系人
+
+            case 0://退出通讯录
+                cout << "欢迎下次使用，再见！" << endl;
+                break;
+            default://未输入规范数字
+        }
+    }
+
+    system("pause");
+    return 0;
+}
