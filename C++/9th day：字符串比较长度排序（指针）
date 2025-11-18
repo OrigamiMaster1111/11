@@ -1,0 +1,26 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+using namespace std;
+
+int main(){
+    const char *p[4] = {"Yes", "No", "Winner", "Keep",};
+    const char **pp = p;
+
+    int i = 0, j = 1;
+    for (; i < 4; i++){
+        for (j = 1; j <4-i; j++){
+            const char *temp;
+            if (strlen(pp[j]) < strlen(pp[j-1])){
+                temp = pp[j-1];
+                pp[j-1] = pp[j];
+                pp[j] = temp;
+            }
+        }
+    }
+
+    for (i = 0; i < 4; i++){
+        cout << *(pp+i) << endl;
+    }
+    return 0;
+}
