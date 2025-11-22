@@ -1,0 +1,289 @@
+#include <iostream>   // 标准输入输出流：cout（打印菜单、提示信息）、cin（读取用户选择、输入数据）、endl（换行）
+#include <vector>     // 动态数组容器：vector<Contact>（存储所有联系人）、vector<int>（存储匹配联系人索引、待删除索引）
+#include <string>     // 字符串类：string（姓名、性别、生日等字符串变量）、getline（读取整行输入，如联系人姓名、地址）
+#include <regex>      // 正则表达式：regex（定义生日格式正则规则）、regex_match（验证生日字符串是否符合格式）
+#include <cstring>    // C风格字符串处理：sscanf（从生日字符串中解析年、月、日）
+#include <windows.h>  // Windows API：SetConsoleOutputCP、SetConsoleCP（设置控制台编码为UTF-8，支持中文输入输出）
+#include <algorithm>  // 算法库：sort（对删除索引排序，避免删除时索引失效）、find（查找用户输入的序号是否有效）
+#include <cctype>     // 字符分类：isdigit（判断电话号码字符是否为数字，验证手机号格式）
+using namespace std;
+
+//将终端的编码转换为能输入和输出中文的格式
+void setConsoleUTF8(){
+    #ifdef _win32
+    SetConsoleOutputCP(65001);
+    SetConsoleCP(65001);
+    #endif
+}
+
+//判断性别输入
+bool isGender(const string &g){ return g == "男" || g == "女"; }
+//判断生日输入
+bool isBirthday(const string &b) {
+    regex pattern(R"(^ \d{4}[-/.] \d{2,1}\1 \d{2,1} &)");/*正则表达式regex*/
+    /*  
+        ^             - 匹配字符串的开始
+        \d{4}         - 匹配 exactly 4 个数字（例如：2023）
+        ([-.\/])      - 匹配一个分隔符（'-', '.', 或 '/'），并将其作为第一个捕获组
+        \d{1,2}       - 匹配 1 个或 2 个数字（例如：9 或 12）
+        \1            - 反向引用，必须与第一个捕获组匹配的分隔符相同
+        \d{1,2}       - 匹配 1 个或 2 个数字（例如：5 或 28）
+        $             - 匹配字符串的结尾
+    */
+    if (!regex_match(b, pattern)){
+        /*判断是否满足正则表达式要求的格式，b是被检查字符串，pattern是表达式格式的命名*/
+        return false;
+    }
+
+    int year, month, day;//为了将年月日和分隔符提取出来
+    char sep1, sep2;     //这里分别定义一个变量作为容器来接收它
+    sscanf(b.c_str(), "%d%c%d%c%d", &year, &sep1, &month, &sep2, &day);
+    /*
+        b.c_str将cpp风格的字符串转换为C语言风格的字符串
+        解析格式：整数(年)+字符(分隔符1)+整数(月)+字符(分隔符2)+整数(日)  ps：%d获取一个十进制整数，%c获取一个字符
+        将每个%d或者%c获得到的值分别传入对应变量
+    */
+    if (month > 12 || month < 1) return false;
+    if (day < 1 || day > 31) return false;
+    return true;
+}
+//判断号码输入
+bool isPhone(const string &p){
+    if (p.size() != 11){
+        return false;
+    }
+    for (char c: p){
+        if (!isdigit(c)){
+            return false;
+        }
+    }
+    return true;
+}
+
+
+
+//菜单界面
+void showMenu(){
+    cout << "——————————————————————"/*16格*/ << endl;
+    cout << "|   -通讯录管理系统- |" << endl;
+    cout << "|    ① 添加联系人    |" << endl;
+    cout << "|    ② 显示联系人    |" << endl;
+    cout << "|    ③ 删除联系人    |" << endl;
+    cout << "|    ④ 查找联系人    |" << endl;
+    cout << "|    ⑤ 修改联系人    |" << endl;
+    cout << "|    ⑥ 清空联系人    |" << endl;
+    cout << "|    ⑦ 退出通讯录    |" << endl;
+    cout << "——————————————————————"/*16格*/ << endl;
+}
+
+//联系人类
+class Contact{
+    private:
+        string name;
+        string gender;
+        string birthday;
+        string phone;
+        string address;
+        string shortPho;
+
+    public:
+        Contact():
+            name(""), gender(""), birthday(""), phone(""), address(""), shortPho(""){}
+        
+        Contact(string &n, string &g, string &b, string &p, string &a):
+            name(n), gender(g), birthday(b), phone(p), address(a){}
+
+        string getName() const {return name;}
+        string getGender() const {return gender;}
+        string getBir() const {return birthday;}
+        string getPho() const {return phone;}
+        string getAdr() const {return address;}
+
+        void getFullInfo() const {
+            cout << "姓名：" << name << endl <<
+                    "性别：" << gender << endl <<
+                    "生日：" << birthday << endl <<
+                    "电话：" << phone << endl <<
+                    "住址：" << address << endl;
+        };
+
+        void changeName(string newName){name = newName; cout << "修改成功：" << name << endl;}
+        void changeBir(string newBir){birthday = newBir; cout << "修改成功：" << birthday << endl;}
+        void changePhone(string newPhe){phone = newPhe; cout << "修改成功：" << phone << endl;}
+        void changeAdr(string newAdr){address = newAdr; cout << "修改成功：" << name << endl;}
+        void changeSho(string newSho){shortPho = newSho; cout << " 修改成功 " << endl;}
+};
+
+class AddressBook{
+    private:
+        vector<Contact> contacts;
+
+    public:
+        void addContact(){
+            string name, birthday, phone, address, gender;
+            
+            cout << "请输入联系人信息" << endl;
+
+            cout << "姓名：";    cin.ignore();    getline(cin, name);
+
+            cout << "性别：";    getline(cin, gender);
+            if (gender != "男" && gender != "女"){
+                cout << "输入无效，默认为“未设置”" << endl;
+                gender = "未设置";
+            }
+            
+            cout << "生日(YYYY-MM-DD或YYYY/MM/DD): ";    getline(cin, birthday);
+            do{
+                cout << "号码：";    getline(cin, phone);
+                if (phone.size() == 11) break;
+                cout << "请输入十一位电话号码！请重试" << endl;
+            } while (true);
+            
+            cout << "地址：";    getline(cin, address);
+
+            contacts.emplace_back(name, gender, birthday, phone, address);
+
+            cout << "请问是需要存储亲情短号，如果有请按 1 ; 没有请按 2 :";
+            string judge;    getline(cin, judge);
+            if (stoi(judge) == 1){
+                Try_again:
+                string newSho;
+                cout << "请输入：";    getline(cin, newSho);
+                
+                bool isValid = false;
+                try {
+                    stoi(newSho);
+                    if (newSho.size() == 3) isValid = true;
+                } 
+                catch(const invalid_argument&) {
+                    isValid = false;
+                }
+
+                if (!isValid){
+                    cout << "输入有误(需为3位数字),请重试！" << endl;
+                    goto Try_again;
+                }
+                contacts.back().changeSho(newSho);
+            }
+
+            cout << "联系人添加成功！" << endl << endl;
+            return;
+        }
+
+
+        void deleteContact(){
+            if (contacts.empty()){
+                cout << "通讯录为空，无法删除！" << endl << endl;
+                return;
+            }
+
+            again1:
+            string input;
+            cout << "请输入要删除的联系人信息（姓名/性别/生日/电话/住址）: ";
+            cin.ignore();    getline(cin, input);
+
+            vector<int> Indices;
+            vector<int> contactIndices;
+
+            int cnt, j;
+            for ( cnt = 0, j = 0; cnt < contacts.size(); cnt++){
+                const Contact &c = contacts[cnt];
+                if (c.getAdr() == input || c.getBir() == input || c.getGender() == input ||
+                    c.getPho() == input || c.getName() == input)
+                {
+                    ++j;
+                    Indices.push_back(j);
+                    contactIndices.push_back(cnt);
+                }
+            }
+
+            int order = 1;
+            if (contactIndices.empty()){
+                cout << "未找到相关联系人" << endl;
+                again2:
+                cout << "重试请按1 | 结束请按2" << endl;
+                cin >> order;
+                if (order == 2){
+                    return;
+                }
+                else if (order == 1){
+                    goto again1;
+                }
+                else {
+                    cout << "输入数字无效，请重试" << endl;
+                    goto again2;
+                }
+            }
+                
+            cnt = 0;
+            cout << "找到 " << contactIndices.size() << " 个相关联系人，请选择你要删除的联系人（输入数字,用空格分隔）：" << endl;
+            for_each (Indices.begin(), Indices.end(), [&](int idx){
+                cout << idx << ": " << endl;
+                contacts[contactIndices[cnt]].getFullInfo();
+                ++cnt;
+            });
+
+            vector<int> deleteIndices;
+            while (true){
+                cout << "请输入要删除的联系人序号(如: 1 3): ";
+                string choiceStr;
+                getline(cin, choiceStr);
+                
+                stringstream ss(choiceStr);
+                int idx, cnt = 0;
+                while (ss >> idx){
+                    if (find(Indices.begin(), Indices.end(), idx) != Indices.end()){
+                        deleteIndices.push_back(contactIndices[cnt]);
+                        ++cnt;
+                    } else {
+                        cout << "序号" << idx << "无效，已跳过！" << endl;
+                    }
+                }
+                
+                if (deleteIndices.empty()){
+                    cout << "未选择有效索引，删除失败！请重试" << endl << endl;
+                    continue;
+                }
+                break;
+            }
+
+            sort(deleteIndices.rbegin(), deleteIndices.rend());
+            for (int idx: deleteIndices){
+                contacts.erase(contacts.begin() + idx);
+            }
+
+            cout << "已删除成功 " << deleteIndices.size() << " 个联系人！" << endl << endl;
+        }
+};
+
+
+int main(){
+    int select = 0;
+    showMenu();
+
+    cin >> select;
+
+    while (true){
+        switch (select)
+        {
+            case 1://添加联系人
+
+            case 2://显示联系人
+            
+            case 3://删除联系人
+
+            case 4://查找联系人
+
+            case 5://修改联系人
+
+            case 6://清空联系人
+
+            case 0://退出通讯录
+                cout << "欢迎下次使用，再见！" << endl;
+                break;
+            default://未输入规范数字
+        }
+    }
+
+    system("pause");
+    return 0;
