@@ -1,0 +1,92 @@
+//删除联系人
+        void deleteContact(){
+            //先判断vector内部是否有成员
+            if (contacts.empty()){
+                cout << "通讯录为空，无法删除！" << endl << endl;
+                return;
+            }
+
+            again1://选择重试选项将会跳转到此处
+            string input;
+            cout << "请输入要删除的联系人信息（姓名/性别/生日/电话/住址）: ";
+            cin.ignore();    getline(cin, input);
+
+            vector<int> Indices;//这里用于存储顺序的序号，为了后续给用户提供删除目录是1,2,3顺序排列
+            vector<int> contactIndices;//这里用于存储符合条件的联系人在Contact数组里的真实索引，同时记录数量
+
+            int cnt, j;//cnt记录真实索引，j构造顺序索引
+            //遍历通讯录，寻找有关联系人
+            for ( cnt = 0, j = 0; cnt < contacts.size(); cnt++){
+                const Contact &c = contacts[cnt];
+                if (c.getAdr() == input || c.getBir() == input || c.getGender() == input ||
+                    c.getPho() == input || c.getName() == input)
+                {
+                    ++j;//符合条件存入才自加，达成顺序索引
+                    Indices.push_back(j);
+                    contactIndices.push_back(cnt);
+                }
+            }
+
+            int order;
+            //未找到时让用户选择重试或结束
+            if (contactIndices.empty()){
+                cout << "未找到相关联系人" << endl;
+                again2://输入非有效指令跳到此处
+                cout << "重试请按1 | 结束请按2" << endl;
+                cin >> order;
+                cin.ignore();
+                if (order == 2){
+                    return;
+                }
+                else if (order == 1){
+                    goto again1;
+                }
+                else {
+                    cout << "输入数字无效，请重试" << endl;
+                    goto again2;
+                }
+            }
+                
+            cnt = 0;//计数器清零
+            cout << "找到 " << contactIndices.size() << " 个相关联系人，请选择你要删除的联系人（输入数字,用空格分隔）：" << endl;
+            for_each (Indices.begin(), Indices.end(), [&/*引用捕获*/](int idx/*Indices内部数据是int型*/){
+                cout << idx << ": " << endl;// Indices 中存储的是匹配到的联系人的序号（如 1, 2, 3...）
+                contacts[contactIndices[cnt]].getFullInfo();//展示符合条件的联系人信息
+                ++cnt;
+            });
+
+            vector<int> deleteIndices;//记录要删除的索引
+            while (true){
+                cout << "请输入要删除的联系人序号(如: 1 3): ";
+                string choiceStr;
+                getline(cin, choiceStr);
+                
+                stringstream ss(choiceStr);
+                int idx, cnt = 0;
+                //持续从 stringstream 对象 ss 中读取整数，直到读取失败（比如没有数据了、或遇到非数字字符），循环才停止
+                while (ss >> idx){
+                    auto it = find(Indices.begin(), Indices.end(), idx);//先在Indices找出对应的序号
+                    //排除掉末尾的情况
+                    if (it != Indices.end()){
+                        //这里用符合情况的迭代器减去首元素迭代器，获得的数字就是真实的索引数字（因为数组首元素是0开始，这里减掉首元素恰好符合）
+                        deleteIndices.push_back(contactIndices[it-Indices.begin()]/*获得contactIndices里的真实索引*/);//将要删除的索引数字记录到delete数组中
+                        ++cnt;
+                    } else {
+                        cout << "序号" << idx << "无效，已跳过！" << endl;
+                    }
+                }
+                
+                if (deleteIndices.empty()){
+                    cout << "未选择有效索引，删除失败！请重试" << endl << endl;
+                    continue;
+                }
+                break;
+            }
+
+            sort(deleteIndices.rbegin(), deleteIndices.rend());//从后往前删，防止自动补位导致后续删除出现问题
+            for (int idx: deleteIndices/*自动从deleteIndices取值赋予idx，并且遍历所有元素*/){
+                contacts.erase(contacts.begin() + idx);
+            }
+
+            cout << "已删除成功 " << deleteIndices.size() << " 个联系人！" << endl << endl;
+        }
