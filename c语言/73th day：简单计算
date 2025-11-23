@@ -1,0 +1,46 @@
+#include <stdio.h>
+
+int main() {
+    int year, month, day, sum = 0, leap;
+    
+    // 输入年月日
+    printf("请输入年月日（格式：年 月 日）：");
+    scanf("%d %d %d", &year, &month, &day);
+    
+    // 判断是否为闰年
+    leap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    
+    sum = day;  // 先计入当月的天数
+    switch (month) {
+        case 12:
+            sum += 30;  // 累加11月的天数（30天）
+        case 11:
+            sum += 31;  // 累加10月的天数（31天）
+        case 10:
+            sum += 30;  // 累加9月的天数（30天）
+        case 9:
+            sum += 31;  // 累加8月的天数（31天）
+        case 8:
+            sum += 31;  // 累加7月的天数（31天）
+        case 7:
+            sum += 30;  // 累加6月的天数（30天）
+        case 6:
+            sum += 31;  // 累加5月的天数（31天）
+        case 5:
+            sum += 30;  // 累加4月的天数（30天）
+        case 4:
+            sum += 31;  // 累加3月的天数（31天）
+        case 3:
+            sum += (leap ? 29 : 28);  // 累加2月的天数（闰年29天，平年28天）
+        case 2:
+            sum += 31;  // 累加1月的天数（31天）
+        case 1:
+            break;  // 1月无前置月份，直接跳出
+        default:
+            printf("月份输入无效！\n");
+            return 1;
+    }
+    
+    printf("%d年%d月%d日是该年的第%d天。\n", year, month, day, sum);
+    return 0;
+}
