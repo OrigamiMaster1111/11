@@ -1,0 +1,78 @@
+//input函数：输出文字的同时输入，与Python里的input函数功能一致
+string input(const string& str){
+    string inf;
+    cout << str;
+    cin >> inf;
+    return inf;
+}
+
+//判断短号输入
+bool isShort(const string& s){
+    bool isValid = false;//判断短号是否符合规定
+    try {                                               //try：特殊代码块标记
+        stoi(s);//stoi在遇到非数字字符时就会抛出异常       在其{大括号}内部运行的代码，相关函数会通过‘throw’关键字抛出一个异常
+        if (s.size() == 3) isValid = true;         //抛出异常后代码将会进入catch部分
+    }
+    //throw抛出的异常类型若与catch()内的异常类型相匹配，程序则会跳转到此处
+    catch(const invalid_argument&/*此处的异常类型就是对应stoi函数抛出的异常*/) {
+        isValid = false;
+    }/*此处可写catch(...)来捕获所有异常类型*/
+    return isValid;
+}
+
+void changeSho(string newSho){shortPho = newSho; cout << " 修改成功：" << shortPho << endl;}
+
+//详情页功能选择
+        void internalDel(Contact& c){
+            int function;
+            while (true){
+                cout << "功能选择：\n" << "1-更改名字   2-更改性别   3-更改生日   4-更改电话\n"
+                    << "5-更改住址   6-添加或更改短号   9-删除该联系人   0-退出详情页\n请选择: ";
+                if(!(cin >> function)){
+                    cout << "输入错误，请重试" << endl;
+                    continue;
+                };
+                switch(function){
+                    case 0:{
+                        return;
+                    }
+                    case 1:{
+                        c.changeName(input("请输入新名字"));
+                        break;
+                    }
+                    case 2:{
+                        c.changeGen(input("请输入性别"));
+                        break;
+                    }
+                    case 3:{
+                        BirAgain:
+                        string newBir = input("请输入新的生日");
+                        if(!isBirthday(newBir)) {cout << "格式错误，请重试" << endl; goto BirAgain;}
+                        c.changeBir(newBir);
+                        break;
+                    }
+                    case 4:{
+                    PhoAgain:
+                        string newPho = input("请输入新电话号码");
+                        if(!isPhone(newPho)) {cout << "格式错误，请重试" << endl; goto PhoAgain;}
+                        c.changePhone(newPho);
+                        break;
+                    }
+                    case 5:{
+                        c.changeAdr(input("请输入新地址"));
+                        break;
+                    }
+                    case 6:{
+                        ShoAgain:
+                        string newSho = input("请输入新的短号");
+                        if(!isShort(newSho)) {cout << "格式错误，请重试" << endl; goto ShoAgain;}
+                        c.changeSho(newSho);
+                        break;
+                    }
+                    case 9:{
+
+                    }
+                };
+                cout << "已完成，请您继续选择" <<endl;
+            }
+        }
