@@ -1,0 +1,154 @@
+//显示所有联系人
+        void showAllContacts(){
+            while (true){
+                int cnt = 0;
+                cout << "---------------- 联系人列表 -------------------" << endl;
+                for (const Contact& contact: contacts){
+                    cout << cnt + 1 << ":" << endl;
+                    contact.getName();
+                    cout << endl;
+                    ++cnt;
+                }
+                 cout << "--------------------------------------------" << endl;
+                
+                while (true){
+                    TryAgain:
+                    bool refresh = false;
+                    int choice;
+                    cout << "请输入想查看的联系人的序号(不需要则输入0): ";    cin >> choice;
+                    if (choice == 0){
+                        cout << "返回上级目录" << endl;
+                        return;
+                    } else if (choice <= cnt+1 && choice > 0){
+                        contacts[choice-1].getFullInfo();
+                        refresh =internalFct(contacts,choice-1);
+                    } else {
+                        cin.clear();
+                        cout << "序号无效，请重试！" << endl;
+                        goto TryAgain;
+                    }
+
+                    if (refresh){
+                        cout << "联系人已删除，正在重新加载列表...." << endl;
+                        system("pause");
+                        break;
+                    }
+                }
+            }
+        }
+
+       //详情页功能选择
+        bool internalFct(vector<Contact> &c, int index){
+            int function;//记录选择的数字
+            while (true){
+                cout << "功能选择：\n" << "1-更改名字   2-更改性别   3-更改生日   4-更改电话\n"
+                    << "5-更改住址   6-添加或更改短号   9-删除该联系人   0-退出详情页\n请选择: ";
+                //判断输入是否合法
+                if(!(cin >> function)){
+                    cout << "输入错误，请重试" << endl;
+                    cin.clear();//清除错误状态
+                    // 第一个参数：numeric_limits<streamsize>::max()
+                    // 作用：获取输入流的最大字符容量（可看作“无限大”），确保能清空所有残留字符
+                    // 第二个参数：'\n'，表示遇到换行符就停止忽略
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    continue;
+                };
+                //为什么这里还会有个相同的代码：如果用户输入的是“3abc”，此时因为第一个3会被成功读取到function中，
+                //但是后续的'a''b''c''\n'会残留在输入缓冲区，这里如果用无参数的ignore()就只会消除一个缓冲区的字符
+                //剩下的字符无法消除，就会影响后续的输入。这里用带参的ignore()就能很好的解决这个问题
+                cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                //根据用户输入执行不同功能操作
+                switch(function){
+                    case 0:{
+                        return false;
+                    }
+                    case 1:{
+                        c[index].changeName(input("请输入新名字"));
+                        break;
+                    }
+                    case 2:{
+                        c[index].changeGen(input("请输入性别"));
+                        break;
+                    }
+                    case 3:{
+                        BirAgain:
+                        string newBir = input("请输入新的生日");
+                        if(!isBirthday(newBir)) {cout << "格式错误，请重试" << endl; goto BirAgain;}
+                        c[index].changeBir(newBir);
+                        break;
+                    }
+                    case 4:{
+                    PhoAgain:
+                        string newPho = input("请输入新电话号码");
+                        if(!isPhone(newPho)) {cout << "格式错误，请重试" << endl; goto PhoAgain;}
+                        c[index].changePhone(newPho);
+                        break;
+                    }
+                    case 5:{
+                        c[index].changeAdr(input("请输入新地址"));
+                        break;
+                    }
+                    case 6:{
+                        ShoAgain:
+                        string newSho = input("请输入新的短号");
+                        if(!isShort(newSho)) {cout << "格式错误，请重试" << endl; goto ShoAgain;}
+                        c[index].changeSho(newSho);
+                        break;
+                    }
+                    case 9:{
+                        string confirm;
+                        cout << "确定要删除联系人吗？(Y/N):";
+                        getline(cin, confirm);
+
+                        if(confirm == "Y" || confirm == "y"){
+                            contacts.erase(contacts.begin() + index);
+                            cout << "联系人已删除！" << endl;
+                            return true;
+                        } else {
+                            cout << "删除操作已取消。" << endl;
+                            break;
+                        }
+                    }
+                    default:
+                        cout << "无效选择，请重试！" << endl;
+                };
+                if(function != '9' && function != '0'){
+                    cout << "已完成，请您继续选择" <<endl;
+                }
+            }
+        } 
+
+        int main(){
+    int select = 0;
+    int refresh = false;
+    AddressBook contacts;
+    showMenu();
+
+    cin >> select;
+
+    while (true){
+        showMenu();
+        switch (select)
+        {
+            case 1://添加联系人
+                contacts.addContact();
+            case 2://显示联系人
+                contacts.showAllContacts();
+            case 3://删除联系人
+                contacts.deleteContact();
+            case 4://查找联系人
+
+            case 5://修改联系人
+
+            case 6://清空联系人
+
+            case 0://退出通讯录
+                cout << "欢迎下次使用，再见！" << endl;
+                break;
+            default://未输入规范数字
+        }
+    }
+
+    system("pause");
+    return 0;
+}
