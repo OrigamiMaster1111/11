@@ -1,0 +1,39 @@
+        //查找联系人
+        void findContact(){
+            if (contacts.empty()){
+                cout << "通讯录为空，无搜寻对象" << endl << endl;
+                return;
+            }
+
+            string search;
+            cin.ignore();
+            cout << "请输入要搜寻的联系人的相关信息：";
+            getline(cin, search);
+
+            int idx = 0, cnt = 0;
+            vector<int> Indices;
+            vector<int> trueIndices;
+
+            for (const Contact &c: contacts){
+                if (c.getAdr() == search || c.getBir() == search || c.getGender() == search ||
+                    c.getPho() == search || c.getName() == search)
+                {
+                    ++cnt;
+                    Indices.push_back(cnt);
+                    trueIndices.push_back(idx);
+                }
+                ++idx;
+            }
+
+            cnt = 0;
+            cout << "共找到 " << cnt << " 个相关联系人:" << endl;
+            for (int printIdx: trueIndices){
+                cout << Indices[++cnt] << ": " << endl;
+                contacts[printIdx].getName();
+            }
+
+            cout << "请输入要查看的联系人序号：";
+            int choice;
+            cin >> choice;
+            contacts[(trueIndices.begin() + choice)]
+}
