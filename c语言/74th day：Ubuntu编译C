@@ -1,0 +1,92 @@
+#include <stdio.h>    // 修复 printf 缺失
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>   // 用于 malloc/free（避免栈溢出）
+
+// 屏幕参数（宏定义方便修改）
+#define LCD_WIDTH   800   // 屏幕宽度
+#define LCD_HEIGHT  480   // 屏幕高度
+#define PIXEL_SIZE  4     // 每个像素 4 字节（BGRA）
+#define BUF_SIZE    (LCD_WIDTH * LCD_HEIGHT * PIXEL_SIZE)  // 缓冲区总大小
+
+int main(void)
+{
+    // 1. 打开 LCD 设备
+    int lcd_fd = open("/dev/fb0", O_RDWR);
+    if (lcd_fd < 0)
+    {
+        perror("打开 LCD 失败");  // perror 更清晰（显示系统错误原因）
+        return -1;
+    }
+
+    // 2. 分配颜色缓冲区（用 malloc 避免栈溢出：1.5MB 数组不能放栈）
+    unsigned char *color_buf = (unsigned char *)malloc(BUF_SIZE);
+    if (color_buf == NULL)
+    {
+        perror("分配内存失败");
+        close(lcd_fd);
+        return -1;
+    }
+
+    // 3. 生成渐变颜色数据（选择一种示例注释解除即可）
+    int x, y;
+    for (y = 0; y < LCD_HEIGHT; y++)  // 遍历每一行（y 从 0 到 479）
+    {
+        for (x = 0; x < LCD_WIDTH; x++)   // 遍历每一列（x 从 0 到 799）
+        {
+            // 计算当前像素在缓冲区中的索引（行优先：y 行 x 列）
+            int idx = (y * LCD_WIDTH + x) * PIXEL_SIZE;
+            unsigned char r, g, b, a = 0;  // a 透明度：通常设 0（无用）
+
+            /************************ 渐变示例 1：多彩混合渐变（推荐）************************/
+            // R 随 x 递增（0→255），G 随 y 递增（0→255），B 固定（增加蓝色底调）
+            r = (x * 255) / LCD_WIDTH;    // x=0→R=0，x=799→R=255
+            g = (y * 255) / LCD_HEIGHT;   // y=0→G=0，y=479→G=255
+            b = 100;                      // 固定蓝色分量（0~255）
+            // 效果：左下角（深蓝）→ 右上角（黄白），中间过渡为青、绿、橙等多彩色
+
+            /************************ 渐变示例 2：水平红蓝渐变 ************************/
+            // r = (x * 255) / LCD_WIDTH;    // x 越大，红色越浓
+            // g = 0;                        // 绿色关闭
+            // b = 255 - (x * 255) / LCD_WIDTH;  // x 越大，蓝色越淡
+            // 效果：左（纯蓝）→ 右（纯红），中间过渡为紫色
+
+            /************************ 渐变示例 3：垂直绿紫渐变 ************************/
+            // r = (y * 255) / LCD_HEIGHT;   // y 越大，红色越浓
+            // g = 255 - (y * 255) / LCD_HEIGHT;  // y 越大，绿色越淡
+            // b = 150;                      // 固定蓝色分量
+            // 效果：上（纯绿）→ 下（紫色）
+
+            /************************ 渐变示例 4：对角黑白渐变 ************************/
+            // int gray = (x + y) * 255 / (LCD_WIDTH + LCD_HEIGHT);  // x+y 越大，越亮
+            // r = g = b = gray;             // 灰度值（R=G=B）
+            // 效果：左上角（纯黑）→ 右下角（纯白）
+
+            // 写入 BGRA 数据到缓冲区（顺序：B→G→R→A）
+            color_buf[idx + 0] = b;
+            color_buf[idx + 1] = g;
+            color_buf[idx + 2] = r;
+            color_buf[idx + 3] = a;
+        }
+    }
+
+    // 4. 将渐变数据写入 LCD
+    ssize_t write_len = write(lcd_fd, color_buf, BUF_SIZE);
+    if (write_len != BUF_SIZE)
+    {
+        perror("写入 LCD 失败");
+        free(color_buf);
+        close(lcd_fd);
+        return -1;
+    }
+
+    // 5. 延迟 5 秒（让渐变效果可见，可删除）
+    sleep(5);
+
+    // 6. 释放资源（避免内存泄漏）
+    free(color_buf);
+    close(lcd_fd);
+
+    return 0;
+}
