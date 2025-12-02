@@ -1,0 +1,21 @@
+#include <easyx.h>
+#include <stdio.h>
+
+int main(){
+    int x = 250, y = 250;
+    int r = 0,g = 0, b = 45;
+    initgraph(x, y);
+
+    COLORREF c = RGB(r, g, b);
+    
+    for (int i = (x/2)-50; i <= (x/2)+50; i++){
+        c = RGB(r, g - i*10, b);
+        for (int j = (y/2)-50; j <= (y/2)+50; j++){
+            
+            putpixel(j, i, c);       
+        }
+    }
+
+    getchar();
+    return 0;
+}
