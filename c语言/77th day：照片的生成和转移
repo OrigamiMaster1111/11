@@ -1,0 +1,68 @@
+#include <easyx.h>
+#include <stdio.h>
+#include <graphics.h>
+
+void toAnother(IMAGE *dstImg, IMAGE *srcImg){
+    //1.设置图片大小
+    dstImg->Resize(srcImg->getwidth(), srcImg->getheight());
+    //2.获取srcImg图片的缓冲区数组指针（一维数组）
+    DWORD* psrc = GetImageBuffer(srcImg);
+    DWORD* pdst = GetImageBuffer(dstImg);
+    for ( int i = 0; i < srcImg->getheight() * srcImg->getwidth(); i++){
+        //彩色像素转成灰度像素
+        DWORD color = RGB(255, 25, 30);
+        int a = (UCHAR)(color >> 24);
+        int r = (UCHAR)(color >> )
+        pdst[i] = psrc[i];
+    }
+}
+
+int main(){
+    //创建窗口
+    initgraph(2880, 1440, EW_SHOWCONSOLE);
+    //设置窗口颜色
+    setbkcolor(WHITE);
+    cleardevice();
+
+    //保存图片
+    IMAGE picture;
+    //加载图片
+    loadimage(&picture, _T("D:/A卡录制和图片/美图/Kurumi.jpg"), 540, 540);
+    //贴图
+    putimage(0, 0, &picture);
+
+    IMAGE another;
+    toAnother(&another, &picture);
+    putimage(540, 0, &another);
+
+    getchar();
+}
+
+
+
+
+// void test(){
+//     int x = 250, y = 250;
+//     int r = 0,g = 0, b = 45;
+//     initgraph(x, y);
+
+//     COLORREF c = RGB(r, g, b);
+    
+//     for (int i = (x/2)-50; i <= (x/2)+50; i++){
+//         c = RGB(r, g - i*10, b);
+//         for (int j = (y/2)-50; j <= (y/2)+50; j++){
+            
+//             putpixel(j, i, ((123 << 16) | (124 << 8) | (125)));       
+//         }
+//     }
+
+//     DWORD red = RGB(255, 25, 30);
+//     r = (UCHAR)red;
+//     g = (UCHAR)(red >> 8);
+//     b = (UCHAR)(red >> 16);
+//     int a = (UCHAR)(red >> 24);
+//     printf("ARGB: %d %d %d %d",a,r,g,b);
+
+//     getchar();
+// }
+
