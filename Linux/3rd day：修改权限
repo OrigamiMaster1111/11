@@ -1,0 +1,5 @@
+chmod o+w 
+chmod o-w
+chmod u+w
+chmod u-w
+chown -R sb.
