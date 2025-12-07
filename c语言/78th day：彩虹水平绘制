@@ -1,0 +1,33 @@
+typedef struct {
+    int row_end;
+    unsigned char a, r, g, b;
+} ColorBlock;
+
+ColorBlock rainbow[] = {
+    //row   A    R    G    B
+    {  99,  0 , 255,  0 ,  0 },//红
+    { 199,  0 , 255, 128,  0 },//橙
+    { 299,  0 , 255, 255,  0 },//黄
+    { 399,  0 ,  0 , 255,  0 },//绿
+    { 499,  0 ,  0 ,  0 , 255},//蓝
+    { 599,  0 ,  0 , 128, 255},//靛
+    { 699,  0 , 255,  0 , 255},//紫色
+};
+
+int main(){
+    int x = 800, y = 700, width = 0, height = 0;
+    initgraph(x, y);
+    SetWindowText(GetHWnd(), "彩虹横条（修正版）");
+
+    for (int j = 0; j < 7; j++){
+        while (height <= rainbow[j].row_end){
+            putpixel(width, height, RGB(rainbow[j].r, rainbow[j].g, rainbow[j].b));
+            ++width;
+                if (width >= x){
+                    width = 0;
+                ++height;
+            }
+        }
+    }
+    _getch();
+}
