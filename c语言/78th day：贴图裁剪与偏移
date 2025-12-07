@@ -1,0 +1,117 @@
+#include <easyx.h>
+#include <stdio.h>
+#include <graphics.h>
+
+void toAnother(IMAGE *dstImg, IMAGE *srcImg){
+    //1.设置图片大小
+    dstImg->Resize(srcImg->getwidth(), srcImg->getheight());
+    //2.获取srcImg图片的缓冲区数组指针（一维数组）
+    DWORD* psrc = GetImageBuffer(srcImg);
+    DWORD* pdst = GetImageBuffer(dstImg);
+    for ( int i = 0; i < srcImg->getheight() * srcImg->getwidth(); i++){
+        //彩色像素转成灰度像素
+        DWORD color = psrc[i];
+        UCHAR a = (UCHAR)(color >> 24);
+        UCHAR r = (UCHAR)color;
+        UCHAR g = (UCHAR)(color >> 8);
+        UCHAR b = (UCHAR)(color >> 16);
+        DWORD average = (r+b+g) / 3;
+        pdst[i] = RGB(average, average, average);
+    }
+}
+
+void drawImg(int x, int y, IMAGE* img){
+    DWORD *pwin = GetImageBuffer();     //获取窗口缓冲区指针
+    DWORD *pimg = GetImageBuffer(img);  //获取图片缓冲区指针
+    int win_w = getwidth();
+    int win_h = getheight();
+    int img_w = img->getwidth();
+    int img_h = img->getheight();
+
+    //判断x，y坐标是否超出了窗口范围
+    int real_w = (x + img_w > win_w) ? win_w - x : img_w;   //超出右边界
+    int real_h = (y + img_h > win_h) ? win_h - y : img_h;   //超出下边界
+    if (x < 0){     //超出左边界
+        pimg += -x;     //让指针向后偏移
+        real_w -= -x;
+        x = 0;  
+    }
+    if (y < 0){
+        pimg += (img_w * -y);   //让指针向后偏移
+        real_h -= -y;
+        x= 0;
+    }
+    pwin += (win_w * y + x);
+
+    for (int iy = 0; iy < real_h; iy++){
+        for (int ix = 0; ix < real_w; ix++){
+            UCHAR alpha = pimg[ix] >> 24;
+            if (alpha > 200){
+                pwin[ix] = pimg[ix];
+            }
+            
+        }
+        //换到下行
+        pwin += win_w;
+        pimg += img_w;
+    }
+    putimage(x, y, img);
+}
+
+int main(){
+    //创建窗口
+    initgraph(1440, 720, EW_SHOWCONSOLE);
+    //设置窗口颜色
+    setbkcolor(WHITE);
+    cleardevice();
+
+    //保存图片
+    IMAGE picture;
+    //加载图片
+    loadimage(&picture, _T("D:/A卡录制和图片/美图/Kurumi.jpg"), 540, 540);
+    //贴图
+    drawImg(-200, 0, &picture);
+
+    IMAGE another;
+    toAnother(&another, &picture);
+    drawImg(540, 0, &another);
+
+    //获取某个像素点的颜色
+    DWORD color = getpixel(0, 0);
+    UCHAR a = (UCHAR)(color >> 24);
+    UCHAR r = (UCHAR)color;
+    UCHAR g = (UCHAR)(color >> 8);
+    UCHAR b = (UCHAR)(color >> 16);
+    printf("argb: %d %d %d %d\n",a,r,g,b);
+
+    system("pause");
+}
+
+
+
+
+// void test(){
+//     int x = 250, y = 250;
+//     int r = 0,g = 0, b = 45;
+//     initgraph(x, y);
+
+//     COLORREF c = RGB(r, g, b);
+    
+//     for (int i = (x/2)-50; i <= (x/2)+50; i++){
+//         c = RGB(r, g - i*10, b);
+//         for (int j = (y/2)-50; j <= (y/2)+50; j++){
+            
+//             putpixel(j, i, ((123 << 16) | (124 << 8) | (125)));       
+//         }
+//     }
+
+//     DWORD red = RGB(255, 25, 30);
+//     r = (UCHAR)red;
+//     g = (UCHAR)(red >> 8);
+//     b = (UCHAR)(red >> 16);
+//     int a = (UCHAR)(red >> 24);
+//     printf("ARGB: %d %d %d %d",a,r,g,b);
+
+//     getchar();
+// }
+
