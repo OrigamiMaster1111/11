@@ -1,0 +1,60 @@
+cmake_minimum_required(VERSION 3.15)           #对Cmake最低版本的要求
+project(FirstMake)                             #项目名
+set(SRC hello.cpp tool.h)                      #设定一个宏（宏的名字  需要引用的文件）
+set(EXECUTABLE_OUTPUT_PATH /home/metatron/C++) #设置exe文件生成的路径
+set(CMAKE_CXX_STANDARD 14)                     #设定C++的语言标准 如：C++14
+add_executable(hello ${SRC})                   #生成exe文件，（exe文件名和引用的宏）
+
+
+
+aux_source_directory(${PROJECT_SOURCE_DIR} SRC)
+#[[
+    1. 命令功能
+    aux_source_directory(目录路径 变量名) 是 CMake 的内置命令，作用是：
+    扫描第一个参数指定的目录下的所有源文件（如.cpp、.c等代码文件）；
+    将这些源文件的路径列表，存储到第二个参数指定的自定义变量中。
+    2. 参数解析
+    ${PROJECT_SOURCE_DIR}：CMake 的内置变量，代表项目根目录（即CMakeLists.txt所在的目录）；
+    SRC：自定义变量名，后续可通过${SRC}引用这个 “自动收集到的源文件列表”。
+]]
+
+
+
+
+
+CMAKE_CURRENT_SOURCE_DIR 和 PROJECT_SOURCE_DIR 的区别
+
+CMAKE_CURRENT_SOURCE_DIR和PROJECT_SOURCE_DIR是 CMake 中两个常用的内置路径变量，核心区别在于作用范围不同，以下是具体对比：
+
+1. 定义与作用范围
+变量名	定义	作用范围
+PROJECT_SOURCE_DIR	对应最近一次调用project()命令的CMakeLists.txt所在的目录	项目级（通常是主项目根目录）
+CMAKE_CURRENT_SOURCE_DIR	对应当前正在处理的CMakeLists.txt所在的目录	当前目录级（随CMakeLists.txt的位置变化）
+
+2. 实际场景示例
+假设项目目录结构如下（主项目根目录是MyProject）：
+plaintext
+MyProject/                # 主项目根目录，包含根CMakeLists.txt
+├── CMakeLists.txt        # 这里调用了project(MyProject)
+├── include/
+└── src/                  # 子目录
+    ├── CMakeLists.txt    # 子目录的CMakeLists.txt
+    └── main.cpp
+在 ** 根目录的CMakeLists.txt** 中：PROJECT_SOURCE_DIR = MyProject/CMAKE_CURRENT_SOURCE_DIR = MyProject/（此时两者相同）
+在 **src子目录的CMakeLists.txt** 中：PROJECT_SOURCE_DIR = MyProject/（仍对应主项目根目录）CMAKE_CURRENT_SOURCE_DIR = MyProject/src/（对应当前子目录）
+
+3. 典型使用场景
+PROJECT_SOURCE_DIR：用于引用主项目根目录下的全局资源，比如：
+cmake
+# 引用根目录下的include文件夹
+include_directories(${PROJECT_SOURCE_DIR}/include)
+CMAKE_CURRENT_SOURCE_DIR：用于引用当前CMakeLists.txt所在目录的文件，比如子目录中收集本地源文件：
+cmake
+# 在src/CMakeLists.txt中，收集当前目录的main.cpp
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC)
+
+注意点
+如果在子目录中重新调用project()命令（定义子项目），PROJECT_SOURCE_DIR会切换为该子项目的根目录（即子目录的路径）—— 但通常主项目仅在根目录调用一次project()，因此PROJECT_SOURCE_DIR一般固定对应主项目根目录。
+
+
+
