@@ -1,0 +1,6 @@
+include_directories(${PROJECT_SOURCE_DIR}/include)      #找寻头文件对应的路径而非指定头文件#endif
+add_library(calc SHARED ${SRC})                         #动态库的制作
+add_library(calc STATIC ${SRC})                         #静态库的制作
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)      #指定库文件的生成位置
+
+ps：动态库也可以用 EXECUTABLE_OUTPUT_PATH，不一定是非得是LIBRARY_OUTPUT_PATH，因为动态库拥有可执行权限而静态库没有
