@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <string.h>
+#define N 5
+
+typedef struct {
+    char ID[20];
+    char name[10];
+    int grades;
+} Sta;
+
+int fun(Sta *sta, Sta *stb) {
+    int i = 1, cnt = 0;
+    int min_grades = sta->grades;
+    Sta *p = sta;
+
+    for (; i < N; i++) {
+        p++;
+        if (p->grades < min_grades) {
+            min_grades = p->grades;
+        }
+    }
+
+    for (i = 0; i < N; i++) {
+        if (sta->grades == min_grades) {
+            strcpy(stb->ID, sta->ID);
+            strcpy(stb->name, sta->name);
+            cnt++;
+            stb++;
+        }
+        sta++;
+    }
+
+    return cnt;
+}
+
+int main() {
+    Sta st[N] = {
+        {"123", "小明", 85},
+        {"1223", "小刚", 62},
+        {"111", "小李", 59},
+        {"1111", "小陈", 63},
+        {"2222", "小红", 74}
+    };
+
+    Sta stb[N];
+    Sta *p = st;
+    int count = fun(st, stb);
+
+    printf("分数最低的学生有%d个", count);
+    return 0;
+}
