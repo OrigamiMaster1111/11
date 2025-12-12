@@ -22,3 +22,5 @@ using namespace spaceB;
 int main(){
     cout << spaceA::year << spaceB::month << endl;
 }
+
+
