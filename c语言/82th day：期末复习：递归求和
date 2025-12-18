@@ -1,0 +1,14 @@
+int digitSum(int digit){
+    int sum = 0;
+    for ( ; digit != 0; digit/=10){
+        sum += (digit%10);
+    }
+    return sum;
+}
+
+int main(){
+    int digit;
+    scanf("%d",&digit);
+    printf("The sum of digits in %d is %d.", digit, digitSum(digit));
+    return 0;
+}
