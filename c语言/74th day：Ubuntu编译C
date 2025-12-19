@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>   // 用于 malloc/free（避免栈溢出）
 
+
 // 屏幕参数（宏定义方便修改）
 #define LCD_WIDTH   800   // 屏幕宽度
 #define LCD_HEIGHT  480   // 屏幕高度
