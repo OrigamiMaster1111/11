@@ -1,0 +1,65 @@
+typedef struct {
+    char bookName[100];
+    char author[20];
+    float price;
+    char canBorrow[20];
+} Book;
+
+void printBookInfo(Book b){
+    printf("书名：%s\n", b.bookName);
+    printf("作者：%s\n", b.author);
+    printf("价格：%.2f元\n", b.price);
+    printf("状态：%s\n", b.canBorrow);
+}
+
+void clearBuffer(){
+    int c;
+    while ((c = getchar()) != EOF && c != '\n');
+}
+
+int main(){
+    FILE *fp = fopen("./book.txt", "w");
+    if (fp == NULL){
+        perror("file open failed:");
+        return -1;
+    }
+    int i = 0;
+    Book bs[2];
+
+    for ( ; i < 2; i++){
+        printf("请输入书名：");
+        fgets(bs[i].bookName, 100, stdin);
+        bs[i].bookName[strcspn(bs[i].bookName, "\r\n")] = '\0';
+
+        printf("请输入作者：");
+        fgets(bs[i].author, 20, stdin);
+        bs[i].author[strcspn(bs[i].author, "\r\n")] = '\0';
+
+        printf("请输入价格：");
+        scanf("%f", &bs[i].price);
+
+        int j;
+        bs[i].canBorrow[0] = '\0';
+        printf("请输入可借状态：可借输入 1 || 不可借输入 2\n:");
+        scanf("%d", &j);
+        if (j == 1){
+            strcat(bs[i].canBorrow, "可借阅");
+        } else {
+            strcat(bs[i].canBorrow, "不可借阅");
+        }
+        putchar('\n');
+
+        clearBuffer();
+    }
+
+    for ( i = 0; i < 2; i++){
+        printf("第%d本书详情如下: \n", i+1);
+        printBookInfo(bs[i]);
+        printf("\n\n");
+
+        fprintf(fp, "书名：%s\n作者：%s\n价格：%f元\n状态：%s\n", 
+                bs[i].bookName, bs[i].author, bs[i].price, bs[i].canBorrow);
+    }
+    fclose(fp);
+    return 0;
+}
