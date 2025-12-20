@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+void readFile(){
+    FILE *fp = fopen("./test.txt", "r");
+    if (fp == NULL){
+        perror("open file failed:");
+        return;
+    }
+    
+    char ch;
+
+    while ((ch = fgetc(fp)) != EOF){
+        printf("%c", ch);
+    }
+
+    fclose(fp);
+}
+
+void writeFile(){
+    FILE *fp = fopen("./test.txt", "w");
+    if (fp == NULL){
+        perror("open file failed:");
+        return;
+    }
+
+    char str[100];
+    fgets(str, 50, stdin);
+    strcspn(str, "\r\n");
+    fputs(str, fp);
+
+    fclose(fp);
+}
+
+int main(){
+    readFile();
+    writeFile();
+    return 0;
+}
