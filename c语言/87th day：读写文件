@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+void readFile(){
+    FILE *fp = fopen("./test.txt", "r");
+    if (fp == NULL){
+        perror("open file failed:");
+        return;
+    }
+    
+    char ch;
+
+    while ((ch = fgetc(fp)) != EOF){
+        printf("%c", ch);
+    }
+
+    fclose(fp);
+}
+
+void writeFile(){
+    FILE *fp = fopen("./test.txt", "w");
+    if (fp == NULL){
+        perror("open file failed:");
+        return;
+    }
+
+    char str[100];
+    fgets(str, 50, stdin);
+    str[strcspn(str, "\r\n")] = '\0';
+    fputs(str, fp);
+
+    fclose(fp);
+}
+
+void WRFile(){
+    FILE *fp = fopen("./test.txt", "w+");
+    if (fp == NULL){
+        perror("file open failed:");
+        return;
+    }
+
+    char ch[300] = {"\
+            我们擦肩而过遥远的距离，张开手臂我等在这里\n\
+            曾经最怀念的你眼中的泪，在那充满回忆的房间\n\
+            说不清多少次再见的言语，终会重新飘回的思念\n"
+        };
+
+    fputs(ch, fp);
+
+    rewind(fp);
+
+    char buf[300] = {0};
+    char *reStr;
+    while ((reStr = fgets(buf, sizeof(buf), fp)) != NULL){
+        printf("%s", reStr);
+    }
+    
+    fclose(fp);
+}
+
+int main(){
+    // readFile();
+    // writeFile();
+    WRFile();
+    return 0;
+}
