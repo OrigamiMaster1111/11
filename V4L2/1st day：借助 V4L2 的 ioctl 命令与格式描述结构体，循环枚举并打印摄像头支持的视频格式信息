@@ -1,0 +1,77 @@
+// 标准输入输出头文件：用于printf、perror等打印函数
+#include <stdio.h>
+// 系统类型定义头文件：用于open函数的参数类型（如mode_t）
+#include <sys/types.h>
+// 文件状态头文件：用于文件属性相关操作（本代码未直接用，但属于open配套头文件）
+#include <sys/stat.h>
+// 文件控制头文件：用于open、fcntl等文件操作函数
+#include <fcntl.h>
+// 标准库头文件：用于exit、malloc等通用函数（本代码未直接用，保留常规依赖）
+#include <stdlib.h>
+// Unix标准头文件：用于close、read、write、ioctl等系统调用
+#include <unistd.h>
+// IO控制头文件：用于ioctl函数（核心：向设备发送控制命令）
+#include <sys/ioctl.h>
+// V4L2核心头文件：定义视频设备的结构体（如v4l2_fmtdesc）、宏（如VIDIOC_ENUM_FMT）
+#include <linux/videodev2.h>
+
+int main(){
+    // -------------------------- 步骤1：打开视频设备文件 --------------------------
+    // 打开摄像头设备节点（/dev/video0是默认的第一个视频设备）
+    // 打开方式：O_RDWR 读写模式（摄像头需要读数据、写控制命令）
+    int fd = open("/dev/video0", O_RDWR);
+    // 错误处理：文件描述符<0表示打开失败（如设备不存在、无权限）
+    if (fd < 0){
+        // perror：打印系统错误信息（如"No such file or directory"）
+        perror("打开设备失败：");
+        return -1; // 程序异常退出
+    }
+
+    // -------------------------- 步骤2：枚举摄像头支持的视频格式 --------------------------
+    // 定义V4L2格式描述结构体：用于存储/传递视频格式信息（输入查询条件、输出格式结果）
+    struct v4l2_fmtdesc v4fmt;
+    // 必须设置：指定设备类型为「视频采集」（摄像头核心类型，对应拍照/录像）
+    // 若设置错误，ioctl枚举格式会失败
+    v4fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    
+    int i = 0; // 格式索引：从0开始枚举（第0个格式、第1个格式...）
+    // 循环枚举所有支持的格式：直到ioctl返回失败（表示无更多格式）
+    while (1){
+        // 设置本次要查询的格式索引
+        v4fmt.index = i++;
+        // 调用ioctl发送「枚举视频格式」命令
+        // 参数说明：
+        // fd：视频设备文件描述符（指定操作哪个设备）
+        // VIDIOC_ENUM_FMT：V4L2预定义命令，含义是「枚举设备支持的视频格式」
+        // &v4fmt：输入输出参数（输入：type/index；输出：格式描述信息）
+        int ret = ioctl(fd, VIDIOC_ENUM_FMT, &v4fmt);
+        // 错误处理：ret<0表示枚举结束（无更多格式）或枚举失败
+        if (ret < 0){
+            perror("获取失败："); // 打印失败原因（通常是"Invalid argument"，表示索引超出范围）
+            break; // 退出循环，结束枚举
+        }
+
+        // -------------------------- 打印枚举到的格式信息 --------------------------
+        printf("===== 第%d个视频格式 =====\n", v4fmt.index);
+        // index：格式索引（和我们设置的i-1一致）
+        printf("index = %d\n", v4fmt.index);
+        // flags：格式标志位（0表示无特殊标志；如V4L2_FMT_FLAG_COMPRESSED表示压缩格式）
+        printf("flags = %d\n", v4fmt.flags);
+        // description：格式的人类可读描述（如"YUYV 4:2:2"、"Motion-JPEG"）
+        printf("description = %s\n", v4fmt.description);
+        
+        // pixelformat：4字节的fourcc编码（V4L2用4个字符表示像素格式，如YUYV、MJPG）
+        // 由于存储是小端序，需强转成字符指针逐字节解析，还原成可读字符
+        unsigned char *p = (unsigned char *)&v4fmt.pixelformat;
+        printf("pixelformat = %c%c%c%c\n", p[0], p[1], p[2], p[3]);
+        
+        // reserved：保留字段（V4L2预留扩展用，通常为0）
+        printf("reserved = %d\n", v4fmt.reserved[0]);
+        printf("\n"); // 换行分隔不同格式
+    }
+
+    // -------------------------- 步骤3：关闭视频设备 --------------------------
+    // 关闭文件描述符，释放设备资源（必须执行，否则会导致资源泄漏）
+    close(fd);
+    return 0; // 程序正常退出
+}
