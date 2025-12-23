@@ -1,0 +1,125 @@
+// 标准输入输出头文件：用于printf、perror等打印函数
+#include <stdio.h>
+// 系统类型定义头文件：open函数的参数类型（如mode_t）依赖
+#include <sys/types.h>
+// 文件状态头文件：文件属性操作依赖（本代码未直接用，保留V4L2开发常规依赖）
+#include <sys/stat.h>
+// 文件控制头文件：open、fcntl等文件操作函数的核心头文件
+#include <fcntl.h>
+// 标准库头文件：malloc、exit等通用函数依赖
+#include <stdlib.h>
+// Unix标准头文件：close、read、write、ioctl等系统调用依赖
+#include <unistd.h>
+// IO控制头文件：ioctl函数的核心头文件（向设备发送控制命令）
+#include <sys/ioctl.h>
+// V4L2核心头文件：定义视频设备的结构体（如v4l2_fmtdesc）、控制命令（如VIDIOC_ENUM_FMT）
+#include <linux/videodev2.h>
+// 内存操作头文件：memset（清空结构体）、memcpy等函数依赖
+#include <string.h>
+
+int main(){
+    // -------------------------- 步骤1：打开视频设备节点 --------------------------
+    // 打开摄像头设备（/dev/video0是默认第一个视频设备）
+    // 打开模式：O_RDWR 读写模式（摄像头需读数据、写控制命令）
+    int fd = open("/dev/video0", O_RDWR);
+    // 错误处理：文件描述符<0表示打开失败（如设备不存在、无权限、未转发到WSL）
+    if (fd < 0){
+        perror("打开设备失败："); // 打印系统错误原因（如"No such file or directory"）
+        return -1; // 程序异常退出
+    }
+
+    // -------------------------- 步骤2：枚举摄像头支持的所有视频格式 --------------------------
+    // v4l2_fmtdesc：V4L2格式描述结构体，用于枚举设备支持的视频格式
+    struct v4l2_fmtdesc v4fmt;
+    // 关键：清空结构体（栈变量默认是垃圾值，会导致ioctl参数无效）
+    memset(&v4fmt, 0, sizeof(v4fmt));
+    // 必设项：指定操作类型为「视频采集」（摄像头核心工作模式）
+    v4fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    
+    int i = 0; // 格式索引：从0开始枚举（第0个格式、第1个格式...）
+    while (1){
+        v4fmt.index = i++; // 设置本次要查询的格式索引
+        // 调用ioctl发送「枚举视频格式」命令
+        // VIDIOC_ENUM_FMT：Video I/O Control Enumerate Format（枚举格式）
+        int ret = ioctl(fd, VIDIOC_ENUM_FMT, &v4fmt);
+        // 枚举结束：ret<0表示无更多格式（正常终止，非错误）
+        if (ret < 0){
+            break;
+        }
+        // 打印枚举到的格式信息
+        printf("===== 第%d个支持的格式 =====\n", v4fmt.index);
+        printf("flags = %d\n", v4fmt.flags);          // 格式标志位（0=无特殊标志）
+        printf("description = %s\n", v4fmt.description); // 格式可读描述（如YUYV 4:2:2）
+        // pixelformat是4字节fourcc编码（如YUYV），强转字符指针解析为可读字符
+        unsigned char *p = (unsigned char *)&v4fmt.pixelformat;
+        printf("pixelformat = %c%c%c%c\n", p[0], p[1], p[2], p[3]);
+        printf("reserved = %d\n", v4fmt.reserved[0]);  // 保留字段（V4L2预留扩展，通常为0）
+        printf("\n"); // 换行分隔不同格式
+    }
+
+    // -------------------------- 步骤3：设置摄像头采集格式 --------------------------
+    // v4l2_format：V4L2格式配置结构体，用于设置/查询设备的采集/输出格式
+    struct v4l2_format vfmt;   
+    // 关键：清空结构体（避免垃圾值导致VIDIOC_S_FMT参数无效）
+    memset(&vfmt, 0, sizeof(vfmt));
+    vfmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;        // 设备类型：视频采集
+    vfmt.fmt.pix.width = 640;                       // 采集宽度（需设备支持，不能任意设）
+    vfmt.fmt.pix.height = 480;                      // 采集高度（需设备支持）
+    vfmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;   // 像素格式：YUYV 4:2:2
+    vfmt.fmt.pix.field = V4L2_FIELD_NONE;           // 场模式：逐行扫描（摄像头必设）
+    // 调用ioctl发送「设置视频格式」命令
+    // VIDIOC_S_FMT：Video I/O Control Set Format（设置格式）
+    int ret = ioctl(fd, VIDIOC_S_FMT, &vfmt);
+    if (ret < 0){
+        perror("设置格式失败:"); // 打印设置失败原因（如参数无效、格式不支持）
+    }
+
+    // -------------------------- 步骤4：验证实际生效的采集格式 --------------------------
+    // 重新清空结构体，避免之前设置的值干扰查询结果
+    memset(&vfmt, 0, sizeof(vfmt));
+    vfmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    // 调用ioctl发送「获取当前格式」命令
+    // VIDIOC_G_FMT：Video I/O Control Get Format（获取格式）
+    ret = ioctl(fd, VIDIOC_G_FMT, &vfmt);
+    if (ret < 0){
+        perror("获取当前格式失败:"); // 修正原错误提示（原提示“设置格式失败”是语义错误）
+        close(fd);
+        return -1;
+    }
+    // 校验是否成功设置为目标格式（设备可能自动修正不支持的分辨率/格式）
+    if (vfmt.fmt.pix.width == 640 && vfmt.fmt.pix.height == 480 &&
+        vfmt.fmt.pix.pixelformat == V4L2_PIX_FMT_YUYV)
+    {
+        printf("采集格式设置成功（640x480 YUYV）\n");
+    } else {
+        printf("采集格式设置失败，实际生效格式：%dx%d %c%c%c%c\n",
+               vfmt.fmt.pix.width, vfmt.fmt.pix.height,
+               (unsigned char)&vfmt.fmt.pix.pixelformat[0],
+               (unsigned char)&vfmt.fmt.pix.pixelformat[1],
+               (unsigned char)&vfmt.fmt.pix.pixelformat[2],
+               (unsigned char)&vfmt.fmt.pix.pixelformat[3]);
+    }
+
+    // -------------------------- 步骤5：申请内核缓冲区 --------------------------
+    // v4l2_requestbuffers：V4L2缓冲区申请结构体，用于向驱动申请内核视频缓冲区
+    struct v4l2_requestbuffers reqbuffer;
+    // 关键：清空结构体（避免垃圾值导致参数无效）
+    memset(&reqbuffer, 0, sizeof(reqbuffer));
+    reqbuffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;   // 缓冲区类型：视频采集
+    reqbuffer.count = 4;                             // 申请4个缓冲区（常用值，驱动可调整）
+    reqbuffer.memory = V4L2_MEMORY_MMAP;             // 内存类型：MMAP（内存映射）
+    // 调用ioctl发送「申请缓冲区」命令
+    // VIDIOC_REQBUFS：Video I/O Control Request Buffers（申请缓冲区）
+    ret = ioctl(fd, VIDIOC_REQBUFS, &reqbuffer);
+    if (ret < 0){
+        perror("申请内核缓冲区失败:"); // 打印失败原因（如参数无效、设备不支持）
+        close(fd);
+        return -1;
+    }
+    printf("内核缓冲区申请成功，实际申请到%d个缓冲区\n", reqbuffer.count);
+
+    // -------------------------- 步骤6：关闭视频设备 --------------------------
+    // 关闭文件描述符，释放设备资源（必须执行，避免资源泄漏）
+    close(fd);
+    return 0; // 程序正常退出
+}
