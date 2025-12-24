@@ -1,62 +1,71 @@
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/videodev2.h>
-#include <string.h>
-#include <sys/mman.h>
+// 引入Linux系统头文件：V4L2（Linux视频设备驱动框架）核心依赖
+#include <stdio.h>          // 标准输入输出（文件操作、打印）
+#include <sys/types.h>      // 系统类型定义（pid_t、size_t等）
+#include <sys/stat.h>       // 文件状态相关（stat结构体）
+#include <fcntl.h>          // 文件控制（open、O_RDWR等宏）
+#include <stdlib.h>         // 标准库（exit、malloc等）
+#include <unistd.h>         // 系统调用（close、usleep、mmap等）
+#include <sys/ioctl.h>      // 设备控制（ioctl系统调用，核心）
+#include <linux/videodev2.h>// V4L2核心头文件（定义视频设备的结构体/命令）
+#include <string.h>         // 内存操作（memset、memcpy等）
+#include <sys/mman.h>       // 内存映射（mmap、munmap）
 
 int main(){
-    //1.打开设备 → 改：加O_NONBLOCK（非阻塞），避免DQBUF卡死
+    // ===================== 步骤1：打开视频设备（摄像头） =====================
+    // /dev/video0：Linux下默认的视频设备节点（摄像头）
+    // O_RDWR：读写模式 | O_NONBLOCK：非阻塞模式（避免等待数据时卡死）
     int fd = open("/dev/video0", O_RDWR | O_NONBLOCK);
     if (fd < 0){
-        perror("打开设备失败：");
+        perror("打开设备失败：");  // 失败时打印错误原因（如权限/设备不存在）
         return -1;
     }
 
-    //2.获取摄像头支持的格式ioctl(文件描述符, 命令, 与命令相对应的结构体)
+    // ===================== 步骤2：枚举摄像头支持的像素格式 =====================
+    // v4l2_fmtdesc：用于枚举视频设备支持的像素格式的结构体
     struct v4l2_fmtdesc v4fmt;
-    memset(&v4fmt, 0, sizeof(v4fmt));
-    v4fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    memset(&v4fmt, 0, sizeof(v4fmt));  // 结构体初始化（避免脏数据）
+    v4fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;  // 指定类型：视频采集
     
     int i = 0;
     while (1){
-        v4fmt.index = i++;
+        v4fmt.index = i++;  // 枚举第i个格式（从0开始）
+        // VIDIOC_ENUM_FMT：ioctl命令，获取设备支持的像素格式
         int ret = ioctl(fd, VIDIOC_ENUM_FMT, &v4fmt);
-        if (ret < 0){
-            // perror("获取失败：");
+        if (ret < 0){       // 枚举完所有格式后会返回失败，退出循环
             break;
         }
-        printf("index = %d\n", v4fmt.index);
-        printf("flags = %d\n", v4fmt.flags);
-        printf("description = %s\n", v4fmt.description);
-        unsigned char *p = (unsigned char *)&v4fmt.pixelformat;
-        printf("pixelformat = %c%c%c%c\n", p[0], p[1], p[2], p[3]);
-        printf("reserved = %d\n", v4fmt.reserved[0]);
+        // 打印格式信息（调试用，确认摄像头支持的格式）
+        printf("index = %d\n", v4fmt.index);          // 格式索引
+        printf("flags = %d\n", v4fmt.flags);          // 格式标志（如是否压缩）
+        printf("description = %s\n", v4fmt.description);  // 格式描述（如YUYV 4:2:2）
+        unsigned char *p = (unsigned char *)&v4fmt.pixelformat;  // 像素格式标识（4字符）
+        printf("pixelformat = %c%c%c%c\n", p[0], p[1], p[2], p[3]); // 如YUYV、MJPG
+        printf("reserved = %d\n", v4fmt.reserved[0]);  // 保留字段（无实际意义）
     }
 
-    //3.设置采集格式
+    // ===================== 步骤3：设置并验证采集格式 =====================
+    // v4l2_format：用于设置/获取视频设备格式的结构体
     struct v4l2_format vfmt;   
     memset(&vfmt, 0, sizeof(vfmt));
-    vfmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;//摄像头采集
-    vfmt.fmt.pix.width = 640;//设置宽（不能任意大小设置）
-    vfmt.fmt.pix.height = 480;//设置高
-    vfmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;//设置视频采集格式
+    vfmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;  // 类型：视频采集
+    vfmt.fmt.pix.width = 640;                 // 采集宽度（需摄像头支持）
+    vfmt.fmt.pix.height = 480;                // 采集高度（需摄像头支持）
+    vfmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;  // 像素格式：YUYV（4:2:2，无压缩）
+    // VIDIOC_S_FMT：ioctl命令，设置视频采集格式
     int ret = ioctl(fd, VIDIOC_S_FMT, &vfmt);
     if (ret < 0){
-        perror("设置格式失败:");
+        perror("设置格式失败:");  // 失败原因：如分辨率/格式不支持
     }
 
+    // 验证格式是否设置成功（VIDIOC_G_FMT：获取当前生效的格式）
     memset(&vfmt, 0, sizeof(vfmt));
     vfmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     ret = ioctl(fd, VIDIOC_G_FMT, &vfmt);
     if (ret < 0){
-        perror("设置格式失败:");
+        perror("获取格式失败:");
     }
 
+    // 检查分辨率和格式是否与预期一致
     if (vfmt.fmt.pix.width == 640 && vfmt.fmt.pix.height == 480 &&
         vfmt.fmt.pix.pixelformat == V4L2_PIX_FMT_YUYV)
     {
@@ -65,63 +74,69 @@ int main(){
         printf("设置失败\n");
     }
 
-    //4.申请内核空间
+    // ===================== 步骤4：申请内核缓冲区 =====================
+    // v4l2_requestbuffers：申请视频缓冲区的结构体
     struct v4l2_requestbuffers reqbuffer;
     memset(&reqbuffer, 0, sizeof(reqbuffer));
-    reqbuffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    reqbuffer.count = 4;//申请四个缓冲区
-    reqbuffer.memory = V4L2_MEMORY_MMAP;//映射方式(Memory Map内存映射)
-
+    reqbuffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;  // 类型：视频采集
+    reqbuffer.count = 4;                            // 申请4个缓冲区（环形队列）
+    reqbuffer.memory = V4L2_MEMORY_MMAP;            // 缓冲区类型：内存映射（用户态直接访问内核缓冲区）
+    // VIDIOC_REQBUFS：ioctl命令，向内核申请缓冲区
     ret = ioctl(fd, VIDIOC_REQBUFS, &reqbuffer);
     if (ret < 0){
         perror("申请队列空间失败:");
     }
 
-    //5.映射
-    unsigned char *mptr[4];//保存映射后用户空间的首地址
-
-    struct v4l2_buffer mapbuffer;
+    // ===================== 步骤5：将内核缓冲区映射到用户空间 =====================
+    unsigned char *mptr[4];  // 保存4个缓冲区映射后的用户空间首地址
+    struct v4l2_buffer mapbuffer;  // 用于查询/操作单个缓冲区的结构体
     memset(&mapbuffer, 0, sizeof(mapbuffer));
     mapbuffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
     for (int i = 0; i < 4; i++){
-        mapbuffer.index = i;
-        ret = ioctl(fd, VIDIOC_QUERYBUF, &mapbuffer);//从内核空间中查询一个空间做映射（Query Buffer查询缓冲区）
+        mapbuffer.index = i;  // 操作第i个缓冲区
+        // VIDIOC_QUERYBUF：查询第i个缓冲区的信息（如大小、内核地址偏移）
+        ret = ioctl(fd, VIDIOC_QUERYBUF, &mapbuffer);
         if (ret < 0){
             perror("查询内核空间队列失败:");
         }
 
-        // 映射时增加检查：
+        // mmap：将内核缓冲区映射到用户空间（核心！避免内核/用户态数据拷贝）
+        // 参数：NULL（让系统分配地址）、缓冲区大小、读写权限、共享映射、设备fd、内核地址偏移
         mptr[i] = (unsigned char *)mmap(NULL, mapbuffer.length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, mapbuffer.m.offset);
-        if (mptr[i] == MAP_FAILED) { // 检查mmap是否失败
+        if (mptr[i] == MAP_FAILED) {  // 检查映射是否失败
             perror("mmap失败:");
             close(fd);
             return -1;
         }
 
-        //通知使用完毕——“放回去”
+        // VIDIOC_QBUF：将缓冲区放回采集队列（供摄像头写入数据）
         ret = ioctl(fd, VIDIOC_QBUF, &mapbuffer);
         if (ret < 0){
             perror("放回失败：");
         }
     }
 
-    //6.开始采集
+    // ===================== 步骤6：启动采集并获取一帧数据 =====================
     int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    // VIDIOC_STREAMON：启动视频采集流（摄像头开始向缓冲区写数据）
     ret = ioctl(fd, VIDIOC_STREAMON, &type);
     if (ret < 0){
         perror("开启失败：");
     }
-    //从队列中提取一帧数据
+
+    // 提取一帧数据（非阻塞模式下重试，避免单次查询失败）
     struct v4l2_buffer readbuffer;
-    memset(&readbuffer, 0, sizeof(readbuffer)); // 修复：初始化结构体
+    memset(&readbuffer, 0, sizeof(readbuffer));
     readbuffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
     int try_cnt = 0;
-    while (try_cnt < 10) { // 重试10次（等1秒）
+    while (try_cnt < 10) {  // 重试10次（总等待1秒），避免摄像头未就绪
+        // VIDIOC_DQBUF：从采集队列取出已写满数据的缓冲区
         ret = ioctl(fd, VIDIOC_DQBUF, &readbuffer);
-        if (ret >= 0) break;
+        if (ret >= 0) break;  // 成功获取缓冲区，退出重试
         try_cnt++;
-        usleep(100000);
+        usleep(100000);       // 每次等待100ms
     }
     if (ret < 0){
         perror("提取数据失败:");
@@ -129,29 +144,34 @@ int main(){
         return -1;
     }
 
+    // ===================== 步骤7：保存帧数据到文件 =====================
+    // 打开文件（wb：二进制模式，避免YUYV数据被转义）
     FILE *file = fopen("my.yuyv", "wb");
-    if (!file) { // 加：检查文件打开是否成功
+    if (!file) {
         perror("打开文件失败:");
         close(fd);
         return -1;
     }
+    // 写入数据：从映射的用户空间地址，写入缓冲区长度的字节
     fwrite(mptr[readbuffer.index], readbuffer.length, 1, file);
-    fclose(file);
+    fclose(file);  // 关闭文件
 
-    //通知内核已经使用完毕
+    // ===================== 步骤8：释放资源 =====================
+    // 将提取的缓冲区放回队列（供后续采集使用）
     ret = ioctl(fd, VIDIOC_QBUF, &readbuffer);
     if (ret < 0){
         perror("放回队列失败:");
     }
 
-    //停止采集
+    // VIDIOC_STREAMOFF：停止视频采集流
     ret = ioctl(fd, VIDIOC_STREAMOFF, &type);
-    // 加：释放mmap映射（避免内存泄漏）
+    
+    // 释放所有缓冲区的内存映射（避免内存泄漏）
     for (int i = 0; i < 4; i++) {
         munmap(mptr[i], mapbuffer.length);
     }
 
-    //9.关闭设备
+    // 关闭视频设备
     close(fd);
     printf("my.yuyv已生成\n");
     return 0;
