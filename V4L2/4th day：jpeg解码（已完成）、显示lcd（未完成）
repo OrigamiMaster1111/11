@@ -1,0 +1,42 @@
+int read_JPEG_file(unsigned char *jpegdata, unsigned char *rgbdata, int size){
+    struct jpeg_error_mgr jerr;
+    struct jpeg_decompress_struct cinfo;
+    cinfo.err = jpeg_std_error(&jerr);
+    //1.创建解码对象并且初始化
+    jpeg_create_decompress(&cinfo);
+    //2.装备解码的数据
+    jpeg_mem_src(&cinfo, (unsigned char *)jpegdata, size);
+    //3.读取图片信息
+    (void) jpeg_read_header(&cinfo, TRUE);
+    //4.开始解码
+    (void) jpeg_start_decompress(&cinfo);
+    //5.申请存储一行数据的内存空间
+    int row_stride = cinfo.output_width * cinfo.output_components;
+    unsigned char *buffer = malloc(row_stride);
+    //6.循环读取每一行数据
+    int i = 0;
+    while (cinfo.output_scanline < cinfo.output_height){
+        (void) jpeg_read_scanlines(&cinfo, &buffer, 1);
+        //复制到rgbdata中
+        memcpy(rgbdata + i*640*3, buffer, row_stride);
+        i++;
+    }
+    //7.完成解码
+    (void) jpeg_finish_decompress(&cinfo);
+    //8.释放内存
+    jpeg_destroy_decompress(&cinfo);
+    free(buffer);
+    return 1;
+}
+
+void lcd_show_rgb(unsigned char *rgbdata, int width, int height){
+    // 此函数应包含将RGB数据发送到LCD显示屏的具体实现
+    // 这里仅为示例，实际实现取决于具体的LCD硬件和驱动
+}
+
+//显示在lcd上
+        {   
+            //把jpeg数据解码为RGB数据
+            read_JPEG_file(mptr[readbuffer.index], rgbdata, readbuffer.length);
+            lcd_show_rgb(rgbdata, 640, 480);
+        }
