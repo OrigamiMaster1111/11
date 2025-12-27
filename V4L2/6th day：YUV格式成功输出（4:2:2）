@@ -1,0 +1,303 @@
+// 定义XOPEN标准宏，启用POSIX扩展函数（解决timeval/nanosleep等声明问题）
+#define _XOPEN_SOURCE 700
+
+/************************** 头文件包含 **************************/
+#include <stdio.h>          // 标准输入输出（printf/fopen/fwrite等）
+#include <time.h>           // 时间相关函数（nanosleep）
+#include <sys/types.h>      // 系统类型定义（pid_t/off_t等）
+#include <sys/stat.h>       // 文件状态相关（open的mode参数）
+#include <fcntl.h>          // 文件控制（open/O_RDWR/O_NONBLOCK等）
+#include <stdlib.h>         // 标准库（malloc/exit等）
+#include <sys/time.h>       // 时间结构体（struct timeval，必须在videodev2.h前）
+#include <unistd.h>         // 系统调用（close/usleep/munmap等）
+#include <sys/ioctl.h>      // 设备控制（ioctl函数）
+#include <linux/videodev2.h>// V4L2摄像头驱动接口（摄像头操作核心头文件）
+#include <string.h>         // 内存操作（memset/memcpy等）
+#include <sys/mman.h>       // 内存映射（mmap/munmap）
+#include <linux/fb.h>       // FrameBuffer帧缓冲（LCD操作核心头文件）
+
+/************************** 函数声明/定义 **************************/
+/**
+ * @brief YUYV格式转RGB888格式（核心转换函数）
+ * @param yuyvdata 输入：YUYV格式的原始数据缓冲区
+ * @param rgbdata  输出：转换后的RGB888数据缓冲区
+ * @param w        视频宽度（像素）
+ * @param h        视频高度（像素）
+ * @note YUYV格式：每2个像素占4字节（Y0 U0 Y1 V1），RGB888：每个像素占3字节（R G B）
+ */
+void yuyv_to_rgb(unsigned char *yuyvdata, unsigned char *rgbdata, int w, int h){
+    int r1, g1, b1, r2, g2, b2; // 临时存储两个像素的RGB值
+
+    // 遍历所有像素对（YUYV每4字节对应2个像素，故循环次数为总像素数/2）
+    for (int i = 0; i < w*h/2; i++){
+        // 提取YUYV数据：Y0 U0 Y1 V1（4字节为一组）
+        unsigned char Y0 = yuyvdata[i*4 + 0]; // 第一个像素的亮度
+        unsigned char U0 = yuyvdata[i*4 + 1]; // 色度U（两个像素共用）
+        unsigned char Y1 = yuyvdata[i*4 + 2]; // 第二个像素的亮度
+        unsigned char V1 = yuyvdata[i*4 + 3]; // 色度V（两个像素共用）
+
+        // YUV转RGB公式（BT.601标准）
+        r1 = Y0 + 1.402 * (V1 - 128); // R = Y + 1.402*(V-128)
+        g1 = Y0 - 0.34414 * (U0 - 128) - 0.71414 * (V1 - 128); // G = Y - 0.34414*(U-128) - 0.71414*(V-128)
+        b1 = Y0 + 1.772 * (U0 - 128); // B = Y + 1.772*(U-128)
+        r2 = Y1 + 1.402 * (V1 - 128); // 第二个像素的R
+        g2 = Y1 - 0.34414 * (U0 - 128) - 0.71414 * (V1 - 128); // 第二个像素的G
+        b2 = Y1 + 1.772 * (U0 - 128); // 第二个像素的B
+
+        // 裁剪RGB值到0~255范围（避免溢出导致颜色异常）
+        r1 = (r1 > 255) ? 255 : (r1 < 0 ? 0 : r1);
+        g1 = (g1 > 255) ? 255 : (g1 < 0 ? 0 : g1);
+        b1 = (b1 > 255) ? 255 : (b1 < 0 ? 0 : b1);
+        r2 = (r2 > 255) ? 255 : (r2 < 0 ? 0 : r2);
+        g2 = (g2 > 255) ? 255 : (g2 < 0 ? 0 : g2);
+        b2 = (b2 > 255) ? 255 : (b2 < 0 ? 0 : b2);
+
+        // 将转换后的RGB值写入输出缓冲区（6字节对应2个像素）
+        rgbdata[i*6 + 0] = r1;
+        rgbdata[i*6 + 1] = g1;
+        rgbdata[i*6 + 2] = b1;
+        rgbdata[i*6 + 3] = r2;
+        rgbdata[i*6 + 4] = g2;
+        rgbdata[i*6 + 5] = b2;
+    }
+}
+
+/************************** 全局变量 **************************/
+int lcdfd = 0;               // LCD设备文件描述符
+unsigned int *lcdptr = NULL; // LCD帧缓冲内存映射首地址
+int lcd_w = 800, lcd_h = 480;// LCD分辨率（默认800x480，实际从设备读取）
+
+/**
+ * @brief 将RGB888数据显示到LCD屏幕（核心显示函数）
+ * @param rgbdata 输入：RGB888格式的图像数据
+ * @param width   图像宽度（像素）
+ * @param height  图像高度（像素）
+ * @note 修正点：1. 先行后列循环（匹配屏幕坐标）；2. RGB转32位ARGB8888（适配LCD）
+ */
+void lcd_show_rgb(unsigned char *rgbdata, int width, int height){
+    // 防空指针：LCD未映射/数据为空则直接返回
+    if (lcdptr == NULL || rgbdata == NULL) return;
+
+    // 先行后列遍历像素（y=行，x=列，匹配屏幕坐标体系）
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            // 计算当前像素在RGB缓冲区的偏移（RGB888：每个像素3字节）
+            unsigned char r = rgbdata[(y * width + x) * 3 + 0];
+            unsigned char g = rgbdata[(y * width + x) * 3 + 1];
+            unsigned char b = rgbdata[(y * width + x) * 3 + 2];
+
+            // 转换为LCD兼容的32位ARGB8888格式（高8位Alpha=255，不透明）
+            unsigned int color = (0xFF << 24) | (r << 16) | (g << 8) | b;
+
+            // 仅在LCD有效分辨率范围内写入（避免越界访问非法内存）
+            if (y < lcd_h && x < lcd_w) {
+                lcdptr[y * lcd_w + x] = color; // 写入LCD帧缓冲
+            }
+        }
+    }
+}
+
+/************************** 主函数（程序入口） **************************/
+int main(){
+    /************************** 第一步：初始化LCD设备 **************************/
+    // 打开LCD帧缓冲设备（/dev/fb0是Linux默认帧缓冲设备）
+    lcdfd = open("/dev/fb0", O_RDWR);
+    if (lcdfd < 0){
+        perror("打开LCD设备失败:"); // 错误原因打印（如权限不足/设备不存在）
+        return -1;
+    }
+
+    // 获取LCD屏幕参数（分辨率、每像素位数等）
+    struct fb_var_screeninfo info; // 存储LCD可变参数的结构体
+    int lret = ioctl(lcdfd, FBIOGET_VSCREENINFO, &info);
+    if (lret < 0) { // 检查获取参数是否失败
+        perror("获取LCD信息失败:");
+        close(lcdfd); // 失败时关闭已打开的设备，避免资源泄漏
+        return -1;
+    }
+
+    // 更新LCD实际分辨率（从设备读取，替代硬编码）
+    lcd_w = info.xres_virtual;  // LCD虚拟宽度（适配虚拟机/扩展屏）
+    lcd_h = info.yres_virtual;  // LCD虚拟高度
+    // 计算LCD映射总大小：分辨率 × 每像素字节数（bits_per_pixel/8）
+    int lcd_size = lcd_w * lcd_h * (info.bits_per_pixel / 8);
+    // 将LCD帧缓冲映射到用户空间（无需read/write，直接操作内存）
+    lcdptr = (unsigned int *)mmap(NULL, lcd_size, PROT_READ|PROT_WRITE, MAP_SHARED, lcdfd, 0);
+    if (lcdptr == MAP_FAILED) { // 检查映射是否失败（MAP_FAILED是mmap的错误返回值）
+        perror("LCD mmap失败:");
+        close(lcdfd);
+        return -1;
+    }
+
+    /************************** 第二步：初始化摄像头设备 **************************/
+    // 打开摄像头设备（/dev/video0是默认视频设备，O_NONBLOCK非阻塞模式避免卡死）
+    int fd = open("/dev/video0", O_RDWR | O_NONBLOCK);
+    if (fd < 0){
+        perror("打开摄像头设备失败：");
+        return -1;
+    }
+
+    // 查询摄像头支持的像素格式（调试用，可查看设备是否支持YUYV）
+    struct v4l2_fmtdesc v4fmt; // 存储格式描述的结构体
+    memset(&v4fmt, 0, sizeof(v4fmt)); // 结构体清零（避免脏数据）
+    v4fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE; // 指定类型为视频采集
+    int i = 0;
+    while (1){
+        v4fmt.index = i++; // 遍历所有支持的格式
+        int ret = ioctl(fd, VIDIOC_ENUM_FMT, &v4fmt); // 查询第index个格式
+        if (ret < 0) break; // 无更多格式则退出循环
+
+        // 打印格式信息（调试：确认是否有YUYV格式）
+        printf("index = %d\n", v4fmt.index);
+        printf("flags = %d\n", v4fmt.flags);
+        printf("description = %s\n", v4fmt.description); // 格式描述（如"YUYV 4:2:2"）
+        unsigned char *p = (unsigned char *)&v4fmt.pixelformat;
+        printf("pixelformat = %c%c%c%c\n", p[0], p[1], p[2], p[3]); // 格式标识（如YUYV）
+        printf("reserved = %d\n", v4fmt.reserved[0]);
+    }
+
+    // 设置摄像头采集格式（强制设为640x480 YUYV）
+    struct v4l2_format vfmt;   // 存储采集格式的结构体
+    memset(&vfmt, 0, sizeof(vfmt));
+    vfmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE; // 类型：视频采集
+    vfmt.fmt.pix.width = 640;                // 采集宽度
+    vfmt.fmt.pix.height = 480;               // 采集高度
+    vfmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV; // 像素格式：YUYV（V4L2预定义宏）
+    int ret = ioctl(fd, VIDIOC_S_FMT, &vfmt); // 设置格式
+    if (ret < 0){
+        perror("设置采集格式失败:");
+    }
+
+    // 验证格式是否设置成功（读取当前格式并校验）
+    memset(&vfmt, 0, sizeof(vfmt));
+    vfmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    ret = ioctl(fd, VIDIOC_G_FMT, &vfmt); // 获取当前格式
+    if (ret < 0){
+        perror("获取采集格式失败:");
+    }
+    // 校验分辨率和格式是否符合预期
+    if (vfmt.fmt.pix.width == 640 && vfmt.fmt.pix.height == 480 &&
+        vfmt.fmt.pix.pixelformat == V4L2_PIX_FMT_YUYV)
+    {
+        printf("摄像头格式设置成功（640x480 YUYV）\n");
+    } else {
+        printf("摄像头格式设置失败（设备可能不支持该格式）\n");
+    }
+
+    /************************** 第三步：申请摄像头缓冲区（内存映射方式） **************************/
+    struct v4l2_requestbuffers reqbuffer; // 申请缓冲区的结构体
+    memset(&reqbuffer, 0, sizeof(reqbuffer));
+    reqbuffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE; // 类型：视频采集
+    reqbuffer.count = 4;                          // 申请4个缓冲区（环形队列，提高效率）
+    reqbuffer.memory = V4L2_MEMORY_MMAP;          // 内存类型：内存映射（替代拷贝，效率更高）
+    ret = ioctl(fd, VIDIOC_REQBUFS, &reqbuffer);  // 向内核申请缓冲区
+    if (ret < 0){
+        perror("申请摄像头缓冲区失败:");
+    }
+
+    // 将内核缓冲区映射到用户空间（4个缓冲区逐一映射）
+    unsigned char *mptr[4];       // 存储每个缓冲区的用户空间首地址
+    int buf_len[4] = {0};         // 存储每个缓冲区的长度（避免后续释放时值丢失）
+    struct v4l2_buffer mapbuffer; // 查询缓冲区信息的结构体
+    memset(&mapbuffer, 0, sizeof(mapbuffer));
+    mapbuffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    for (int i = 0; i < 4; i++){
+        mapbuffer.index = i; // 指定要查询的缓冲区索引
+        // 查询第i个缓冲区的信息（如长度、内核偏移）
+        ret = ioctl(fd, VIDIOC_QUERYBUF, &mapbuffer);
+        if (ret < 0){
+            perror("查询摄像头缓冲区信息失败:");
+        }
+
+        buf_len[i] = mapbuffer.length; // 保存缓冲区长度
+        // 内存映射：将内核缓冲区映射到用户空间
+        mptr[i] = (unsigned char *)mmap(NULL, mapbuffer.length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, mapbuffer.m.offset);
+        if (mptr[i] == MAP_FAILED) { // 检查映射是否失败
+            perror("摄像头缓冲区mmap失败:");
+            close(fd);
+            return -1;
+        }
+
+        // 将缓冲区放回摄像头队列（初始化为可采集状态）
+        ret = ioctl(fd, VIDIOC_QBUF, &mapbuffer);
+        if (ret < 0){
+            perror("摄像头缓冲区放回队列失败：");
+        }
+    }
+
+    /************************** 第四步：开始摄像头采集 **************************/
+    int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    ret = ioctl(fd, VIDIOC_STREAMON, &type); // 启动视频流采集
+    if (ret < 0){
+        perror("启动摄像头采集失败：");
+    }
+
+    // 分配RGB缓冲区（存储转换后的RGB数据，640x480x3字节）
+    unsigned char rgbdata[640 * 480 * 3];
+
+    /************************** 第五步：循环采集+显示 **************************/
+    while (1){ // 死循环持续采集（按Ctrl+C退出）
+        struct v4l2_buffer readbuffer; // 存储待读取的缓冲区信息
+        memset(&readbuffer, 0, sizeof(readbuffer));
+        readbuffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+        // 尝试从摄像头队列提取一帧数据（重试10次，避免短暂无数据导致退出）
+        int try_cnt = 0;
+        while (try_cnt < 10) {
+            // 提取缓冲区（DQBUF：Dequeue Buffer，从队列取出）
+            ret = ioctl(fd, VIDIOC_DQBUF, &readbuffer);
+            if (ret >= 0) break; // 提取成功则退出重试
+            try_cnt++;
+            // 等待100ms后重试（nanosleep替代usleep，兼容性更好）
+            struct timespec ts = {0, 100000 * 1000}; // 0秒 + 100000微秒（100ms）
+            nanosleep(&ts, NULL);
+        }
+        if (ret < 0){ // 10次重试仍失败，退出程序
+            perror("提取摄像头数据失败:");
+            // 退出前释放所有资源（避免内存泄漏）
+            for (int j = 0; j < 4; j++) munmap(mptr[j], buf_len[j]);
+            munmap(lcdptr, lcd_size);
+            close(fd);
+            close(lcdfd);
+            return -1;
+        }
+
+        // 核心逻辑：YUYV转RGB → 显示到LCD
+        yuyv_to_rgb(mptr[readbuffer.index], rgbdata, 640, 480); // YUYV转RGB
+        lcd_show_rgb(rgbdata, 640, 480);                       // RGB数据显示到LCD
+
+        // 调试：将YUYV原始数据写入文件（可用于验证数据是否正常）
+        FILE *file = fopen("my.yuyv", "wb"); // 以二进制写模式打开
+        if (!file) { // 检查文件打开是否成功
+            perror("打开my.yuyv文件失败:");
+            // 退出前释放资源
+            for (int j = 0; j < 4; j++) munmap(mptr[j], buf_len[j]);
+            munmap(lcdptr, lcd_size);
+            close(fd);
+            close(lcdfd);
+            return -1;
+        }
+        fwrite(mptr[readbuffer.index], readbuffer.length, 1, file); // 写入一帧数据
+        fclose(file); // 关闭文件
+
+        // 将缓冲区放回摄像头队列（QBUF：Enqueue Buffer，供下次采集）
+        ret = ioctl(fd, VIDIOC_QBUF, &readbuffer);
+        if (ret < 0){
+            perror("摄像头缓冲区放回队列失败:");
+        }
+    }
+
+    /************************** 第六步：停止采集+释放资源（理论上死循环不会执行到这里） **************************/
+    ret = ioctl(fd, VIDIOC_STREAMOFF, &type); // 停止视频流采集
+    // 释放摄像头缓冲区的内存映射
+    for (int i = 0; i < 4; i++) {
+        munmap(mptr[i], buf_len[i]);
+    }
+    // 释放LCD的内存映射
+    munmap(lcdptr, lcd_size);
+    // 关闭设备文件描述符
+    close(lcdfd); // 关闭LCD
+    close(fd);    // 关闭摄像头
+    printf("my.yuyv已生成，程序正常退出\n");
+    return 0; 
+}
