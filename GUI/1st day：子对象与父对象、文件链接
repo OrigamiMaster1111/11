@@ -1,0 +1,44 @@
+###Object.cpp
+#include "GUIObject.h"
+#include <iostream>
+using namespace GUIObject;
+
+Object::Object(Object *parent): f_parent(parent){
+    if (f_parent){
+        f_parent->f_kids.push_back(this);
+        std::cout << "Object init (有父对象)" << std::endl;
+    } else {
+        std::cout << "Object init (无父对象)" << std::endl;
+    }
+};
+
+
+###main.cpp
+#include <iostream>
+#include "GUIObject.h"
+using namespace std;
+using namespace GUIObject;
+
+int main(){
+    Object* obj = new Object;
+    Object* obj1 = new Object(obj);
+}
+
+
+###GUIObject.h
+#pragma once
+#include <vector>
+
+namespace GUIObject{
+    class Object {
+        public:
+            Object(Object *parent = nullptr);
+            ~Object();
+        private:
+            Object* f_parent;//对象的父指针
+            std::vector<Object*> f_kids;//子对象数组
+    };
+};
+
+
+.\Object.cpp .\main.cpp -o demo
