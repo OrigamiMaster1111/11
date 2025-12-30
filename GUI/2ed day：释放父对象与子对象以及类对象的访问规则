@@ -1,0 +1,43 @@
+#include "GUIObject.h"
+#include <iostream>
+#include <algorithm>
+using namespace GUIObject;
+
+Object::Object(Object *parent): f_parent(parent){
+    if (f_parent){
+        f_parent->f_kids.push_back(this);
+        std::cout << "Object init (有父对象)" << std::endl;
+    } else {
+        std::cout << "Object init (无父对象)" << std::endl;
+    }
+};
+
+Object::~Object(){
+    //1.释放自己的时候同时释放子对象
+    for (auto &kid: f_kids){
+        delete kid;
+        kid = nullptr;
+    }
+    //2.清空子对象数组
+    f_kids.clear();
+
+    //3.父对象尚未处理: 从父对象的子对象数组中，把本对象移除
+    if (f_parent){
+        //找到自己  从vector数组中找到
+        auto it = std::find(f_parent->f_kids.begin(), f_parent->f_kids.end(), this);
+        //删除自己
+        if (it != f_parent->f_kids.end()){
+            f_parent->f_kids.erase(it);
+        }
+    }
+
+    std::cout << "~Object" << std::endl;
+}
+
+同属一个类的对象：哪怕类里没写任何 public 接口，只要在「类的成员函数（包括构造函数、析构函数、普通成员函数等）」内部，一个对象就能访问 / 修改另一个同类别对象的 private 成员 —— 成员函数里写了什么逻辑，就会按什么逻辑执行（比如你构造函数里的f_parent->f_kids.push_back(this)）。本质是：成员函数是类的 “内部通道”，和 “是不是同一个对象” 无关，只和 “是不是同一个类” 有关。
+非同类且非友元的对象 / 函数：没有 public 接口的话，绝对无法访问类的 private 成员 —— 不管是直接访问（比如obj.f_kids），还是间接尝试，编译器都会直接报错，完全被 private 权限阻断。
+友元例外：友元（friend声明的函数 / 类）虽然不是同类，但属于类 “主动开放权限” 的特殊情况 —— 哪怕没有 public 接口，友元也能像成员函数一样访问 private 成员（这是唯一的非同类访问例外，你的代码没用到，了解即可）。
+一句话简化记忆
+同类对象：靠「成员函数」互相访问 private（不用 public 接口）；
+非同类 + 非友元：必须靠「public 接口」才能间接操作，否则无权访问；
+友元：特殊豁免，无 public 接口也能访问。
