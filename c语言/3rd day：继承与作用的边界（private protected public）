@@ -1,0 +1,17 @@
+###window.h
+#pragma once
+#include <easyx.h>
+#include "GUIObject.h"
+using namespace GUIObject;
+
+class Window: public Object{
+    public:
+        Window(int w, int h, int flag = 0x0010);
+        ~Window();
+};
+
+父类private的变量，子类对象里存在，但子类自己写的成员函数不能直接访问 / 修改；
+子类想改这个变量，只能通过从父类继承来的public/protected成员函数（比如父类的setter函数）；
+如果父类没提供任何能修改这个private变量的public/protected函数（也没提供间接操作的接口），那么子类永远无法修改这个继承来的private变量 —— 哪怕这个变量就 “躺” 在子类对象的内存里。
+
+protected的本质是 “父类给子类的专属特权”—— 既不让外部碰，又允许子类直接用，是继承场景下 “封装” 和 “复用” 的最优解
