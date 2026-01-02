@@ -16,6 +16,7 @@ void setConsoleUTF8(){
     #endif
 }
 
+
 //判断性别输入
 bool isGender(const string &g){ return g == "男" || g == "女"; }
 //判断生日输入
