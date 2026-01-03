@@ -57,6 +57,7 @@ void showMenu(){
     cout << "——————————————————————"/*16格*/ << endl;
 }
 
+
 //联系人类
 class Contact{
     private:
