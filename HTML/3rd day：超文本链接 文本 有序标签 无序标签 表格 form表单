@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a href = "https://www.bilibili.com/">b站</ahref>
+        <img width = "600px" src = "../标签之图片/steam娘夜晚.jpg">
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <p>p文本</p>
+    <em>em文本</em>
+    <b><br>b文本</b>
+    <i><br>i文本</i>
+    <strong><br>strong文本</strong>
+    <del><br>del文本</del>
+    <span><br>span文本</span>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--    <ol type = "a">-->
+<!--        <li>岑夫子丹丘生，将进酒杯莫停</li>-->
+<!--        <li>与君歌一曲，请君为我倾耳听</li>-->
+<!--        <li>钟鼓馔玉不足贵，但愿长醉不愿醒</li>-->
+<!--        <li>古来圣贤皆寂寞，唯有饮者留其名</li>-->
+<!--    </ol>-->
+<!--    <ol type = "A">-->
+<!--        <li>岑夫子丹丘生，将进酒杯莫停</li>-->
+<!--        <li>与君歌一曲，请君为我倾耳听</li>-->
+<!--        <li>钟鼓馔玉不足贵，但愿长醉不愿醒</li>-->
+<!--        <li>古来圣贤皆寂寞，唯有饮者留其名</li>-->
+<!--    </ol>-->
+<!--    <ol type = "i">-->
+<!--        <li>岑夫子丹丘生，将进酒杯莫停</li>-->
+<!--        <li>与君歌一曲，请君为我倾耳听</li>-->
+<!--        <li>钟鼓馔玉不足贵，但愿长醉不愿醒</li>-->
+<!--        <li>古来圣贤皆寂寞，唯有饮者留其名</li>-->
+<!--    </ol>-->
+<!--    <ol type = "I">-->
+<!--        <li>岑夫子丹丘生，将进酒杯莫停</li>-->
+<!--        <li>与君歌一曲，请君为我倾耳听</li>-->
+<!--        <li>钟鼓馔玉不足贵，但愿长醉不愿醒</li>-->
+<!--        <li>古来圣贤皆寂寞，唯有饮者留其名</li>-->
+<!--    </ol>-->
+    <ol>
+        <li>水果
+            <ol>
+                <li>苹果</li>
+                <li>李子</li>
+                <li>葡萄</li>
+            </ol>
+        </li>
+        <li>蔬菜
+            <ol>
+                <li>南瓜</li>
+                <li>白菜</li>
+                <li>萝卜</li>
+            </ol>
+        </li>
+        <li>肉类
+            <ol>
+                <li>鸡肉</li>
+                <li>牛肉</li>
+                <li>羊肉</li>
+            </ol>
+        </li>
+    </ol>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <ul>
+      <li>李子</li>
+      <li>苹果</li>
+      <li>草莓</li>
+    </ul>
+    <ul type="circle">
+      <li>李子</li>
+      <li>苹果</li>
+      <li>草莓</li>
+    </ul>
+    <ul type="square">
+      <li>李子</li>
+      <li>苹果</li>
+      <li>草莓</li>
+    </ul>
+    <ul type="none">
+      <li>李子</li>
+      <li>苹果</li>
+      <li>草莓</li>
+    </ul>
+
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+        <table border="1" width="400px" height="400px">
+            <tr>
+                <td>单元格</td>
+                <td>单元格</td>
+            </tr>
+            <tr>
+                <td>单元格</td>
+                <td>单元格</td>
+            </tr>
+            <tr>
+                <td>单元格</td>
+                <td>单元格</td>
+            </tr>
+        </table>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="url" method="get|post" name="myfor"></form>
+
+    <form>
+        用户名：<input type="text">
+        密码：<input type="password">
+        <input type="submit" value="登录">
+    </form>
+
+</body>
+</html
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <p>合并单元格6-7：colspan</p>
+  <p>合并单元格15和20：rowspan</p>
+  <p>水平合并：保留左边，删除右边</p>
+  <p>垂直合并：保留左边，删除下边</p>
+  <table border = "1" width="600" height="200">
+    <tr align="center">
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+    </tr>
+    <tr align="center">
+      <td colspan="2">6 7</td>
+      <td>8</td>
+      <td>9</td>
+      <td>10</td>
+    </tr>
+    <tr align="center">
+      <td>11</td>
+      <td>12</td>
+      <td>13</td>
+      <td>14</td>
+      <td rowspan="2">15 20</td>
+    </tr>
+    <tr align="center">
+      <td colspan="2" rowspan="2">16 17 <br>21 22</td>
+
+      <td>18</td>
+      <td>19</td>
+    </tr>
+    <tr align="center">
+      <td>23</td>
+      <td>24</td>
+      <td>25</td>
+    </tr>
+  </table>
+</body>
+</html>
