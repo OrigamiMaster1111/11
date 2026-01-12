@@ -1,0 +1,72 @@
+# 块元素与行内元素（内联元素）
+
+HTML5 出现之前，经常把元素按照**块级元素**和**内联元素**来区分。在 HTML5 中，元素不再按照这种方式来区分，而是按照内容模型来区分，分为**元数据型** (metadata content)、**区块型** (sectioning content)、**标题型** (heading content)、**文档流型** (flow content)、**语句型** (phrasing content)、**内嵌型** (embedded content)、**交互型** (interactive content)。元素不属于任何一个类别，被称为穿透的，元素可能属于不止一个类别，称为混合的
+
+![image.png](attachment:b5d74da9-d449-4f82-8e39-4e367610f61c:image.png)
+
+<aside>
+💡
+
+详细参考地址: [https://developer.mozilla.org/zhCN/docs/Web/Guide/HTML/Content_categories](https://developer.mozilla.org/zh-CN/docs/Web/Guide/HTML/Content_categories)
+
+</aside>
+
+## 内联元素和块级元素的区别
+
+| **块级元素** | **内联元素** |
+| --- | --- |
+| 块元素会在页面中独占一行（自上向下垂直排列） | 行内元素不会独占页面中的一行，只占自身的大小 |
+| 可以设置 width, height 属性 | 行内元素设置 width, height 属性无效 |
+| 一般块级元素可以包含行内元素和其他块级元素 | 一般内联元素包含内联元素不包含块级元素 |
+
+**常见块级元素**
+
+> div、form、h1~h6、hr、p、table、ul、等
+> 
+
+常见内联元素
+
+> a、b、em、i、span、strong 等
+> 
+
+行内块级元素（特点：不换行、能够识别宽高）
+
+> button、img、input 等
+>
+
+
+# HTML5新增标签
+
+1. HTML5 的基本属性
+- 是 HTML 的最新修订版本
+- 2014 年 10 月由万维网联盟（W3C）完成标准制定
+
+  2.  旧布局方式的缺陷（DIV+CSS）
+
+- 文档结构不够清晰
+- 不利于搜索引擎爬虫对页面内容的爬取
+
+  3.   HTML5 的针对性改进
+
+- 新增大量语义化标签，以解决 DIV+CSS 布局的上述缺点
+
+## 扩展知识
+
+`div` 容器元素，也是页面中见到最多的元素
+
+div实现
+
+![image.png](attachment:b9880919-d254-459a-9c28-4176b8094938:image.png)
+
+H5新标签实现
+
+![image.png](attachment:2eaac87b-99b6-40bb-b95e-66f6e0c1824a:image.png)
+
+## H5 新语义化标签
+
+1. `<header></header>`：作为页面 / 内容区块的**头部区域**，通常承载标题、Logo、简介等内容
+2. `<nav></nav>`：定义页面的**导航区域**，用于存放导航链接、菜单等导航相关内容
+3. `<section></section>`：划分文档中的**独立节**（如章节、页眉 / 页脚的模块），用于组织内容区块
+4. `<aside></aside>`：表示页面的**侧边栏区域**，通常包含与主内容关联的辅助信息（如侧边导航、补充说明）
+5. `<footer></footer>`：作为页面 / 内容区块的**脚部区域**，一般承载版权信息、联系方式、相关链接等
+6. `<article></article>`：代表独立、完整的**内容单元**（如博客文章、论坛帖子、用户评论），可脱离文档其余部分单独理解或分发
