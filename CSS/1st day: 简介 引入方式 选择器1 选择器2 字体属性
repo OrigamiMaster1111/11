@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        h3{
+            color: red;
+            font-size: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h3>
+        Hello
+    </h3>
+</body>
+</html>
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>首页</h1>
+    <a href="product.html">产品</a>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="public.css">
+</head>
+<body>
+    <p>
+        产品
+    </p>
+</body>
+</html>
+
+p{
+    color: red;
+    font-size: large;
+}
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        span{
+          color: red;
+        }
+    </style>
+</head>
+<body>
+    <p>我是第一个</p>
+    <p>我是第二个</p>
+    <p>学完了<span>前端</span>，继续学Java</p>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+              color: red;
+              font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+    <p>hello</p>
+    <h3>World</h3>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .content{
+          color: red;
+        }
+
+        .size{
+          font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+    <p>大家好</p>
+    <p>早上好</p>
+    <p class="content">晚上好</p>
+    <h1 class="content size">真是美好的一天</h1>
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #text{
+            color: red;
+            font-size: 20px;
+        }
+
+        .t1{
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <p id="text">Hello</p>
+    <p class="t1">文本1</p>
+    <p class="t1">文本二</p>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        p,h3{
+            font-size: 30px;
+            color: green;
+        }
+
+    </style>
+</head>
+<body>
+    <p>我是p标签</p>
+    <h3>我是h3标签</h3>
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        p{
+          color: green;
+          color: #ff0000;
+          color: rgb(0, 0, 255);
+          color: rgba(0, 0, 0, 0.5);
+        }
+
+    </style>
+</head>
+<body>
+    <p>我来学习字体属性</p>
+</body>
+</html>
