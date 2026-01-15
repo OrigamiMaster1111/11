@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box{
+            width: 400px;
+            height: 400px;
+            background-color: green;
+        }
+
+        .box2{
+            width: 1000px;
+            height: 1000px;
+            background-image: url("助手.jpg");
+            /*background-repeat: no-repeat;*/
+            background-size: contain;
+            background-position: left center;
+        }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+    <div class="box2"></div>
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        h3{
+            text-align: center;
+            text-decoration: underline;
+            text-transform: uppercase;
+        }
+
+        .p1{
+            text-align: left;
+            font-size: 50px;
+            text-indent: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h3>我是一个标题内容Hello</h3>
+    <p class="p1">i am fine thank you</p>
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+      table,td{
+        border-collapse: collapse;
+          border: 1px solid black;
+      }
+
+      td{
+        padding: 20px;
+        background-color: lightgray;
+        color: yellow;
+      }
+
+    </style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>单元格</td>
+            <td>单元格</td>
+            <td>单元格</td>
+        </tr>
+        <tr>
+            <td>单元格</td>
+            <td>单元格</td>
+            <td>单元格</td>
+        </tr>
+        <tr>
+            <td>单元格</td>
+            <td>单元格</td>
+            <td>单元格</td>
+        </tr>
+    </table>
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        ul li{
+            color: red;
+        }
+
+    </style>
+</head>
+<body>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <div>
+            <ol>
+                <li>一</li>
+                <li>二</li>
+            </ol>
+        </div>
+    </ul>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+      div>p{
+        color: red;
+      }
+
+    </style>
+</head>
+<body>
+    <div>
+        <p>大家好</p>
+        <ul>
+            <li>
+                <p>我很好</p>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        h3+p{
+          color: red;
+        }
+
+    </style>
+</head>
+<body>
+    <h3>我是标题</h3>
+    <p>我是内容1</p>
+    <p>我是内容2</p>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+          h3~p{
+            color: red;
+          }
+
+    </style>
+</head>
+<body>
+    <h3>我是标题</h3>
+    <p>我是内容1</p>
+    <p>我是内容2</p>
+    <p>我是内容3</p>
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        .container{
+          width: 500px;
+          height: 500px;
+          background-color: #555;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .box1{
+          width: 100px;
+          height: 100px;
+          background-color: red;
+          flex: 2;
+        }
+
+        .box2{
+          width: 100px;
+          height: 100px;
+          background-color: green;
+          flex: 2;
+        }
+
+        .box3{
+          width: 100px;
+          height: 100px;
+          background-color: blue;
+          flex: 1;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box1"></div>
+        <div class="box2"></div>
+        <div class="box3"></div>
+    </div>
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        .box{
+            width: 200px;
+            height: 200px;
+            background-color: aqua;
+            float: left;
+        }
+
+        .container{
+            width: 400px;
+            height: 400px;
+            background-color: purple;
+        }
+
+        img{
+            width: 300px;
+            float: left;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+    <div class="container"></div>
+
+    <div>
+        <img src="云先生.png">
+        <img src="云先生.png">
+    </div>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        .container{
+            width: 700px;
+            height: 700px;
+            background-color: #666;
+        }
+
+        div{
+            width: 300px;
+            height: 300px;
+            float: left;
+        }
+
+        .box1{
+            background-color: red;
+        }
+
+        .box2{
+            background-color: blue;
+        }
+
+        .box3{
+            background-color: green;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box1"></div>
+        <div class="box2"></div>
+        <div class="box3"></div>
+    </div>
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        .container{
+            width: 500px;
+            background-color: #888;
+            overflow: hidden;
+            clear: both;
+        }
+
+        .container::after{
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .box{
+            width: 100px;
+            height: 100px;
+            background-color: aqua;
+            margin: 5px;
+            float: left;
+        }
+
+        .text{
+            width: 100px;
+            height: 100px;
+            background-color: purple;
+            /*clear: both;*/
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box"></div>
+        <div class="box"></div>
+        <div class="box"></div>
+    </div>
+    <div class="text"></div>
+</body>
+</html>
