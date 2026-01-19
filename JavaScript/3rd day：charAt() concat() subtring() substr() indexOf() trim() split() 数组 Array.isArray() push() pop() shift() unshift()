@@ -1,0 +1,427 @@
+### charAt 方法
+
+`charAt` 方法返回指定位置的字符，参数是从 `0` 开始编号的
+
+```jsx
+var s = new String('itbaizhan');
+
+s.charAt(1) // "t"
+s.charAt(s.length - 1) // "n"
+```
+
+如果参数为负数，或大于等于字符串的长度，`charAt` 返回空字符串
+
+```jsx
+'itbaizhan'.charAt(-1) // ""
+'itbaizhan'.charAt(9) // ""
+```
+
+
+
+### concat 方法
+
+`concat` 方法用于连接两个字符串，返回一个新字符串，不改变原字符串
+
+```jsx
+var s1 = 'itbaizhan';
+var s2 = 'sxt';
+
+s1.concat(s2) // "itbaizhansxt"
+s1 // "itbaizhan"
+```
+
+---
+
+### 多参数支持
+
+该方法可以接受多个参数
+
+```jsx
+'sxt'.concat('itbaizhan', 'bjsxt') // "sxtitbaizhanbjsxt"
+```
+
+---
+
+### 非字符串参数处理
+
+如果参数不是字符串，`concat` 方法会将其先转为字符串，然后再连接
+
+```jsx
+var one = 1;
+var two = 2;
+var three = '3';
+
+''.concat(one, two, three) // "123"
+```
+
+
+
+### substring 方法
+
+`substring` 方法用于从原字符串取出子字符串并返回，不改变原字符串。它的第一个参数表示子字符串的开始位置，第二个参数表示结束位置（返回结果不含该位置）
+
+---
+
+### 1. 基本用法
+
+```jsx
+'itbaizhan'.substring(0, 2) // "it"
+```
+
+### 2. 省略第二个参数
+
+如果省略第二个参数，表示子字符串一直到原字符串的结束
+
+```jsx
+'itbaizhan'.substring(2) // "baizhan"
+```
+
+### 3. 第一个参数大于第二个参数
+
+如果第一个参数大于第二个参数，`substring` 方法会自动更换两个参数的位置
+
+```jsx
+'itbaizhan'.substring(9, 2) // "baizhan"
+// 等同于
+'itbaizhan'.substring(2, 9) // "baizhan"
+```
+
+### 4. 参数为负数
+
+如果参数是负数，`substring` 方法会自动将负数转为0
+
+```jsx
+'itbaizhan'.substring(-3) // "itbaizhan"
+'itbaizhan'.substring(2, -3) // "it"
+```
+
+
+
+### substr 方法
+
+`substr` 方法用于从原字符串取出子字符串并返回，不改变原字符串，跟 `substring` 方法的作用相同
+
+`substr` 方法的第一个参数是子字符串的开始位置（从0开始计算），第二个参数是子字符串的长度
+
+---
+
+### 1. 基本用法
+
+```jsx
+'itbaizhan'.substr(2, 7); // baizhan
+```
+
+### 2. 省略第二个参数
+
+如果省略第二个参数，则表示子字符串一直到原字符串的结束
+
+```jsx
+'itbaizhan'.substr(2) // "baizhan"
+```
+
+### 3. 参数为负数的处理
+
+如果第一个参数是负数，表示倒数计算的字符位置。如果第二个参数是负数，将被自动转为0，因此会返回空字符串
+
+```jsx
+'itbaizhan'.substr(-7) // "baizhan"
+'itbaizhan'.substr(4, -1) // ""
+```
+
+
+
+
+### indexOf 方法
+
+`indexOf` 方法用于确定一个字符串在另一个字符串中第一次出现的位置，返回结果是匹配开始的位置。如果返回 `-1`，就表示不匹配
+
+---
+
+### 1. 基本用法
+
+```jsx
+'hello world'.indexOf('o') // 4
+'itbaizhan'.indexOf('sxt') // -1
+
+```
+
+### 2. 第二个参数（起始匹配位置）
+
+`indexOf` 方法还可以接受第二个参数，表示从该位置开始向后匹配
+
+```jsx
+'hello world'.indexOf('o', 6) // 7
+
+```
+
+
+
+
+
+
+### trim 方法
+
+`trim` 方法用于去除字符串两端的空格，返回一个新字符串，不改变原字符串
+
+```jsx
+'   hello world   '.trim()
+// "hello world"
+```
+
+---
+
+### 去除的字符范围
+
+该方法去除的不仅是空格，还包括制表符（`\\t`、`\\v`）、换行符（`\\n`）和回车符（`\\r`）
+
+```jsx
+'\\r\\nitbaizhan \\t'.trim() // 'itbaizhan'
+```
+
+---
+
+### ES6 扩展方法：`trimEnd()` 和 `trimStart()`
+
+```jsx
+"   itbaizhan   ".trimEnd(); //   itbaizhan
+"   itbaizhan   ".trimStart(); // itbaizhan
+```
+
+
+
+
+
+### split 方法
+
+`split` 方法按照给定规则分割字符串，返回一个由分割出来的子字符串组成的数组
+
+---
+
+### 1. 基本用法
+
+```jsx
+'it|sxt|baizhan'.split('|') // ["it", "sxt", "baizhan"]
+```
+
+### 2. 分割规则为空字符串
+
+如果分割规则为空字符串，则返回数组的成员是原字符串的每一个字符
+
+```jsx
+'a|b|c'.split('') // ["a", "|", "b","|", "c"]
+```
+
+### 3. 省略参数
+
+如果省略参数，则返回数组的唯一成员就是原字符串
+
+```jsx
+'it|sxt|bz'.split() // ["it|sxt|bz"]
+```
+
+### 4. 第二个参数（限定返回数组的最大成员数）
+
+`split` 方法还可以接受第二个参数，限定返回数组的最大成员数
+
+```jsx
+'it|sxt|bz'.split('|', 0) // []
+'it|sxt|bz'.split('|', 1) // ["it"]
+'it|sxt|bz'.split('|', 2) // ["it", "sxt"]
+'it|sxt|bz'.split('|', 3) // ["it", "sxt", "bz"]
+'it|sxt|bz'.split('|', 4) // ["it", "sxt", "bz"]
+```
+
+
+
+
+
+
+### 数组定义
+
+数组（array）是按次序排列的一组值。每个值的位置都有编号（从0开始），整个数组用方括号表示。
+
+```jsx
+var arr = ['sxt', 'baizhan', 'it'];
+```
+
+两端的方括号是数组的标志。`sxt` 是0号位置，`baizhan` 是1号位置，`it` 是2号位置。（位置也被称为下标）
+
+---
+
+### 先定义后赋值
+
+除了在定义时赋值，数组也可以先定义后赋值。
+
+```jsx
+var arr = [];
+arr[0] = 'sxt';
+arr[1] = 'baizhan';
+arr[2] = 'it';
+```
+
+---
+
+### 任意类型数据放入数组
+
+任何类型的数据，都可以放入数组
+
+```jsx
+var arr = [ 100, [1, 2, 3],false ];
+```
+
+---
+
+### 多维数组
+
+如果数组的元素还是数组，就形成了多维数组
+
+```jsx
+var a = [[1, 2], [3, 4]];
+a[0][1] // 2
+a[1][1] // 4
+```
+
+---
+
+### length属性
+
+数组的length属性，返回数组的成员数量
+
+```jsx
+['sxt', 'baizhan', 'it'].length //3
+```
+
+
+
+
+### for 循环 / while 循环
+
+```jsx
+var a = ['sxt', 'baizhan', 'it'];
+
+// for循环
+for(var i = 0; i < a.length; i++) {
+  console.log(a[i]);
+}
+
+// while循环
+var i = 0;
+while (i < a.length) {
+  console.log(a[i]);
+  i++;
+}
+```
+
+---
+
+### for...in 循环
+
+```jsx
+var a = ['sxt', 'baizhan', 'it'];
+for (var i in a) {
+  console.log(a[i]);
+}
+```
+
+
+
+
+### Array.isArray 方法
+
+`Array.isArray` 方法返回一个布尔值，表示参数是否为数组。它可以弥补 `typeof` 运算符的不足
+
+---
+
+### 1. `typeof` 检测数组的局限性
+
+```jsx
+var arr = ["尚学堂", 100, true];
+console.log(typeof arr); // object
+```
+
+### 2. `Array.isArray` 检测数组
+
+```jsx
+var arr = ['sxt', 'baizhan', 'it'];
+Array.isArray(arr) // true
+```
+
+
+
+
+### push 方法
+
+`push` 方法用于在数组的末端添加一个或多个元素，并返回添加新元素后的数组长度。注意，该方法会改变原数组
+
+```jsx
+var arr = [];
+arr.push("尚学堂") // 1
+arr.push('itbaizhan') // 2
+arr.push(true, {}) // 4
+arr // ["尚学堂", "itbaizhan", true, {}]
+```
+
+---
+
+### pop 方法
+
+`pop` 方法用于删除数组的最后一个元素，并返回该元素。注意，该方法会改变原数组
+
+```jsx
+var arr = ['尚学堂', 'itbaizhan', 'WEB前端'];
+arr.pop() // 'WEB前端'
+arr // ['尚学堂', 'itbaizhan']
+```
+
+
+
+
+### shift 方法
+
+`shift` 方法用于删除数组的第一个元素，并返回该元素。注意，该方法会改变原数组
+
+```jsx
+var arr = ['尚学堂', 'itbaizhan', 'WEB前端'];
+arr.shift() // '尚学堂'
+arr // ['itbaizhan', 'WEB前端']
+```
+
+### shift 方法遍历并清空数组
+
+```jsx
+var list = [1, 2, 3, 4, 5, 6];
+var item;
+
+while (item = list.shift()) {
+  console.log(item);
+}
+
+list // []
+```
+
+---
+
+### unshift 方法
+
+`unshift` 方法用于在数组的第一个位置添加元素，并返回添加新元素后的数组长度。注意，该方法会改变原数组
+
+```jsx
+var arr = ['尚学堂', 'itbaizhan', 'WEB前端'];
+arr.unshift('baizhan'); // 4
+arr // ['baizhan', '尚学堂', 'itbaizhan', 'WEB前端']
+```
+
+### 多参数支持
+
+`unshift` 方法可以接受多个参数，这些参数都会添加到目标数组头部
+
+```jsx
+var arr = [ '尚学堂', 'itbaizhan' ];
+arr.unshift('WEB前端', 'baizhan') // 4
+arr // ['WEB前端', 'baizhan', '尚学堂', 'itbaizhan' ]
+```
+
+
+
+
+
