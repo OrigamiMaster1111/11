@@ -1,0 +1,455 @@
+函数是一段可以反复调用的代码块
+
+### 函数的声明
+
+使用 `function` 命令声明函数，语法结构为：
+
+```jsx
+function 函数名(参数) {
+  // 函数体
+}
+```
+
+示例：
+
+```jsx
+function print(s) {
+  console.log(s);
+}
+```
+
+### 函数名的提升
+
+JavaScript 引擎将函数名视同变量名，因此通过 `function` 命令声明的函数会像变量声明一样，被提升到代码头部。这意味着**可以在函数声明之前调用函数**。
+示例：
+
+```jsx
+add(); // 可以正常执行，不会报错
+
+function add() {}
+```
+
+### 函数返回值
+
+JavaScript 函数通过两个接口与外界交互：
+
+- **参数**：作为入口，接收外界输入的信息
+- **返回值**：作为出口，将运算结果反馈给外界
+
+---
+
+### 基本用法
+
+使用 `return` 关键字指定函数的返回值，示例：
+
+```jsx
+function getName(name) {
+  return name;
+}
+
+var myName = getName("itbaizhan")
+console.log(myName); // itbaizhan
+```
+
+
+
+
+什么是对象？对象`object` 是 JavaScript 语言的核心概念，也是最重要的数据类型。简单说，对象就是一组**“键值对”（key-value）的集合**，是一种无需的复合数据的集合
+
+![image.png](attachment:4a8d74ff-35ff-4337-9b5a-17c90e33f9dc:image.png)
+
+```jsx
+var user = {
+	name: 'chenyuwei',
+	age: '19',
+};
+```
+
+## 对象的属性与方法
+
+对象的每个键名称为**“属性”（property）**，它的“键值”可以是任何数据类型。如果一个属性的值为函数，通常把这个属性称为“方法”，可以像函数那样调用。
+
+示例：
+
+```jsx
+var user = {
+  getName: function (name) {
+    return name;
+  }
+};
+
+user.getName("itbaizhan") // itbaizhan
+```
+
+---
+
+### 链式引用
+
+如果属性的值还是一个对象，就形成了链式引用，可以通过连续的点符号访问深层属性。
+
+示例：
+
+```jsx
+var user = {
+  name: "itbaizhan",
+  age: 13,
+  container: {
+    frontEnd: ["Web前端", "Android", "iOS"],
+    backEnd: ["Java", "Python"]
+  }
+}
+
+user.container.frontEnd // ["Web前端", "Android", "iOS"]
+```
+
+
+
+
+
+Math 是 JavaScript 的原声对象，提供各种数学功能。
+
+## Math.abs()
+
+`Math.abs()` 方法返回参数值的绝对值
+
+```jsx
+Math.abs(1) // 1
+Math.abs(-1) // 1
+```
+
+## Math.max() & Math.min()
+
+- `Math.max()`：返回参数之中最大的那个值
+- `Math.min()`：返回参数之中最小的那个值
+- 如果参数为空，`Math.min()` 返回 `Infinity`，`Math.max()` 返回 `Infinity`
+
+```jsx
+Math.max(2, -1, 5) // 5
+Math.min(2, -1, 5) // -1
+Math.min() // Infinity
+Math.max() // -Infinity
+```
+
+## Math.floor()
+
+`Math.floor()` 方法返回**小于参数值的最大整数**（向下取整）
+
+```jsx
+Math.floor(3.2) // 3
+Math.floor(-3.2) // -4
+```
+
+## Math.ceil()
+
+`Math.ceil()` 方法返回**大于参数值的最小整数**（向上取整）
+
+```jsx
+Math.ceil(3.2) // 4
+Math.ceil(-3.2) // -3
+```
+
+## Math.random()
+
+`Math.random()` 返回一个 **0 到 1 之间的伪随机数**，它可能等于 0，但一定小于 1。
+
+```jsx
+Math.random() // 示例输出：0.28525367438365223
+```
+
+### 生成任意范围的随机数
+
+如果需要生成 `[min, max)` 区间内的随机数，可以用这个通用函数：
+
+```jsx
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+getRandomArbitrary(5, 10) // 示例输出：7.34521689
+```
+
+这个公式的原理是：
+
+1. `Math.random()` 生成 `[0, 1)` 的随机数
+2. 乘以 `(max - min)` 得到 `[0, max - min)` 的随机数
+3. 加上 `min` 后，范围就变成了 `[min, max)`
+
+
+
+
+## Date 对象
+
+`Date` 对象是 JavaScript 原生的时间库，它以 **1970年1月1日 00:00:00 UTC** 作为时间零点，能表示的时间范围是前后各 1 亿天（单位为毫秒）。
+
+## Date.now()
+
+`Date.now()` 方法返回**当前时间距离时间零点（1970年1月1日 00:00:00 UTC）的毫秒数**，相当于 Unix 时间戳（秒为单位）乘以 1000。
+
+示例：
+
+```jsx
+Date.now(); // 示例输出：1635216733395
+```
+
+## 时间戳
+
+时间戳是指**格林威治时间1970年1月1日 00:00:00**（对应北京时间1970年1月1日 08:00:00）起至现在的总秒数。
+
+- 这一设定源于 Unix 操作系统，它将 1970 年 1 月 1 日 0 点作为“时间纪元”，JavaScript 也遵循了这一约定。
+- 时间戳的毫秒数版本（即秒数 × 1000）是 JavaScript 中 Date 对象的核心计算单位。
+
+---
+
+## Date 对象的 `get` 类实例方法
+
+Date 对象提供了一系列 `get` 方法，用于获取实例对象某方面的值：
+
+| 方法 | 作用 |
+| --- | --- |
+| `getTime()` | 返回实例距离1970年1月1日 00:00:00 的毫秒数 |
+| `getDate()` | 返回实例对应每个月的几号（从1开始） |
+| `getDay()` | 返回星期几（星期日为0，星期一为1，以此类推） |
+| `getYear()` | 返回距离1900的年数（已被 `getFullYear()` 替代） |
+| `getFullYear()` | 返回四位的年份（推荐使用） |
+| `getMonth()` | 返回月份（0表示1月，11表示12月） |
+| `getHours()` | 返回小时（0-23） |
+| `getMilliseconds()` | 返回毫秒（0-999） |
+| `getMinutes()` | 返回分钟（0-59） |
+| `getSeconds()` | 返回秒（0-59） |
+
+```jsx
+var d = new Date('January 6, 2022');
+d.getDate() // 6
+d.getMonth() // 0（表示1月）
+d.getYear() // 122（2022-1900）
+d.getFullYear() // 2022
+```
+
+### 获取本年度剩余天数
+
+```jsx
+function leftDays() {
+  // 1. 获取当前时间
+  var today = new Date();
+
+  // 2. 构造本年度最后一天的最后一刻（12月31日 23:59:59.999）
+  // 注意：月份是0-based，11表示12月
+  var endYear = new Date(today.getFullYear(), 11, 31, 23, 59, 59, 999);
+
+  // 3. 计算一天的毫秒数：24小时 × 60分钟 × 60秒 × 1000毫秒
+  var msPerDay = 24 * 60 * 60 * 1000;
+
+  // 4. 计算毫秒差 → 转换为天数 → 四舍五入取整
+  return Math.round((endYear.getTime() - today.getTime()) / msPerDay);
+}
+```
+
+### 关键细节
+
+- **日期构造**：`new Date(year, month, day, hours, minutes, seconds, ms)` 中，`month` 是从 0 开始计数的，所以 `11` 代表 12 月。
+- **毫秒计算**：一天的毫秒数是固定的 `86400000`，用 `24 * 60 * 60 * 1000` 计算更直观。
+- **四舍五入**：使用 `Math.round()` 是因为时间差可能不是整数天（比如当前时间是中午，到年底的毫秒差除以一天毫秒数会有小数），四舍五入能让结果更准确。
+
+
+
+
+
+DOM是JavaScript操作网页的接口，全称为”**文档对象模型**”**（Document ObjectModel）**。它的作用是将网页转为一个 JavaScript 对象，从而可以用脚本进行各种操作（比如对元素增删内容）
+         浏览器会根据DOM模型，将结构化文档HTML解析成一系列的节点，再由这些节点组成一个树状结构（DOM Tree）。所有的节点和最终的树状结构，都有规范的对外接口
+         DOM只是一个接口规范，可以用各种语言实现。所以严格地说，DOM 不是 JavaScript 语法的一部分，但是 DOM 操作是 JavaScript 最常见的任务，离开了DOM，JavaScript就无法控制网页。另一方面，JavaScript 也是最常用于DOM操作的语言
+
+# 节点
+
+DOM的最小组成单位叫做**节点(node)。**文档的树形结构（DOM树），就是由各种不同类型的节点组成。每个节点可以看作是文档树的一片叶子。
+
+![image.png](attachment:3dc5d673-4001-4ce6-84d6-cb0658533c24:image.png)
+
+### 七种类型
+
+在 HTML DOM 中，节点被分为以下七种类型，每种类型对应文档中的不同部分：
+
+| 节点类型 | 说明 | 示例 |
+| --- | --- | --- |
+| **Document** | 整个文档树的顶层节点，代表整个 HTML 文档 | `document` 对象本身就是这种类型 |
+| **DocumentType** | 对应文档的 `<!DOCTYPE>` 标签 | `<!DOCTYPE html>` |
+| **Element** | 网页中的各种 HTML 标签，是最常见的节点类型 | `<div>`、`<p>`、`<a>` 等标签 |
+| **Attribute** | HTML 元素的属性 | `class="right"`、`id="header"` |
+| **Text** | 标签之间或标签包含的文本内容 | `<p>这是一段文本</p>` 中的“这是一段文本” |
+| **Comment** | HTML 注释 | `<!-- 这是一条注释 -->` |
+| **DocumentFragment** | 文档片段，是一种轻量级的文档对象，用于批量操作节点而不触发页面重绘 | 常用于动态创建多个元素后一次性插入 DOM |
+
+# 节点树（DOM 树）
+
+一个文档的所有节点，按照所在的层级可以抽象成树状结构，这就是 **DOM 树**。
+
+- 它有一个顶层节点（`document`），下一层都是顶层节点的子节点，子节点又有自己的子节点，层层衍生出金字塔式的结构。
+- 浏览器原生提供 `document` 节点，代表整个 HTML 文档，是 DOM 树的根节点。
+    
+    ```jsx
+    document // 直接指向整个文档树
+    ```
+    
+
+### 节点的三种层级关系
+
+除了根节点（`document`），其他节点都具备以下三种层级关系：
+
+| 关系类型 | 说明 | 示例 |
+| --- | --- | --- |
+| **父节点关系（parentNode）** | 直接的上级节点 | 如果 `<div>` 包含 `<p>`，则 `<div>` 是 `<p>` 的父节点 |
+| **子节点关系（childNodes）** | 直接的下级节点 | 如果 `<div>` 包含 `<p>` 和 `<span>`，则 `<p>` 和 `<span>` 都是 `<div>` 的子节点 |
+| **同级节点关系（sibling）** | 拥有同一个父节点的节点 | 如果 `<p>` 和 `<span>` 都在 `<div>` 内部，则它们互为同级节点 |
+
+```html
+<div>
+  <p>段落1</p>
+  <span>文本</span>
+</div>
+```
+
+- `<div>` 是 `<p>` 和 `<span>` 的**父节点**
+- `<p>` 和 `<span>` 是 `<div>` 的**子节点**
+- `<p>` 和 `<span>` 互为**同级节点**
+
+### Node.nodeType 属性
+
+`Node.nodeType` 属性返回一个数值，用来标识节点的类型。在开发中，我们常通过它来判断节点类型（比如区分元素节点和文本节点），避免操作错误的节点。
+
+**常用节点类型的 nodeType 值与对应常量：**
+
+| 节点类型 | nodeType 值 | 对应常量 |
+| --- | --- | --- |
+| 文档节点（document） | 9 | `Node.DOCUMENT_NODE` |
+| 元素节点（element） | 1 | `Node.ELEMENT_NODE` |
+| 属性节点（attr） | 2 | `Node.ATTRIBUTE_NODE` |
+| 文本节点（text） | 3 | `Node.TEXT_NODE` |
+| 文档片段节点（DocumentFragment） | 11 | `Node.DOCUMENT_FRAGMENT_NODE` |
+
+```jsx
+// 文档节点的 nodeType 是 9
+document.nodeType // 9
+
+// 用常量判断节点类型，可读性更好
+document.nodeType === Node.DOCUMENT_NODE // true
+
+// 元素节点的示例
+var div = document.querySelector('div');
+div.nodeType // 1
+div.nodeType === Node.ELEMENT_NODE // true
+```
+
+
+
+
+
+
+![image.png](attachment:86d4b86b-480c-43ac-98f8-076a1d8409d2:image.png)
+
+# document.getElementsByTagName()
+
+`document.getElementsByTagName` 方法搜索 HTML 标签名，返回符合条件的元素。它的返回值是一个类似数组对象（`HTMLCollection` 实例），可以实时反映 HTML 文档的变化。如果没有任何匹配的元素，就返回一个空集
+
+```jsx
+var paras = document.getElementsByTagName('p');
+```
+
+如果传入`*`，就可以返回文档中所有 HTML 元素
+
+```jsx
+var allElements = document.getElementsByTagName('*');
+```
+
+# document.getElementsByClassName()
+
+`document.getElementsByClassName` 方法返回一个类似数组的对象（`HTMLCollection` 实例），包括了所有 `class` 名字符合指定条件的元素，元素的变化实时反映在返回结果中
+
+```jsx
+var elements = document.getElementsByClassName(names);
+```
+
+由于 `class` 是保留字，所以 JavaScript 一律使用 `className` 表示 CSS 的 `class`
+
+参数可以是多个 `class`，它们之间使用空格分隔
+
+```jsx
+var elements = document.getElementsByClassName('foo bar');
+```
+
+# document.getElementsByName()
+
+`document.getElementsByName` 方法用于选择拥有 `name` 属性的 HTML 元素（比如 `<form>`、`<radio>`、`<img>` 等），返回一个类似数组的对象（`NodeList` 实例），因为 `name` 属性相同的元素可能不止一个
+
+```jsx
+// 表单为 <form name="itbaizhan"></form>
+var forms = document.getElementsByName('itbaizhan');
+```
+
+# document.getElementById()
+
+`document.getElementById` 方法返回匹配指定 `id` 属性的元素节点。如果没有发现匹配的节点，则返回 `null`
+
+```jsx
+var elem = document.getElementById('para1');
+```
+
+注意，该方法的参数是大小写敏感的。比如，如果某个节点的 `id` 属性是 `main`，那么 `document.getElementById('Main')` 将返回 `null`
+
+# document.querySelector()
+
+`document.querySelector` 方法接受一个 CSS 选择器作为参数，返回匹配该选择器的元素节点。如果有多个节点满足匹配条件，则返回第一个匹配的节点。如果没有发现匹配的节点，则返回 `null`
+
+```jsx
+var el1 = document.querySelector('.myclass');
+```
+
+# document.querySelectorAll()
+
+`document.querySelectorAll` 方法与 `querySelector` 用法类似，区别是返回一个 `NodeList` 对象，包含所有匹配给定选择器的节点
+
+```jsx
+var elementList = document.querySelectorAll('.myclass');
+```
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>Hello 1</div>
+    <div>Hello 2</div>
+    <p class="text">Hello 3</p>
+    <form name = "login"></form>
+    <div id ="root">哈哈哈</div>
+    <div class="nav">nav1</div>
+    <div class="nav">nav2</div>
+    <script>
+
+        var divs = document.getElementsByTagName("div")[1];
+        divs.innerHTML = "hello world";
+
+        var text = document.getElementsByClassName("text")[0];
+        console.log(text);
+        text.innerHTML = "Hello text";
+
+        //使用率极低
+        var name = document.getElementsByName("login")[0];
+        console.log(name);
+
+        var root = document.getElementById("root");
+        console.log(root);
+        root.innerHTML = "HaHaHaHa"
+
+        var nav = document.querySelector(".nav");
+        console.log(nav);
+
+        var navs = document.querySelectorAll(".nav");
+        console.log(navs);
+    </script>
+</body>
+</html>
