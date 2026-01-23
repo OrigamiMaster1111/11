@@ -31,7 +31,7 @@ var root = document.getElementById('root');
 var it = document.createAttribute('itbaizhan');
 it.value = 'it';
 root.setAttributeNode(it);
-```
+``` 
 
 <!DOCTYPE html>
 <html lang="en">
