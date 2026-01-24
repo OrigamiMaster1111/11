@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+
+        .root{
+            width: 300px;
+            height: 300px;
+            background-color: #999;
+        }
+
+        .box{
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="root" id="root">
+        <div class="box" id="box"></div>
+    </div>
+
+    <script>
+        // mouseenter/mouseover 和 mouseleave/out 区别
+        var root = document.getElementById("root");
+        var box = document.getElementById("box");
+
+        root.onmouseover = function(){
+                console.log("进入");
+        }
+
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+      .box1{
+        background-color: red;
+        width: 100px;
+        height: 100px;
+      }
+      .box2{
+        background-color: deepskyblue;
+        width: 100px;
+        height: 100px;
+      }
+      .box3{
+        background-color: greenyellow;
+        width: 100px;
+        height: 100px;
+      }
+      .box4{
+        background-color: yellow;
+        width: 100px;
+        height: 100px;
+      }
+      .box5{
+        background-color: orange;
+        width: 100px;
+        height: 100px;
+      }
+
+    </style>
+</head>
+<body>
+
+    <button id="bto1">单击</button>
+    <button id="bto2">双击</button>
+    <button id="bto3">鼠标按下</button>
+    <button id="bto4">鼠标抬起</button>
+    <div id="bto5" class="box1"></div>
+    <div id="bto6" class="box2"></div>
+    <div id="bto7" class="box3"></div>
+    <div id="bto8" class="box4"></div>
+    <div id="bto9" class="box5"></div>
+    <button id="bto10">滚轮</button>
+
+    <script>
+
+      var bto1 = document.getElementById("bto1");
+      var bto2 = document.getElementById("bto2");
+      var bto3 = document.getElementById("bto3");
+      var bto4 = document.getElementById("bto4");
+      var bto5 = document.getElementById("bto5");
+      var bto6 = document.getElementById("bto6");
+      var bto7 = document.getElementById("bto7");
+      var bto8 = document.getElementById("bto8");
+      var bto9 = document.getElementById("bto9");
+      var bto10 = document.getElementById("bto10");
+
+      bto1.onclick = function(){
+          console.log("单击事件");
+      }
+      bto2.ondblclick = function(){
+          console.log("双击事件");
+      }
+      bto3.onmousedown = function(){
+          console.log("鼠标按下");
+      }
+      bto4.onmouseup = function(){
+          console.log("鼠标抬起");
+      }
+      bto5.onmousemove = function(){
+          console.log("鼠标移动")
+      }
+      bto6.onmouseenter = function(){
+          console.log("鼠标进入");
+      }
+      bto7.onmouseleave = function(){
+          console.log("鼠标离开");
+      }
+      bto8.onmouseover = function(){
+          console.log("鼠标进入");
+      }
+      bto9.onmouseout = function(){
+          console.log("鼠标离开");
+      }
+      bto10.onwheel = function(){
+          console.log("滚动滚轮");
+      }
+
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <input type="text" id="usernaem">
+
+    <script>
+
+      var un = document.getElementById("usernaem");
+      un.onkeydown = function(e){
+          console.log("按下了");
+      }
+      un.onkeyup = function(e){
+          console.log(e.target.value);
+      }
+
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <input type="text" id="username">
+    <input type="text" id="password">
+
+    <script>
+
+        var un = document.getElementById("username");
+        un.oninput = function(e){
+            console.log(e.target.value);
+        }
+
+        un.onselect = function(){
+            console.log("选中了");
+
+        }
+
+        //失去焦点和回车的时候触发
+        var pwd = document.getElementById("password");
+        pwd.onchange = function(e){
+            console.log(e.target.value);
+        }
+
+    </script>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="服务器地址" id="myMorm" onsubmit="submitHandle">
+        <input type="text" name="username">
+        <button id="resetBtn">重置</button>
+        <button>提交表单</button>
+    </form>
+
+    <script>
+
+        var rbtn = document.getElementById("resetBtn");
+        var myForm = document.getElementById("myForm");
+        rbtn.onclick = function(){
+            myForm.reset();//触发在表单上：清空表单
+        }
+
+        function submitHandle(){
+            console.log()
+        }
+
+    </script>
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <button id="bto">按钮</button>
+
+    <script>
+
+        var bto = document.getElementById("bto");
+        //Event事件对象，其实就是参数
+        bto.onclick = function(event){
+            event.target.innerHTML = "已点击"
+        }
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <ul id="list">
+        <li>列表</li>
+        <li>列表</li>
+        <p>文本</p>
+    </ul>
+
+    <script>
+
+      var list = document.getElementById("list");
+      // list.onclick = function(){
+      //     console.log("点击了");
+      // }
+
+      list.addEventListener("click", function(e){
+          if(e.target.tagName === "LI"){
+              console.log(e.target.innerHTML);
+          }
+      })
+
+    </script>
+</body>
+</html>
