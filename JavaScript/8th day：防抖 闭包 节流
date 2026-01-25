@@ -1,1 +1,105 @@
+防抖属于性能优化技术，用于处理高频触发的事件（如滚动、输入等），避免因函数执行过于频繁导致浏览器性能问题甚至卡死。
 
+## 问题背景
+
+以滚动事件监听为例，原生的滚动事件触发频率极高。在 Chrome 中，仅一次按下方向键，`window.onscroll` 事件就可能触发 8-9 次。
+
+这种高频执行对性能是极大的浪费，而我们通常并不需要如此密集的反馈。
+
+```jsx
+// 未优化的滚动监听
+function showTop () {
+  var scrollTop = document.documentElement.scrollTop;
+  console.log('滚动条位置：' + scrollTop);
+}
+window.onscroll = showTop
+```
+
+## 核心思路
+
+1. 第一次触发事件时，不立即执行目标函数，而是为其设置一个延迟（如 200ms）
+2. 如果在延迟时间内事件再次触发，则**取消当前计时**并**重新开始计时**
+3. 只有当延迟时间内没有新的事件触发时，目标函数才会执行
+
+**效果**：短时间内大量触发同一事件，最终只会执行一次函数。
+
+## 代码实现
+
+借助闭包保存定时器状态，结合 `setTimeout` 和 `clearTimeout` 实现防抖：
+
+```jsx
+function debounce(fn, delay){
+  let timer = null // 借助闭包保存定时器
+  return function() {
+    if(timer){
+      clearTimeout(timer)
+    }
+    timer = setTimeout(fn, delay)
+  }
+}
+
+// 原功能函数
+function showTop () {
+  var scrollTop = document.documentElement.scrollTop;
+  console.log('滚动条位置：' + scrollTop);
+}
+
+// 为滚动事件添加防抖处理
+window.onscroll = debounce(showTop, 300)
+```
+
+
+
+
+
+
+节流严格算起来应该属于性能优化的知识，但实际上遇到的频率相当高，处理不当或者放任不管就容易浏览器卡死
+
+继续思考，使用上面的防抖方案来处理问题的结果是
+
+如果在限定时间段内，不断触发滚动事件（比如某个用户闲着无聊，按住滚动不断的拖来拖去），只要不停止触发，理论上就永远不会输出当前距离顶部的距离
+
+但是如果产品同学的期望处理方案是：即使用户不断拖动滚动条，也能在某个时间间隔之后给出反馈呢？
+
+其实很简单：我们可以设计一种类似控制阀门一样定期开放的函数，也就是让函数执行一次后，在某个时间段内暂时失效，过了这段时间后再重新激活（类似于技能冷却时间）
+
+效果：如果短时间内大量触发同一事件，那么在函数执行一次之后，该函数在指定的时间期限内不再工作，直至过了这段时间才重新生效
+
+[闭包简述](https://www.notion.so/2f336a0519bd805f8eb2cbae7b505848?pvs=21)
+
+```jsx
+// 外部函数：throttle
+function throttle(fn, delay){
+    // 外部函数的变量：valid（开关）、delay（延迟时间）
+    var valid = true;
+    // 内部函数：被return出去，脱离了外部函数的作用域
+    return function(){
+        // 关键：内部函数访问了外部函数的变量 valid
+        if(!valid){
+            return false;
+        }
+        valid = false;
+        setTimeout(function(){
+            fn();
+            // 继续访问并修改外部的 valid 变量
+            valid = true;
+        }, delay) // 还访问了外部的 delay 变量
+    }
+}
+
+function scrollHandle() {
+    // 打印滚动处理标识，并获取当前页面的垂直滚动距离（单位：像素）
+    // document.documentElement.scrollTop：获取HTML根节点的垂直滚动偏移量，代表页面向上滚动的距离
+    console.log('执行滚动处理：', document.documentElement.scrollTop);
+}
+
+// 内部函数被赋值给 window.onscroll，被永久保留
+window.onscroll = throttle(scrollHandle, 2000)
+```
+
+如果一直拖着滚动条进行滚动，那么会以**300ms**的时间间隔，持续输出当前位置和顶部的距离
+
+平时开发中常遇到的场景:
+
+1. **搜索框input事件**，例如要支持输入实时搜索可以使用节流方案（间隔一段时间就必须查询相关内容），或者实现输入间隔大于某个值（如500ms），就当做用户输入完成，然后开始搜索，具体使用哪种方案要看业务需求
+2. **页面resize事件**，常见于需要做页面适配的时候。需要根据最终呈现的页面情况进行dom渲染（这种情形一般是使用防抖，因为只需要判断最后一次的变化情况）
