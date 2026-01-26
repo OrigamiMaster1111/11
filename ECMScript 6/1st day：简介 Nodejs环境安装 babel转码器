@@ -1,0 +1,176 @@
+ECMAScript 和 JavaScript 的关系是，前者是后者的规范，后者是前者的一种实现，通常场合，这两个词是可以互换的。
+
+# 名称详解
+
+ECMAScript 6（以下简称 ES6）是 JavaScript 语言的标准，在 2015 年 6 月发布。它的目标，是使得 JavaScript 语言可以用来编写复杂的大型应用程序，成为企业级开发语言。
+
+| 版本 | 官方名称 | 发布日期 |
+| --- | --- | --- |
+| ES1 | ECMAScript 1 | 1997 |
+| ES2 | ECMAScript 2 | 1998 |
+| ES3 | ECMAScript 3 | 1999 |
+| ES4 | ECMAScript 4 | 从未发布过 |
+| ES5 | ECMAScript 5 | 2009 |
+| ES5.1 | ECMAScript 5.1 | 2011 |
+| ES6 | ECMAScript 2015（ECMAScript 6） | 2015 |
+| ES7 | ECMAScript 2016 | 2016 |
+| ES8 | ECMAScript 2017 | 2017 |
+| ... | ... | ... |
+
+因此，ES6 既是一个历史名词，也是一个泛指，含义是 5.1 版以后的 JavaScript 的下一代标准，涵盖了 ES2015、ES2016、ES2017 等等
+
+# 语法提案的批准流程
+
+任何人都可以向标准委员会（又称 TC39 委员会）提案，要求修改语言标准。
+
+一种新的语法从提案到变成正式标准，需要经历五个阶段。每个阶段的变动都需要由 TC39 委员会批准。
+
+- **Stage 0 - Strawman（展示阶段）**
+- **Stage 1 - Proposal（征求意见阶段）**
+- **Stage 2 - Draft（草案阶段）**
+- **Stage 3 - Candidate（候选人阶段）**
+- **Stage 4 - Finished（定案阶段）**
+
+一个提案只要能进入 Stage 2，就差不多肯定会包括在以后的正式标准里面。ECMAScript 当前的所有提案，可以在 TC39 的官方网站 [GitHub.com/tc39/ecma262](http://github.com/tc39/ecma262) 查看。
+
+# ES6带来的新特性
+
+1. `let` 和 `const` 命令
+2. 变量的解构赋值
+3. 字符串扩展
+4. 函数扩展
+5. 对象扩展
+6. 数组扩展
+7. 运算符扩展
+8. Promise对象
+9. Class
+10. Class 继承
+11. ...
+
+
+
+
+
+## Nodejs简介
+
+诞生于2009年，主攻服务器方向，使得利用 `JavaScript` 也可以完成服务器代码的编写
+
+## Nodejs安装
+
+> **Nodejs官网：https://nodejs.org/en/**
+> 
+
+找到对应安装包即可下载
+
+![image.png](attachment:a4dd0375-a458-4625-8d60-7aa8a233b967:image.png)
+
+## 大量的库
+
+在安装 Node.js 的同时，会附带一个 **npm 命令**，`npm` 是 Node 的包管理工具，这样正是接下来我们要用到的。
+
+npm 的简单结构有助于 Node.js 生态系统的激增，现在 npm 仓库托管了超过 1,000,000 个可以自由使用的开源库包。
+
+## npm 镜像
+
+由于服务器在国外，所以下载速度比较慢，我们可以用国内的镜像。
+
+> 阿里镜像地址：
+> 
+> 
+> `https://npmmirror.com/`
+>
+
+
+
+
+
+
+
+Babel 是一个广泛使用的 ES6 转码器，可以将 ES6 代码转为 ES5 代码，从而在老版本的浏览器执行。这意味着，你可以用 ES6 的方式编写程序，又不用担心现有环境是否支持
+
+> 浏览器支持性查看：`https://caniuse.com/`
+> 
+
+> Babel官网：`https://caniuse.com/`
+> 
+
+# 转码示例
+
+原始代码用了箭头函数，Babel 将其转为普通函数，就能在不支持箭头函数的 JavaScript 环境执行了
+
+```jsx
+// 转码前
+input.map(item => item + 1);
+
+// 转码后
+input.map(function (item) {
+  return item + 1;
+});
+```
+
+# Babel安装流程
+
+## 第一步：安装 Babel
+
+```bash
+npm install --save-dev @babel/core
+```
+
+## 第二步：配置文件 `.babelrc`
+
+Babel 的配置文件是 `.babelrc`，存放在项目的根目录下。使用 Babel 的第一步，就是配置这个文件。
+
+该文件用来设置转码规则和插件，基本格式如下：
+
+```json
+{
+  "presets": [],
+  "plugins": []
+}
+```
+
+# 第三步：转码规则
+
+`presets` 字段设定转码规则，官方提供以下的规则集，你可以根据需要安装
+
+```bash
+npm install --save-dev @babel/preset-env
+```
+
+# 第四步：将规则加入 `.babelrc`
+
+```json
+{
+  "presets": [
+    "@babel/env"
+  ],
+  "plugins": []
+}
+```
+
+# Babel命令行转码
+
+Babel提供命令行工具 `@babel/cli`，用于命令行转码
+
+```bash
+npm install --save-dev @babel/cli
+```
+
+### 基本用法如下
+
+```bash
+# 转码结果输出到标准输出
+$ npx babel example.js
+
+# 转码结果写入一个文件
+# --out-file 或 -o 参数指定输出文件
+$ npx babel example.js --out-file compiled.js
+# 或者
+$ npx babel example.js -o compiled.js
+
+# 整个目录转码
+# --out-dir 或 -d 参数指定输出目录
+$ npx babel src --out-dir lib
+# 或者
+$ npx babel src -d lib
+```
