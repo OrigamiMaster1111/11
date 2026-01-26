@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <script>
+
+        /*
+            1.var关键字：函数级的作用域
+            2.let关键字：①块级作用域（花括号）
+                        ②不存在变量提升
+                        ③不允许重复声明
+         */
+
+    </script>
+
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+
+        var user = {
+            name: "Metatron",
+            age: 19,
+        }
+        
+        //利用解构赋值方式简化
+        const {name, age}  = user;
+        // console.log(name, age);
+
+        const{log} = console;
+        log(name, age);
+
+        const {abs, ceil, floor, random} = Math;
+        log(abs, ceil, floor);
+
+    </script>
+</body>
+</html>
+
+
+
+
+
