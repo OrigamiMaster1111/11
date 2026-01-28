@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <h3>111</h3>
+    <h3>222</h3>
+    <h3>333</h3>
+
+    <script>
+        const {log} = console;
+        //类数组，伪数组，只能使用数组的读取方式和length属性，不能使用数组方法：push
+        
+        //arguments
+        function add(){
+            log(arguments);// 10 20 30
+            let result = Array.from(arguments);
+            result.push(40);
+            log(result);
+        }
+        
+        add(10, 20, 30);
+        
+        //元素集合
+        let titles = document.querySelectorAll("h3");
+        log(Array.from(titles));
+
+        let user = {
+            "0": "yuwei",
+            "1": 19,
+            "2": "male",
+            length: 3,
+        }
+
+        log(Array.from(user));
+        
+    </script>
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+
+        function fn1(){
+
+        }
+
+        //第二种方式
+        let fn2 = function(x, y){
+            return x + y;
+        }
+
+        //箭头函数 =>
+        let fn3 = (x, y) => x + y;
+        console.log(fn3(10, 20));
+        let fn4 = x => x;
+        let fn5 = () => "任意参数";
+        console.log(fn5);
+
+        let fn6 = (x, y) => {
+            let z = 10;
+            return x + y + z;
+        }
+
+        // let fn7 = function(){
+        //     return{
+        //         x: 10,
+        //         y: 20,
+        //     }
+        // }
+        //改写为下面的函数式
+        let fn7 = () => ({x: 10, y: 20});
+
+        let arr = [10, 20, 30, 40];
+        arr.map(function(element, index){
+            console.log(element);
+        })
+
+        arr.map((element, index) => {
+            console.log(element);
+        })
+        // 纯遍历打印，forEach 是更优选择
+        arr.forEach(element => console.log(element))
+
+
+
+        let name = "Jack";
+        let user1 = {
+            name: "John",
+            age: 4,
+            getName(){
+                console.log(this.name);//John
+            }
+        }
+        /*
+        若使用计时器，由于计时器内的this是指向全局的变量，所以此处打印 Jack 而非 John
+        若替换成 that 即可打印 John
+
+        let name = "Jack";
+        let user1 = {
+            name: "John",
+            age: 4,
+            getName(){
+                console.log(this.name);//Jack
+            }
+        }
+
+        或者使用箭头函数
+
+        let name = "Jack";
+        let user1 = {
+            name: "John",
+            age: 4,
+            getName(() => {
+                console.log(this.name);//John
+            });
+        }
+         */
+        user1.getName();
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+
+        function fn1(){
+
+        }
+
+        //第二种方式
+        let fn2 = function(x, y){
+            return x + y;
+        }
+
+        //箭头函数 =>
+        let fn3 = (x, y) => x + y;
+        console.log(fn3(10, 20));
+        let fn4 = x => x;
+        let fn5 = () => "任意参数";
+        console.log(fn5);
+
+        let fn6 = (x, y) => {
+            let z = 10;
+            return x + y + z;
+        }
+
+        // let fn7 = function(){
+        //     return{
+        //         x: 10,
+        //         y: 20,
+        //     }
+        // }
+        //改写为下面的函数式
+        let fn7 = () => ({x: 10, y: 20});
+
+        let arr = [10, 20, 30, 40];
+        arr.map(function(element, index){
+            console.log(element);
+        })
+
+        arr.map((element, index) => {
+            console.log(element);
+        })
+        // 纯遍历打印，forEach 是更优选择
+        arr.forEach(element => console.log(element))
+
+
+
+        let name = "Jack";
+        let user1 = {
+            name: "John",
+            age: 4,
+            getName(){
+                console.log(this.name);//John
+            }
+        }
+        /*
+        若使用计时器，由于计时器内的this是指向全局的变量，所以此处打印 Jack 而非 John
+        若替换成 that 即可打印 John
+
+        let name = "Jack";
+        let user1 = {
+            name: "John",
+            age: 4,
+            getName(){
+                console.log(this.name);//Jack
+            }
+        }
+
+        或者使用箭头函数
+
+        let name = "Jack";
+        let user1 = {
+            name: "John",
+            age: 4,
+            getName(() => {
+                console.log(this.name);//John
+            });
+        }
+         */
+        user1.getName();
+
+    </script>
+</body>
+</html>
