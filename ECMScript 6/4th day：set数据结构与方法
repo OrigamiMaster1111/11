@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+
+        // let s = new Set();
+        // let arr = [10, 20, 30, 40, 50];
+        // arr.forEach(x => s.add(x));//foreach遍历数组赋值给x,箭头函数是function(x){s.add(x)}
+        //
+        // console.log(s);
+        
+        // let s = new Set([10 ,20 ,30]);
+        // console.log(s);
+        
+        
+    </script>
+</body>
+</html>
+
+
+
+
+
