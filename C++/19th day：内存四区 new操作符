@@ -1,0 +1,156 @@
+#include<iostream>
+#include<windows.h>
+using std::cout, std::endl;
+
+//全局变量
+int g_a = 10;
+int g_b = 10;
+
+//const修饰的全局变量，全局常量
+const int c_g_a = 10;
+const int c_g_b = 10;
+
+int main(){
+    SetConsoleOutputCP(CP_UTF8);
+
+    //全局区
+
+    //全局变量、静态变量、常量
+
+    //创建普通局部变量
+    int a = 10;
+    int b = 10;
+
+    cout << "局部变量 a 的地址为：" << &a << endl;
+    cout << "局部变量 b 的地址为：" << &b << endl;
+    
+    cout << "全局变量 a 的地址为：" << &g_a << endl;
+    cout << "全局变量 b 的地址为：" << &g_b << endl;
+
+    //静态变量 在普通变量前加static，属于静态变量
+    static int s_a = 10;
+    static int s_b = 10;
+    cout << "静态变量 s_a 的地址为：" << &s_a << endl;
+    cout << "静态变量 s_b 的地址为：" << &s_b << endl;
+
+    //常量
+    //字符串常量
+    cout << "字符串常量的地址：" << &"Hello world" << endl;
+
+    //const修饰的变量
+    //const修饰的全局变量，const修饰的局部变量
+    cout << "全局常量 c_g_a 的地址为：" << &c_g_a << endl;
+    cout << "全局常量 c_g_b 的地址为：" << &c_g_b << endl;
+
+    const int c_l_a = 10;// c - const ; g - global ; l - local
+    const int c_l_b = 10;
+
+    cout << "局部常量 c_l_a 的地址为：" << &c_l_a << endl;
+    cout << "局部常量 c_l_b 的地址为：" << &c_l_b << endl;
+}
+
+
+
+
+
+#include<iostream>
+#include<windows.h>
+using namespace std;
+
+//栈区数据注意事项 ---不要返回局部变量的地址
+//栈区的数据由编译器管理开辟和释放
+
+ int* func(int b/*形参数据也会放在栈区*/){
+    b = 100;
+    int a = 10;//局部变量  存放在栈区，栈区的数据在函数执行完后自动释放
+    return &a;//返回局部变量的地址
+}
+
+int main(void){
+    SetConsoleOutputCP(CP_UTF8);
+
+    //接受func函数的返回值
+    int* p = func(1);
+
+    cout << *p << endl;//第一次可以打出正确的数字，是应为编译器做了保留
+    cout << *p << endl;//第二次这个数据就不再保留了
+
+    system("pause");
+
+    return 0;
+}
+
+
+
+
+
+
+#include<iostream>
+#include<windows.h>
+using namespace std;
+
+int* func(){
+    //利用new关键字，可以将数字开辟到堆区
+    //指针  本质也是局部变量。放在栈上，指针保存的数据是在堆区
+    int* p = new int(10);
+    return p;
+}
+
+int main(void){
+    SetConsoleOutputCP(CP_UTF8);
+
+    //在堆区开辟数据
+    int *p = func();
+
+    cout << *p << endl;
+
+    system("pause");
+
+    return 0;
+}
+
+
+
+
+
+#include<iostream>
+#include<windows.h>
+using namespace std;
+    
+    //1.new的基本语法
+    int* func(){
+        //在堆区创建整形数据
+        //new返回的是 该数据类型指针
+        int* p = new int(10);
+        return p;
+    }
+
+    void test1(){
+        int* p = func();
+        cout << *p << endl;
+        //堆区的数据 由程序员管理开辟
+        //如果想释放堆区的数据，利用关键字 delete
+        delete p;
+    }
+
+    //2.在堆区里利用new开辟数组
+    void test2(){
+        //创建10整形数据的数组，在堆区
+        int* arr = new int[10];
+        for (int i = 0; i < 10; i++){
+            arr[i] = i + 100;//给10个元素赋值 100~109
+        }
+
+        for (int i = 0; i < 10; i++){
+            cout << arr[i] << endl;
+        }
+        //释放堆区数组
+        delete[] arr;//释放数组要加[]
+    }
+
+int main(){
+    SetConsoleOutputCP(CP_UTF8);
+
+    test1();
+    test2();
+}
