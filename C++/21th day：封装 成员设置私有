@@ -1,0 +1,247 @@
+#include<iostream>
+using namespace std;
+//圆周率
+const double PI = 3.14;
+
+//设计一个圆类，求圆的周长
+//周长公式：2 * PI * 半径
+
+//class 表示设计一个类，类后面紧跟着就是类的名称
+class Circle{
+    //访问权限
+    //公共权限
+    public:
+        //属性
+        int m_r;
+        //行为
+        //获取圆的周长
+        double calculateZC(){
+            return 2 * PI * m_r;
+        }
+};
+
+int main(){
+    //通过圆类 创建一个具体的圆（对象）
+    Circle cl;
+
+    //给圆对象的属性进行赋值
+    cl.m_r = 10;
+
+    //2 * PI * 10 = 62.8
+    cout << "圆的周长为：" << cl.calculateZC() << endl;
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+//访问权限：三种
+//1.public      公共权限    成员类内可以访问 类外可以访问
+//2.protected   保护权限    成员类内可以访问 类外不可以访问
+//3.private     私有权限    成员类内可以访问 类外不可以访问
+
+class Person{
+    public://公共权限
+        string m_name;
+
+        void func(){
+            m_name = "chenyuwei";
+            m_Car = "None";
+            m_Pwd = "cywsd";
+        }
+
+    protected://保护权限
+        string m_Car;
+
+    private://私有权限
+        string m_Pwd;
+};
+
+
+int main(){
+    Person p1;
+    p1.m_name = "cyw";
+    //p1.m_Car = "baoma"; 保护权限内容，在类外访问不到
+    //p1.m_Pwd = "12345"; 私有权限内容，在类外访问不到
+    
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+class C1{
+    int m_A;//默认权限  私有
+};
+
+struct C2{
+    int m_A2;//默认权限  公共
+};
+
+int main(){
+    //struct 和 class 的区别
+    //struct 默认权限是 公共权限
+    //class  默认权限是 私有权限
+    C1 c1;
+    //c1.m_A；class默认私有，不可访问
+
+    C2 c2;
+    c2.m_A2 = 100; //struct默认公共，可访问
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//成员属性设置为私有
+//1.可以自己控制读写权限
+//2.对于写可以检测数据有效性
+
+//人类
+class Person{
+    public:
+        void setName(){
+            cout << "输入名字：";
+            cin >> m_name;
+        }
+
+        string getName(){
+            return m_name;
+        }
+
+        int getAge(){
+            return m_age;
+        }
+
+        void setIdol(){
+            cout << "偶像：";
+            cin >> m_idol;
+        }
+
+    private:
+        string m_name;//姓名 可读可写
+
+        int m_age = 18;//年龄 只读
+
+        string m_idol;//偶像 只写
+};
+
+int main(){
+    Person p;
+    p.setName();
+    cout << "名字：" << p.getName() << endl;
+
+    cout << "年龄：" << p.getAge() << endl;
+
+    p.setIdol();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+class Cube{
+    private:
+        double lon, width, height;
+        double *p = nullptr;
+    
+    public:
+        //行为
+        //设置长宽高
+        void setPro(){
+            cout << "输入长 宽 高：";
+            cin >> lon >> width >> height;
+        }
+
+        //获取长宽高
+        double* getPro(){
+            p = new double[3];
+            p[0] = lon;
+            p[1] = width;
+            p[2] = height;
+            return p;
+        }
+
+        //获取立方体面积
+        double getArea(){
+            return (lon*width + lon*height + width*height) * 2;
+        }
+
+        //获取立方体体积
+        double getVolume(){
+            return lon * width * height;
+        }
+
+        //判断是否相同
+        bool isSame(Cube &c){
+            double *pc = c.getPro();
+            for (int index = 0; index < 3; ++index){
+                if (p[index] != pc[index]){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        ~Cube(){
+            delete[] p;
+        }
+};
+
+//利用全局函数判断两个立方体是否相等
+bool isSame(Cube &c1, Cube &c2){
+    double *pc1 = c1.getPro();
+    double *pc2 = c2.getPro();
+
+    for (int index = 0; index < 3; ++index){
+        if (pc1[index] != pc2[index]){
+            return false;
+        }
+    }
+    return true;
+}
+
+int main(){
+    Cube c1;
+    c1.setPro();
+    cout << "面积为：" << c1.getArea() << " 体积为：" << c1.getVolume() << endl;
+
+    Cube c2;
+    c2.setPro();
+    cout << "面积为：" << c2.getArea() << " 体积为：" << c2.getVolume() << endl;
+
+    if (isSame(c1, c2)){
+        cout << "相同" << endl;
+    } else {
+        cout << "不同" << endl;
+    }
+
+    if (c1.isSame(c2)){
+        cout << "相同" << endl;
+    } else {
+        cout << "不同" << endl;
+    }
+
+    return 0;
+}
