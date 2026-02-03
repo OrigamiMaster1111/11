@@ -1,0 +1,176 @@
+#include <iostream>
+using namespace std;
+
+//对象初始化和清理
+//1.构造函数 进行初始化操作
+class Person{
+    // 1. 构造函数，没有返回值也不写void
+    // 2. 名称与类名相同
+    // 3. 构造函数可以有参数，因此可以发生重载
+    // 4. 程序在调用对象时候回自动调用构造，无需手动调用，而且只会调用一次
+    public:
+        //构造函数
+        // 1. 构造函数，没有返回值也不写void
+        // 2. 名称与类名相同
+        // 3. 构造函数可以有参数，因此可以发生重载
+        // 4. 程序在调用对象时候回自动调用构造，无需手动调用，而且只会调用一次
+        Person(){
+            cout << "Person 构造函数的调用" << endl;
+        }
+
+        //析构函数
+        // 1. 析构函数，没有返回值也不写void
+        // 2. 函数名称与类名相同，在名称前加上符号`~`
+        // 3. 析构函数不可以有参数，因此不可以发生重载
+        // 4. 程序在对象销毁前会自动调用析构，无需手动调用，而且只会调用一次
+        ~Person(){
+            cout << "Person 析构函数的调用" << endl;
+        }
+};
+
+
+void test1(){
+    Person p;//在栈上的数据，test1执行完毕之后，释放这个对象
+}
+
+int main(){
+    test1();
+
+    Person p;
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+//构造函数的分类及调用
+//分类
+//按参数分类：有参   无参（默认构造）
+//按类型分类：普通   拷贝
+class Person{
+    public:
+        //构造函数
+        Person(){
+            cout << "Person 无参构造函数调用\n" << endl;
+        }
+        Person(int a){
+            age = a;
+            cout << "Person 有参构造函数调用\n" << endl;
+        }
+        
+        //拷贝构造函数
+        Person(const Person &p){
+            //将传入的对象所带有的属性，拷贝到此对象上
+            age = p.age;
+            cout << "Person 拷贝构造函数调用\n" << endl;
+        }
+
+        //析构函数
+        ~Person(){
+            cout << "Person 析构函数调用\n" << endl;
+        }
+
+        int age;
+};
+
+//调用
+void test1(){
+    //1.括号法
+    Person p;//默认构造函数调用
+    Person p2(10);//有参构造函数调用
+    Person p3(p2);//拷贝构造函数
+
+    //注意事项①
+    //调用默认构造函数的时候，不要加`()`
+    //例如：Person p1();
+    //编译器会认为是一个函数的声明,不会认为在创建对象
+
+    cout << "p2的年龄为是" << p2.age << endl;
+    cout << "p3的年龄为是" << p3.age << endl;
+
+    //2.显示法
+    Person ps;
+    Person ps2 = Person(10);//有参构造
+    Person ps3 = Person(p2);//拷贝构造
+    // Person(10);//匿名对象 特点：当前行执行结束后，系统会立刻回收掉匿名对象
+
+    //注意事项②
+    //不要利用拷贝构造函数来初始化匿名对象   例如：Person(p3);
+
+    //3.隐式转换法
+    Person p4 = 10;//相当于 Person p4 = Person(10)
+    Person p5 = p4;//拷贝构造
+}
+
+int main(){
+    test1();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+class Person{
+    public:
+        Person(){
+            cout << "默认构造函数调用" << endl;
+        }
+
+        Person(int a){
+            age = a;
+            cout << "有参构造函数调用" << endl;
+        }
+        
+        Person(const Person &p){
+            age = p.age;
+            cout << "拷贝构造函数调用" << endl;
+        }
+
+        ~Person(){
+            cout << "析构函数调用" << endl;
+        }
+
+        int age;
+};
+
+//拷贝构造函数调用时机
+//1.使用一个创建完毕的对象来初始化一个新的对象
+void test1(){
+    Person p1(20);
+    Person p2(p1);
+}
+
+//2.用值传递的方式给函数参数传值
+void doWork(Person p){}
+void test2(){
+    Person p;
+}
+
+//3.以值方式返回局部对象
+Person doWork2(){
+    Person p1;
+    cout << &p1 << endl;
+    return p1;
+}
+void test3(){
+    Person p = doWork2();
+    cout << &p << endl;
+}
+
+int main(){
+
+    test1();
+    test2();
+    test3();
+
+};
