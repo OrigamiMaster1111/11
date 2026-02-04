@@ -1,0 +1,137 @@
+#include <iostream>
+using namespace std;
+
+//深拷贝与浅拷贝
+class Person{
+    public:
+        Person(){
+            cout << "默认构造函数的调用" << endl; 
+        }
+
+        Person(int a, int h){
+            cout << "有参函数的调用" << endl;
+            age = a;
+            height = new int(h);
+        }
+
+        //自己实现拷贝构造函数 解决浅拷贝带来的问题
+        Person(const Person &p){
+            cout << "自定义拷贝构造函数的调用" << endl;
+            age = p.age;
+            // height = p.height; 此行为编译器默认实现方式
+            //深拷贝操作实现
+            height = new int(*p.height);
+        }
+
+        ~Person(){
+            //析构代码，将堆区开辟数据做释放操作
+            cout << "析构函数的调用" << endl; 
+            if (height != nullptr){
+                delete height;
+                height = NULL;
+            }
+        }
+
+        int age;
+        int *height;
+};
+
+void test1(){
+    Person p1(18, 160);
+    cout << "p1's age is " << p1.age << endl;
+    cout << "p1's height is " << *(p1.height) << endl;
+    Person p2(p1);
+    cout << "p2's age is " << p2.age << endl;
+}
+
+int main(){
+
+    test1();
+    
+    return 0;
+}
+
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+class Person{
+    public:
+        //传统初始化操作
+        Person(int a, double h, string n){
+            age = a;
+            height = h;
+            name = n;
+        }
+
+        //初始化列表初始化属性
+        Person(int a, double h, string n): age(a), height(h), name(n){}
+
+        int age;
+        double height;
+        string name;
+};
+
+void test1(){
+    Person p1(19, 1.75, "cyw");
+    cout << p1.age << endl;
+    cout << p1.height << endl;
+    cout << p1.name << endl;
+}
+
+int main(){
+
+    test1();
+
+    return 0;
+}
+
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//类对象作为类成员
+
+//手机类
+class Phone{
+    public:
+        //手机品牌名称
+        string pn;
+
+        Phone(string pName){
+            pn = pName;
+        }
+};
+
+//人类
+class Person{
+    public:
+        //phone ph = pName  隐式转换法
+        Person(string n, string pName): name(n), ph(pName){}
+
+        string name;
+        Phone ph;
+};
+
+//当其他类对象作为本类成员，构造时候先构造类对象，再构造自身，析构的顺序相反
+
+void test1(){
+    Person p("cyw", "red magic");
+    cout << p.name << "拿着" << p.ph.pn << "手机" << endl;
+}
+
+int main(){
+
+    test1();
+
+    return 0;
+}
