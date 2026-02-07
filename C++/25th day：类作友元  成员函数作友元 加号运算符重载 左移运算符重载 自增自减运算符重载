@@ -1,0 +1,368 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+//类作友元
+class Build;
+class Goodguy{
+    public:
+        Goodguy();
+
+        Build * b;
+
+        void visit();//参观函数 访问Build中的属性
+};
+
+class Build{
+    //Goodguy是友元，可以访问私密成员
+    friend class Goodguy;
+
+    public:
+        Build();
+
+        string settingroom;
+    
+    private:
+        string bedroom;
+};
+
+//类外写成员函数
+Build::Build(){
+    settingroom = "settingroom";
+    bedroom = "bedroom";
+}
+
+Goodguy::Goodguy(){
+    //创造一个建筑的对象
+    b = new Build;
+}
+
+void Goodguy::visit(){
+    cout << "The class \"Goodguy\" is visiting " <<  b->settingroom << endl;
+    cout << "The class \"Goodguy\" is visiting " <<  b->bedroom << endl;
+}
+
+void test01(){
+    Goodguy g;
+    g.visit();
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Build;
+class Goodguy{
+    public:
+        Goodguy();
+        Build * b;
+
+        void visit1();//让visit函数可以访问Build中私有的成员
+        void visit2();//让visit2函数不可以访问Build中私有成员
+};
+
+class Build{
+    //将成员函数变为友元
+    friend void Goodguy::visit1();
+
+    public:
+        string Sroom;
+
+        Build();
+
+    private:
+        string Broom;
+};
+
+//类外实现成员函数
+Build::Build(){
+    Sroom = "Sroom";
+    Broom = "Broom";
+}
+
+Goodguy::Goodguy(){
+    b = new Build;
+}
+
+void Goodguy::visit1(){
+    cout << "visit1访问" << b->Sroom << endl;
+    cout << "visit1访问" << b->Broom << endl;
+}
+void Goodguy::visit2(){
+    cout << "visit2访问" << b->Sroom << endl;
+}
+
+void test1(){
+    Goodguy g;
+    g.visit1();
+    g.visit2();
+}
+
+int main(){
+
+    test1();
+
+    return 0;
+}
+
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+// 加号运算符重载
+
+class Person{
+    public:
+        Person(){ age = 0; height = 0;};
+        Person(int a, int h): age(a), height(h){}
+
+        int age;
+        int height;
+
+        // 1.成员函数重载 ‘+’号
+        Person operator+(const Person &p){
+            Person temp;
+            temp.age = this->age + p.age;
+            temp.height = this->height + p.height;
+            return temp;
+        }
+};
+
+// 2.全局函数重载 ‘+’号
+Person operator+(const Person &p1, const Person &p2){
+    Person temp(0, 0);
+    temp.age = p1.age + p2.age;
+	temp.height = p1.height + p2.height;
+	return temp;	
+}
+
+// 3.函数重载版本
+Person operator+ (const Person &p1, int n){
+    Person temp;
+    temp.age = p1.age + n;
+    temp.height = p1.height + n;
+    return temp;
+}
+
+void test01(){
+    Person p1;
+    p1.age = 11;
+    p1.height = 222;
+    Person p2;
+    p2.age = 22;
+    p2.height = 111;
+
+    // 成员函数重载本质调用：Person p3 = p1.operator+(p2);
+
+    Person p3 = p1 + p2;
+    cout << "p3.age = " << p3.age << endl;
+    cout << "p3.height = " << p3.height << endl;
+}
+
+int main(){
+
+    test01();
+
+    Person p1(11, 222);
+    Person p2(22, 111);
+
+    //全局函数本质调用：Person p3 = operator+(p1, p2);
+    Person p3 = p1 + p2;
+    cout << "p3.age = " << p3.age << endl;
+    cout << "p3.height = " << p3.height << endl;
+
+    //运算符重载 也可以发生函数重载
+    Person p4  = p1 + 10;// Person + int
+    cout << "p4.age = " << p4.age << endl;
+    cout << "p4.height = " << p4.height << endl;
+
+    return 0;
+}
+
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//左移运算符
+class Person{
+    friend ostream & operator<<(ostream &cout, Person &p);
+
+    public:
+        Person(int a, int h): age(a), height(h){}
+
+    private:
+        // 利用成员函数重载 左移运算符  p.operator<<(cout)  简化版本 p << cout
+        // 不会利用成员函数来重载 ‘<<’ 运算符，因为无法实现cout在左侧
+        // void operator<<(Person &p){}
+
+        int age;
+        int height;
+};
+
+// 只能利用全局函数重载左移运算符
+ostream & operator<<(ostream &cout, Person &p){ //本质  operator<<(cout, p) 简化  cout << p
+    cout << "age = " << p.age << ", height = " << p.height << endl;
+    return cout;
+}
+
+void test1(){
+    Person p(12, 123);    
+
+    cout << p << "hello world" << endl;
+}
+
+int main(){
+
+    test1();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//递增运算符重载
+
+//自定义整型
+class Myinteger{
+    friend ostream & operator<<(ostream &cout, const Myinteger &m);
+
+    public:
+        Myinteger(){
+            num = 0;
+        }
+
+        //重载 ‘++前置’ 运算符  返回引用为了一直对一个数据进行递增操作
+        Myinteger & operator++(){
+            num++;
+            return *this;//将自身返回
+        }
+
+        //重载 ‘后置++’ 运算符  int代表占位参数，可以用于区分前置和后置递增
+        Myinteger operator++(int){
+            //先 记录返回结果
+            Myinteger temp = *this;
+            //后 递增
+            num++;
+            //最后 返回结果
+            return temp;
+        }
+
+    private:
+        int num;
+};
+
+//重载左移运算符
+ostream & operator<<(ostream &cout, const Myinteger &m){
+    cout << m.num << endl;
+    return cout;
+};
+
+void test1(){
+    Myinteger myint;
+
+    cout << ++(++myint) << endl;
+    cout << myint << endl;
+}
+
+void test2(){
+    Myinteger m;
+
+    cout << m++ << endl;
+    cout << m << endl;
+}
+
+int main(){
+
+    test1();
+    test2();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+//递减运算符重载
+
+class Myinteger{
+    friend ostream & operator<<(ostream &cout, const Myinteger &m);
+
+    private:
+        int num = 0;
+
+    public:
+        //1.前置‘--’重载
+        Myinteger & operator--(){
+            --num;
+            return *this;
+        }
+
+        //2.‘--’后置重载
+        Myinteger operator--(int){
+            Myinteger temp = *this;
+            --num;
+            return temp;
+        }
+};
+
+// 左移运算符重载
+ostream & operator<<(ostream &cout, const Myinteger &m){
+    cout << m.num << endl;
+    return cout;
+}
+
+void test01(){
+    Myinteger m;
+    cout << --(--m) << endl;
+    cout << m << endl;
+}
+
+void test02(){
+    Myinteger m;
+    cout << (m--)-- << endl;
+    cout << m << endl;
+}
+
+int main(){
+
+    test01();
+    test02();
+
+    return 0;
+}
+
+
+
+
+
