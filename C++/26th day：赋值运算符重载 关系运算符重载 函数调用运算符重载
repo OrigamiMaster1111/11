@@ -1,0 +1,176 @@
+#include <iostream>
+using namespace std;
+
+//赋值运算符重载
+class Person{
+    public:
+        Person(int a){
+            age = new int(a);
+        }
+        int *age;
+        ~Person(){
+            if(age != NULL){
+                delete age;
+                age = NULL;
+            }
+        }
+
+        //重载 赋值运算符
+        Person & operator=(Person &p){
+            //编译器提供浅拷贝
+            //age = p.age;
+
+            //应该先判断是否有属性在堆区，如果有先释放干净，然后再深拷贝
+            if(age != NULL){
+                delete age;
+                age = NULL;
+            }
+
+            //深拷贝
+            age = new int(*p.age);
+            return *this;
+        }
+};
+
+void test01(){
+    Person p1(18);
+    Person p2(19);
+    Person p3(20);
+
+      p3 = p2 = p1;// 浅拷贝：只把p1.age的地址赋值给p2.age，而非复制内存内容
+
+    cout << "p1's age = " << *p1.age << endl;
+    cout << "p2's age = " << *p2.age << endl;
+    cout << "p3's age = " << *p3.age << endl;
+}
+
+int main(){
+
+    test01();
+
+
+
+    return 0;
+}
+
+
+
+
+#include <iostream>
+#include <string>
+#include <stdbool.h>
+using namespace std;
+
+//重载关系运算符
+class Person{
+    public:
+        Person(string n, int  a, float h){
+            name = n;
+            age = a;
+            height = h;
+        }
+
+        //重载 ‘==’ 号
+        bool operator==(Person &p){
+            if (this->age == p.age && this->height == p.height && this->name == p.name){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        //重载 ‘!=’ 号
+        bool operator!=(Person &p){
+            if (this->age == p.age && this->height == p.height && this->name == p.name){
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        string name;
+        int age;
+        float height;
+};
+
+void test01(){
+    Person p1("Tom", 18, 1.22);
+    Person p2("Jack", 17, 1.11);
+    Person p3("Jack", 17, 1.11);
+
+    if (p1 == p2){
+        cout   << "p1和p2相等" << endl;
+    }
+    else {
+        cout << "p1和p2不相等" << endl;
+    }
+
+    if (p2 != p3){
+        cout   << "p2和p3不相等" << endl;
+    }
+    else {
+        cout << "p3和p2相等" << endl;
+    }
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//函数调用运算符重载
+
+//打印输出类
+class MyPrint{
+    public:
+        //重载函数调用运算符
+        void operator()(string test){
+            cout << test << endl;
+        }
+};
+
+void MyPrint2(string s){
+    cout << s << endl;
+}
+
+void test1(){
+    MyPrint m;
+    m("Hello World");// 由于重载后使用的方法非常像函数的调用，因此成为仿函数
+    MyPrint2("Hello world");
+}
+
+//仿函数非常灵活，没有固定的写法
+//加法类
+class MyAdd{
+    public:
+        int operator()(int n1, int n2){
+            return n2 + n1;
+        }
+};
+
+void test02(){
+    MyAdd m;
+    cout << m(100, 200)  << endl;
+
+    //匿名函数对象
+    cout << MyAdd()(100, 200) << endl;
+}
+
+int main(){
+
+    test1();
+    test02();
+
+    return 0;
+}
