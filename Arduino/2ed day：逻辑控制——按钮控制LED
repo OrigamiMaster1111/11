@@ -1,0 +1,139 @@
+/*
+  Input Pull-up Serial
+
+  This example demonstrates the use of pinMode(INPUT_PULLUP). It reads a digital
+  input on pin 2 and prints the results to the Serial Monitor.
+
+  The circuit:
+  - momentary switch attached from pin 2 to ground
+  - built-in LED on pin 13
+
+  Unlike pinMode(INPUT), there is no pull-down resistor necessary. An internal
+  20K-ohm resistor is pulled to 5V. This configuration causes the input to read
+  HIGH when the switch is open, and LOW when it is closed.
+
+  created 14 Mar 2012
+  by Scott Fitzgerald
+
+  This example code is in the public domain.
+
+  https://docs.arduino.cc/built-in-examples/digital/InputPullupSerial/
+*/
+
+void setup() {
+  //start serial connection
+  Serial.begin(9600);
+  //configure pin 2 as an input and enable the internal pull-up resistor
+  pinMode(2, INPUT_PULLUP);
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  //read the pushbutton value into a variable
+  int sensorVal = digitalRead(2);
+  //print out the value of the pushbutton
+  Serial.println(sensorVal);
+
+  // Keep in mind the pull-up means the pushbutton's logic is inverted. It goes
+  // HIGH when it's open, and LOW when it's pressed. Turn on pin 13 when the
+  // button's pressed, and off when it's not:
+  if (sensorVal == HIGH) {
+    digitalWrite(13, LOW);
+  } else {
+    digitalWrite(13, HIGH);
+  }
+}
+
+
+
+<aside>
+💡
+
+## 几个关键点
+
+1. 板载 LED 的电路是：`pin13引脚 → 限流电阻 → LED正极 → LED负极 → 主板GND`
+
+1. 为什么将本该接GND的导线接到pin13会导致LED灯泡亮度降低：
+    
+    当按下按键时，这个改动后的电路会触发一个**高速开关循环**：
+    
+    - **初始状态**：按键未按下，pin2 通过内部上拉为 HIGH。代码执行`digitalWrite(13, LOW)`，pin13 输出 0V，LED 熄灭。
+    - **按键按下瞬间**：
+        - 按键闭合，将 pin2 和 pin13 短接。
+        - pin13 此时输出 LOW（0V），它的驱动能力远强于 pin2 的弱上拉，所以 pin2 的电平被强行拉低到 LOW。
+        - 代码检测到 pin2 为 LOW，于是执行`digitalWrite(13, HIGH)`，让 pin13 输出 5V。
+    - **正反馈循环**：
+        - pin13 输出 5V 后，又通过按键将这个高电平传递给 pin2。
+        - 代码检测到 pin2 为 HIGH，又执行`digitalWrite(13, LOW)`。
+        - 这个 “拉低→拉高→拉低” 的过程会以极高的频率（远快于人眼分辨速度）不断重复。
+        
+2. **亮度降低的本质**
+    
+    这个高速开关循环导致 pin13 在 HIGH 和 LOW 之间快速切换，LED 并不是持续发光，而是在**高速闪烁**。人眼看到的 “变暗”，实际上是 LED 的**平均亮度**大幅降低了，而不是它真的只发出了微弱的光。
+    
+3. **核心结论**
+    - 改动并没有直接 “拉低” LED 的亮度，而是通过改变电路，让 pin13 和 pin2 形成了一个**相互制约的振荡系统**。
+    - 这个系统导致 LED 无法稳定地处于全亮状态，而是在亮灭之间高速切换，最终表现为亮度降低。
+</aside>
+
+### **驱动能力（简述）**
+
+**驱动能力 = 输出引脚能稳定带动多少电流、带多大负载的能力。**
+
+**极简拆解**
+
+1. **强驱动**输出电流大，带得动灯、继电器、电机等，电平不容易被拉歪。
+2. **弱驱动**输出电流很小，只能带动芯片内部电路，**不能直接带外部负载**。
+3. **上拉 / 下拉是弱驱动**内部电阻很大，电流极小，只能 “稳住电平”，不能驱动外设。
+4. **推挽输出是强驱动**内部直接接电源 / 地，电流大，能直接驱动器件。
+
+**总结**
+
+**驱动能力 = 输出口 “有劲没劲”。**
+
+- 有劲 → 强驱动，能带负载
+- 没劲 → 弱驱动，只能定电平
+
+**为什么说pin13 的驱动能力远强于 pin2 的弱上拉？**
+
+1. **pin13（输出模式 OUTPUT）**
+    - 当设置为 `OUTPUT` 并执行 `digitalWrite(13, HIGH)` 时，单片机内部的**推挽输出电路**会主动将引脚驱动到 5V，能提供几十毫安级的电流，驱动能力很强。
+    - 当执行 `digitalWrite(13, LOW)` 时，它会主动将引脚拉到 0V，吸收电流的能力也很强。
+2. **pin2（输入上拉模式 INPUT_PULLUP）**
+    - 它的高电平是通过一个几十千欧（通常 30-50kΩ）的**内部弱上拉电阻**获得的。
+    - 这个电阻极大地限制了电流，只能提供微安级的电流，驱动能力非常弱。
+    
+
+**结果**：当两个引脚短接时，pin13 的强驱动会 “压倒” pin2 的弱上拉，直接决定 pin2 的电平。例如，如果 pin13 输出 LOW，pin2 会被强行拉低，完全忽略内部上拉的作用。
+
+### 短接
+
+**短接**（Short Circuit）是指用导线（或按键等导体）将两个原本独立的电路节点直接连接，使它们的电位强制相等。
+
+在当前的场景中：
+
+- 正常情况下，pin2（输入上拉）和 pin13（输出）是两个独立的引脚，各自有自己的电平状态。
+- 当通过按键把 pin2 和 pin13 直接连在一起时，就相当于用一根导线把它们短接了。这会强制让两个引脚的电平趋于一致，而最终的电平由**驱动能力更强**的那个引脚决定。
+
+### LED接口的设定
+
+- **板载 LED**：Arduino Uno 上的板载 LED 是**硬件固定连接在 pin13** 上的，它的电路是 `pin13 → 限流电阻 → LED → GND`。这个连接无法通过程序改变。
+- **外接 LED**：如果你想控制其他 LED，就需要自己接线。例如，当你执行 `pinMode(12, OUTPUT)` 后，你可以将一个外接 LED 的阳极通过限流电阻接到 pin12，阴极接到 GND。这样，当你执行 `digitalWrite(12, HIGH)` 时，这个外接 LED 就会点亮。
+
+简单来说：
+
+- 板载 LED 永远在 pin13。
+- 其他引脚可以通过编程和接线，成为控制外接 LED 的 “接口”。
+
+## 特殊情况
+
+不考虑正反馈，只看静态电平下，将 pin13 与 pin2 相连会怎样：
+
+- 假设代码强制让 pin13 输出 `HIGH`（5V）：
+    - 即使 pin2 和 pin13 短接，LED 两端的电压差依然是 5V（pin13）到 0V（GND）。
+    - 电流会正常流过 LED，它会以正常亮度发光。pin2 被拉到 5V 只是一个副作用，不会影响 LED 的亮度。
+
+- 假设代码强制让 pin13 输出 `LOW`（0V）：
+    - LED 两端电压差为 0，不会发光。pin2 被拉到 0V 也是一个副作用。
+
+**关键结论**：LED 的亮度只由 pin13 的输出状态决定，和 pin2 无关。看到的 “变暗”，正是因为正反馈循环让 pin13 在 HIGH 和 LOW 之间高速切换，导致 LED 高速闪烁，人眼感知到的平均亮度降低了。
