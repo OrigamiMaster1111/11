@@ -1,0 +1,316 @@
+Java页面
+class Java{
+    public:
+        void hearder(){
+            cout << "Home and Public class and Login and Resigiter" << endl;
+        }
+
+        void footer(){
+            cout << "Help-Center and Communication-Cooperation and so on..." << endl;
+        }
+        void left(){
+            cout << "Java Python C++..." << endl;
+        }
+        void content(){
+            cout << "Java教学视频" << endl;
+        }
+};
+
+
+//继承实现页面
+//公共页面
+class BasePage{
+    public:
+        void hearder(){
+            cout << "Home and Public class and Login and Resigiter" << endl;
+        }
+        void footer(){
+            cout << "Help-Center and Communication-Cooperation and so on..." << endl;
+        }
+        void left(){
+            cout << "Java Python C++..." << endl;
+        }
+};
+
+//Java页面
+class Java: public BasePage{
+    public:
+        void content(){
+            cout << "Java学科视频" << endl;
+        }
+};
+
+//Python页面
+class Python: public BasePage{
+    public:
+        void content(){
+            cout << "Python学科视频" << endl;
+        }
+};
+
+//C++页面
+class Cpp: public BasePage{
+    public:
+        void content(){
+            cout << "C++学科视频" << endl;
+        }
+};
+
+
+
+#include <iostream>
+using namespace std;
+
+//继承方式
+
+//公共继承
+class Base{
+    public:
+        int a;
+    
+    protected:
+        int b;
+
+    private:
+        int c;
+};
+
+class Son: public Base{
+    public:
+        void func(){
+            a = 10;//父类中的公共权限成员 到子类中仍然是公共权限
+            b = 10;//父类中的保护权限成员 到子类中仍然是保护权限
+            //c = 10;父类中的私有权限成员 到子类中仍然是私有权限
+        }
+};
+
+void test01(){
+    Son s1;
+    s1.a = 100;
+    // s1.b = 100;到s1中b是保护权限 类外访问不到
+}
+
+//保护继承
+class Base2{
+    public:
+        int a;
+    
+    protected:
+        int b;
+
+    private:
+        int c;
+};
+
+class Son2: protected Base2{
+    public:
+        void func(){
+            a = 100;//父类中公共成员，到子类变为保护权限
+            b = 100;//父类中保护成员，到子类仍为保护权限
+            // c = 100;父类中的私有成员 子类访问不到
+        }
+};
+
+void test02(){
+    Son2 s1;
+    // s1.a = 100;a变为了Protected权限，类外访问不了
+    // s1.b = 100;b为保护权限 不可访问
+}
+
+//私有继承
+class Base3{
+    public:
+        int a;
+    
+    protected:
+        int b;
+
+    private:
+        int c;
+};
+
+class Son3: private Base3{
+    public:
+        void func(){
+            a = 100;//父类中公共成员 到子类中变为 私有成员
+            b = 100;//父类中保护成员 到子类中变为 私有成员
+            // c = 100;父类中私有的成员 子类访问不到
+        }
+};
+
+void test03(){
+    Son3 s1;
+    // s1.a = 100;
+    // s1.b = 100;  到Son3中 所有成员都变为私有成员 非类内函数接口外无法访问
+    // s1.c = 100;
+}
+
+class GrandSon3: public Son3{
+    public:
+        void func(){
+            // a = 100;     在Base3类中的所有成员都以private的方式继承到了Son3中，
+            // b = 100;     所以当Grandson3类继承Son3时，所有的成员都是以父类私有成员继承
+            // c = 100;     故，Grandson3类内所有的成员都是不可访问的
+        }
+};
+
+int main(){
+    test01();
+    test02();
+    test03();
+    return 0;
+}
+
+
+
+#include <iostream>
+using namespace std;
+
+//继承中的对象模型
+class Base{
+    public:
+        int a;
+    
+    protected:
+        int b;
+
+    private:
+        int c;
+};
+
+class Son: public Base{
+    public:
+        int d;
+};
+
+//利用开发人员命令提示工具
+//先进入到要查看的类所在的源文件的盘符下
+//然后输入cl /d1 reportSingleClassLayout类名 ".\继承中的对象模型.cpp"
+
+void test01(){
+    //16
+    //父类中所有非静态成员属性都会被子类继承下去
+    //父类中私有的成员属性 是被编译器隐藏了，因此访问不了，但实际上确实继承了
+    cout << "size of Son = " << sizeof(Son) << endl;
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+#include <iostream>
+using namespace std;
+
+//继承中的构造和析构顺序
+class Base{
+    public:
+        Base(){
+            cout << "Base构造函数调用" << endl;
+        }
+        ~Base(){
+            cout << "Base析构函数调用" << endl;
+        }
+};
+
+class Son: public Base{
+    public:
+        Son(){
+            cout << "Son构造函数调用" << endl;
+        }
+        ~Son(){
+            cout << "Son析构函数调用" << endl;
+        }
+};
+
+void test01(){
+    // Base b;
+   
+    //先构造父类再子类，析构顺序相反
+    Son s;
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+//继承中的同名静态成员处理方式
+class Base{
+    public:
+        static int a;
+
+        static void func(){
+            cout << "Base's static void func" << endl;
+        }
+
+        static void func(int a){
+            cout << "Base's static void func" << endl;
+        }
+};
+
+int Base::a = 100;
+
+class Son: public Base{
+    public:
+        static int a;
+
+        static void func(){
+            cout << "Son's static void func" << endl;
+        }
+};
+
+int Son::a = 200;
+
+//同名静态成员属性
+void test01(){
+    //1.通过对象访问
+    Son s;
+    cout << "Son 下的a = " << s.a << endl;
+    cout << "Base下的a = " << s.Base::a << endl;
+
+    //2.通过类名访问
+    cout << "通过类名访问" << endl;
+    cout << "Son 下的a = " << Son::a << endl;
+    //第一个‘::’代表通过类名方式访问    第二个代表访问父类作用域下
+    cout << "Base下的a = " << Son::Base::a << endl;
+}
+
+//同名静态成员函数
+void test02(){
+    //1.通过对象访问
+    Son s;
+    s.func();
+    s.Base::func();
+
+    //2.通过类名访问
+    Son::func();
+    Son::Base::func();
+
+    //子类出现和父类同名静态成员函数，也会隐藏父类中所有同名成员函数
+    //如果想访问父类中被隐藏同名成员，需要加作用域
+}
+
+int main(){
+
+    test01();
+    test02();
+
+    return 0;
+}
+
+
