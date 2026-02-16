@@ -1,0 +1,355 @@
+#include <iostream>
+using namespace std;
+
+//纯虚函数和抽象类
+class Base{
+    public:
+        //纯虚函数
+        //只要有一个纯虚函数，这个类称为抽象类
+        //抽象类特点
+        //1.无法实例化对象
+        //2.抽象类的子类 必须要重写父类中的纯虚函数，否则也属于抽象类
+        //3.
+        virtual void func() = 0;
+};
+
+class Son: public Base{
+    public:
+        void func(){
+            cout << "func函数调用" << endl;
+        }
+};
+
+void test01(){
+    //Base b;  抽象类无法实例化对象
+    //new Base;抽象类无法实例化对象
+    //Son s;子类必须重写父类中的纯虚函数，否则无法实例化对象
+
+    Base *s = new Son;
+    s->func();
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+//多态案例2 制作饮品
+class AbstractDrinking{
+    public:
+        //制作声明
+        virtual void declaration() = 0;
+        //煮水
+        virtual void Boil() = 0;
+        //冲泡
+        virtual void Brew() = 0;
+        //导入杯中
+        virtual void PourInCup() = 0;
+        //加入辅料
+        virtual void PutSomeThing() = 0;
+        //制作饮品
+        void makeDrink(){
+            declaration();
+            Boil();
+            Brew();
+            PourInCup();
+            PutSomeThing();
+        }
+
+        virtual ~AbstractDrinking() = default;
+};
+
+//制作咖啡
+class Coffee: public AbstractDrinking{
+    public:
+        //制作声明
+        virtual void declaration(){
+            cout << "制作咖啡中" << endl;
+        }
+        //煮水
+        virtual void Boil(){
+            cout << "煮白开水" << endl;
+        }
+        //冲泡
+        virtual void Brew(){
+            cout << "冲泡咖啡" << endl;
+        }
+        //导入杯中
+        virtual void PourInCup(){
+            cout << "导入咖啡杯" << endl;
+        }
+        //加入辅料
+        virtual void PutSomeThing(){
+            cout << "加入砂糖" << endl;
+        }
+};
+
+//制作茶叶
+class Tea: public AbstractDrinking{
+    public:
+        //制作声明
+        virtual void declaration(){
+            cout << "制作茶中" << endl;
+        }
+        //煮水
+        virtual void Boil(){
+            cout << "煮白开水" << endl;
+        }
+        //冲泡
+        virtual void Brew(){
+            cout << "冲泡茶叶" << endl;
+        }
+        //导入杯中
+        virtual void PourInCup(){
+            cout << "导入茶杯" << endl;
+        }
+        //加入辅料
+        virtual void PutSomeThing(){
+            cout << "加入枸杞" << endl;
+        }
+};
+
+//制作函数
+void doWork(AbstractDrinking * abs){//AbstractDrinking * abs = new Coffee
+    abs->makeDrink();
+    delete abs;//释放
+}
+
+void test01(){
+    //制作咖啡
+    doWork(new Coffee);
+
+    cout << "-----------------" << endl;
+
+    //制作茶
+    doWork(new Tea);
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//虚析构和纯虚析构
+class Animal{
+    public:
+        Animal(){
+            cout << "Animal构造函数调用" << endl;
+        }
+        //利用虚析构可以解决 父类指针释放对象时不干净的问题
+        // virtual ~Animal(){
+        //     cout << "Animal析构函数调用" << endl;
+        // }
+
+        //纯虚析构
+        //有了纯虚析构函数之后，这个类也属于抽象类，无法实例化对象
+        virtual ~Animal() = 0;
+
+        //纯虚函数
+        virtual void speak() = 0;
+};
+
+Animal::~Animal(){
+    cout << "Animal纯虚析构函数调用" << endl;
+}
+
+class Cat: public Animal{
+    public:
+        Cat(string n){
+            cout << "Cat构造函数调用" << endl;
+            name = new string(n);
+        }
+        virtual void speak(){
+            cout << *name << "miao~miao~" << endl;
+        }
+        ~Cat(){
+            cout << "Cat析构函数调用" << endl;
+            if (name != NULL){
+                delete name;
+            }
+        }
+
+        string *name;
+};
+
+void test01(){
+    Animal *a = new Cat("环环");
+    a->speak();
+    //父类指针在析构时候 不会调用子类中的析构函数，导致子类人如果有堆区属性，会出现内存泄漏
+    delete a;
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+//抽象不同零件类
+
+//抽象CPU类
+class CPU{
+    public:
+        //抽象计算函数
+        virtual void calculate() = 0;
+        virtual ~CPU() = default;
+};
+
+//抽象GPU类
+class GPU{
+    public:
+        //抽象显示函数
+        virtual void display() = 0;
+        virtual ~GPU() = default;
+};
+
+//抽象内存条类
+class RAM{
+    public:
+        virtual void storage() = 0;
+        virtual ~RAM() = default;
+};
+
+//电脑类
+class Computer{
+    public:
+        Computer(CPU *cpu, GPU *gpu, RAM *ram){
+            c = cpu;
+            g = gpu;
+            r = ram;
+        }
+        ~Computer(){
+            //释放所有零件
+            if (c != NULL){
+                delete c;
+            }
+            if (g != NULL){
+                delete g;
+            }
+            if (r != NULL){
+                delete r;
+            }
+        }
+
+        //提供工作的函数
+        void work(){
+            //让零件工作起来，调用接口
+            c->calculate();
+            g->display();
+            r->storage();
+        }
+
+    private:
+        CPU *c;//CPU的零件指针
+        GPU *g;//显卡零件指针
+        RAM *r;//内存条零件指针
+};
+
+//具体厂商
+
+//Intel厂商
+class IntelCPU: public CPU{
+    public:
+        virtual void calculate(){
+            cout << "Intel的CPU开始计算!" << endl; 
+        }
+};
+
+//AMD厂商
+class AMDCPU: public CPU{
+    public:
+        virtual void calculate(){
+            cout << "AMD的CPU开始计算!" << endl;
+        }
+};
+
+class AMDGPU: public GPU{
+    public:
+        virtual void display(){
+            cout << "AMD的GPU开始显示!" << endl;
+        }
+};
+
+//NVIDA厂商
+class NVIDA: public GPU{
+    public:
+        virtual void display(){
+            cout << "NVIDA的GPU开始显示!" << endl;
+        }
+};
+
+//Kingston厂商
+class kingston: public RAM{
+    public:
+        virtual void storage(){
+            cout << "Kingston的内存条开始存储" << endl;
+        }
+};
+
+//G.Skill厂商
+class GS: public RAM{
+    public:
+        virtual void storage(){
+            cout << "G.Skill的内存条开始存储" << endl;
+        }
+};
+
+void test01(){
+    //第一台电脑的零件
+    CPU *ic = new IntelCPU;
+    GPU *ng = new NVIDA;
+    RAM *kr = new kingston;
+
+    //创建第一台电脑
+    Computer *com1 = new Computer(ic, ng, kr);
+    com1->work();
+    delete com1;
+
+    cout << "-----------------" << endl;
+
+    //第二台电脑的零件
+    CPU *ac = new AMDCPU;
+    GPU *gn = new AMDGPU;
+    RAM *gr = new GS;
+
+    //创建第二台电脑
+    Computer *com2 = new Computer(ac, gn, gr);
+    com2->work();
+    delete com2;
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
