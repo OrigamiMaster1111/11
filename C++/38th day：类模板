@@ -1,0 +1,142 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+//类模板成员函数类外实现
+template<class T1, class T2>
+class Person{
+    public:
+        T1 name;
+        T2 age;
+
+        Person(T1 n, T2 a);
+
+        void showPerson();
+        // {
+        //     cout << "name: " << name << endl;
+        //     cout << "age" << age << endl;
+        // }
+};
+
+//构造函数类外实现
+template<class T1, class T2>
+Person<T1, T2>::Person(T1 n, T2 a){
+    age = a;
+    name = n;
+}
+
+//成员函数的类外实现
+template<class T1, class T2>
+void Person<T1, T2>::showPerson(){
+    cout << "name: " << name << endl;
+    cout << "age: " << age << endl;
+}
+
+void test01(){
+    Person<string, int> p1("A", 13);
+    p1.showPerson();
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+#pragma once
+#include <iostream>
+#include <string>
+using namespace std;
+
+//类模板分文件编写问题以及解决
+template<class T1, class T2>
+class Person{
+    public:
+        Person(T1 n, T2 a);
+
+        void showPerson();
+
+        T1 name;
+        T2 age;
+};
+
+//构造函数类外实现
+template<class T1, class T2>
+Person<T1, T2>::Person(T1 n, T2 a){
+    age = a;
+    name = n;
+}
+
+//成员函数的类外实现
+template<class T1, class T2>
+void Person<T1, T2>::showPerson(){
+    cout << "name: " << name << endl;
+    cout << "age: " << age << endl;
+}
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//类模板与友元
+
+//通过全局函数 打印Person信息
+
+//提前让编译器知道Person类的存在
+template<class T1, class T2>
+class Person;
+
+//类外实现
+template<class T1, class T2>
+void printPerson2(Person<T1, T2> p){
+    cout << "name: " << p.name << endl;
+    cout << "age: " << p.age << endl;
+}
+
+template<class T1, class T2>
+class Person{
+    //全局函数类内实现
+    friend void printPerson1(Person<T1, T2> p){
+        cout << "name: " << p.name << endl;
+        cout << "age: " << p.age << endl;
+    }
+
+    //全局函数类外实现
+    //加空模板参数列别
+    //如果全局函数 是类外实现 需要让编译器提前知道这个函数的存在
+    friend void printPerson2<>(Person<T1, T2> p);
+
+    private:
+        T1 name;
+        T2 age;
+    
+    public:
+        Person(T1 n, T2 a): name(n), age(a){}
+};
+
+//1.全局函数类内实现
+void test01(){
+    Person<string, int> p("A", 13);
+    printPerson1(p);
+}
+
+//2.全局函数在类外实现
+void test02(){
+    Person<string, int> p("B", 14);
+    printPerson2(p);
+}
+
+int main(){
+
+    test01();
+    test02();
+
+    return 0;
+}
