@@ -1,0 +1,192 @@
+//自己通用的数组类
+#pragma once
+#include <iostream>
+using namespace std;
+
+template<class T>
+class MyArr{
+    public:
+        //有参构造
+        MyArr(int capa){
+            cout << "MyArr的有参构造调用" << endl;
+            capacity = capa;
+            size = 0;
+            pAddress = new T[capacity]; 
+        }
+
+        //拷贝构造
+        MyArr(const MyArr &arr){
+            cout << "MyArr的拷贝构造调用" << endl;
+            capacity = arr.capacity;
+            size = arr.size;
+            
+            //深拷贝
+            pAddress = new T[arr.capacity];
+            //将arr数组中的数据全部拷贝过来
+            for (int i = 0; i < size; ++i){
+                pAddress[i] = arr.pAddress[i];
+            }
+        }
+
+        //operator= 防止浅拷贝问题
+        MyArr& operator=(const MyArr &arr){
+             cout << "MyArr的operator=调用" << endl;
+
+            //先判断原来堆区是否有数据，如果有先释放
+            if (pAddress != NULL){
+                delete[] pAddress;
+                pAddress = NULL;
+                capacity = 0;
+                size = 0;
+            }
+
+            //深拷贝
+            pAddress = new T[arr.capacity];
+            //将arr数组中的数据全部拷贝过来
+            for (int i = 0; i < size; ++i){
+                pAddress[i] = arr.pAddress[i];
+            }
+
+            return *this;
+        }
+
+        //尾插法
+        void push_Back(const T &val){
+            //判断容量是否已满
+            if (capacity == size){
+                cout << "数组已满" << endl;
+                return;
+            }
+            pAddress[size] = val;//在数组末尾插入数据
+            ++size;//更新数组大小
+        }
+
+        //尾删法
+        void pop_back(){
+            //让用户访问不到最后一个元素，即为尾删，逻辑删除
+            if (size == 0){
+                cout << "数组为空" << endl;
+                return;
+            }
+            --size;
+        }
+
+        //通过下标方式访问数组中的元素
+        T& operator[](int index){
+            return pAddress[index];
+        }
+
+        //返回数组容量
+        int getCapacity(){
+            return capacity;
+        }
+
+        //返回数组大小
+        int getSize(){
+            return size;
+        }
+
+        //析构函数
+        ~MyArr(){
+            cout << "析构调用" << endl;
+            if(pAddress != NULL){
+                delete[] pAddress;
+                pAddress = NULL;
+            }
+        }
+
+    private:
+        T *pAddress;//指针指向堆区开辟真实数组
+        int capacity;//数组容量
+        int size;//数组大小
+};
+
+
+
+
+using namespace std;
+#include "myArr.h"
+#include <string>
+
+void printIntArray(MyArr<int> &arr){
+    for (int i = 0; i < arr.getSize(); ++i){
+        cout << arr[i] << endl;
+    }
+}
+
+void test01(){
+    MyArr<int> arr1(5);
+    MyArr<int> arr2(arr1);
+    MyArr<int> arr3(100);
+    arr3 = arr1;
+
+
+    MyArr <int>arr4(5);
+    for (int i = 0; i < 5; ++i){
+        //利用尾插法向数组中插入数据
+        arr4.push_Back(i);
+    }
+
+    cout << "arr4的打印输出为：" << endl;
+    printIntArray(arr4);
+    cout << "arr4的容量为：" << arr4.getCapacity() << endl;
+    cout << "arr4的大小为：" << arr4.getSize() << endl;
+
+    MyArr<int> arr5(arr4);
+    cout << "arr5的打印输出为：" << endl;
+    printIntArray(arr5);
+
+    //尾删
+    arr5.pop_back();
+    cout << "arr5尾删后：" << endl;
+    cout << "arr5的容量为：" << arr5.getCapacity() << endl;
+    cout << "arr5的大小为：" << arr5.getSize() << endl;
+}
+
+//测试自定义的数据类型
+class Person{
+    public:
+        Person(){}
+        Person(string n, int a): name(n), age(a){}
+    
+        string name;
+        int age; 
+};
+
+void printPersonArray(MyArr<Person> &p){
+    for (int i = 0; i < p.getSize(); ++i){
+        cout << "name: " << p[i].name << " age: " << p[i].age << endl;
+    }
+}
+
+void test02(){
+    MyArr<Person> arr(4);
+
+    Person p1("鸢一折纸", 16);
+    Person p2("时崎狂三", 17);
+    Person p3("四系乃", 14);
+    Person p4("五河琴里", 15);
+
+    //将数据插入到数组中
+    arr.push_Back(p1);
+    arr.push_Back(p2);
+    arr.push_Back(p3);
+    arr.push_Back(p4);
+
+    //打印数组
+    printPersonArray(arr);
+
+    //输出容量
+    cout << "arr的容量为：" << arr.getCapacity() << endl;
+
+    //输出大小
+    cout << "arr的大小为：" << arr.getSize() << endl;
+}
+
+int main(){
+
+    test01();
+    test02();
+
+    return 0;
+}
