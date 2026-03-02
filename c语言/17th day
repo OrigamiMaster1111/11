@@ -6,6 +6,7 @@ int main()
 	int min = 0;
 	int ret = 1;
 
+
 	if (scanf("%d %d", &a, &b) != 2) {
 		printf("输入错误，请输入两个整数！\n");
 		return 1;
