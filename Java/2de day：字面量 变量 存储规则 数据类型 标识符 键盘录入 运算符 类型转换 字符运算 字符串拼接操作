@@ -1,0 +1,138 @@
+package literal;
+
+public class literDemo1 {
+    public void main(String[] args){
+        //输出名字
+        System.out.println("霸王龙");
+        //输出年龄
+        System.out.println(8);
+        //输出性别
+        System.out.println("公");
+        //输出身高
+        System.out.println(11.5);
+    }
+}
+
+
+
+package variable;
+
+public class variable_attention {
+    //变量的注意事项
+    //1. 只能存一个值
+    //2. 变量名不允许重复定义
+    //3. 变量在使用之前一定要赋值
+    //4. 一条语句可以定义多个变量，也可以连续赋值
+
+    public void main(String[] args){
+        //变量在使用之前一定要赋值
+        int a = 10;
+        System.out.println(a);
+
+        //一条语句可以定义多个变量，也可以连续赋值
+        int b = 10, c = 20;
+        System.out.println(b);
+        System.out.println(c);
+    }
+}
+
+
+
+
+package variable;
+
+//确定Scanner的位置
+import java.util.Scanner;
+
+import java.util.Scanner;
+
+public class keyboardGet {
+    public static void main(String[] args){
+        /*
+            键盘录入：
+                第一步：找到键盘录入类Scanner
+                第二步：创建Scanner对象
+         */
+
+        //第一步
+        Scanner sc = new Scanner(System.in);
+
+        //第二步
+        //接收整数
+        int num = sc.nextInt();
+        System.out.println(num);
+        //接收小数
+        double num2 = sc.nextDouble();
+        System.out.println(num2);
+        //接收字符串
+        String str = sc.next();
+        System.out.println(str);
+    }
+}
+
+
+
+
+
+
+package train;
+import java.util.Scanner;
+
+public class keyboardGet_1 {
+    static void main(){
+        Scanner sc = new Scanner(System.in);
+        int num1 = sc.nextInt();
+        int num2 = sc.nextInt();
+        System.out.println(num1 + num2);
+    }
+}
+
+
+
+
+
+package train;
+import java.util.Scanner;
+
+public class BMI {
+    static void main(){
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("请输入体重：");
+        double weight = sc.nextDouble();
+
+        System.out.print("请输入身高：");
+        double height = sc.nextDouble();
+
+        double bmi = weight / (height * height);
+
+        if (bmi < 18.5){
+            System.out.println("体重偏轻");
+        } else if (bmi < 24){
+            System.out.println("体重正常");
+        } else {
+            System.out.println("体重偏重");
+        }
+    }
+}
+
+
+
+
+
+package operator;
+import java.util.Scanner;
+
+public class operator_train {
+    static void main(){
+        System.out.print("请输入秒数：");
+        Scanner sc = new Scanner(System.in);
+        int sec = sc.nextInt();
+
+        int hour = sec / 3600;
+        int min = (sec - hour * 3600) / 60;
+        sec = sec - hour * 3600 - min * 60;
+
+        System.out.println(hour + " " + min + " " + sec);
+    }
+}
