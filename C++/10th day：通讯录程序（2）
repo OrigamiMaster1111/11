@@ -7,6 +7,7 @@
 #include <cctype>
 using namespace std;
 
+
 void setConsoleUTF8(){
     #ifdef _win32
     SetConsoleOutputCP(65001);
