@@ -2,6 +2,7 @@
 int main()
 {
 	int a;
+
 	int b;
 	int min = 0;
 	int ret = 1;
