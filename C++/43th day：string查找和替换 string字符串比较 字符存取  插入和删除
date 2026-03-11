@@ -1,0 +1,141 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+//字符串查找和替换
+
+//1.查找
+void test01(){
+    string str1 = "abcdefg";
+    int pos = str1.find("de");
+
+    if (pos == -1){
+        cout << "未找到字符串" << endl;
+    }
+    else {
+        cout << "找到字符串, pos = " << pos << endl;
+    }
+
+    //rfind 和 find的区别，r代表right，从右往左查找，find从左往右
+    pos = str1.rfind("de");
+    cout << "pos = " << pos << endl;
+}
+
+//2.替换
+void test02(){
+    string str1 = "abcdefg";
+    //从一号位置起，3个字符 替换为“1111”
+    str1.replace(1, 3, "1111");
+    cout << "str1 = " << str1 << endl;
+}
+
+int main(){
+    test01();
+
+    test02();
+}
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//字符串比较
+void test01(){
+    string str1 = "xello";
+    string str2 = "hello";
+
+    if (str1.compare(str2) == 0){
+        cout << "str1 = str2" << endl;
+    } 
+    else if (str1.compare(str2) > 0){
+        cout << "str1 > str2" << endl;
+    }
+    else {
+        cout << "str1 < str2" << endl;
+    }
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//string字符存取
+void test01(){
+    string str1 = "Hello";
+    cout << "str = " << str1 << endl;
+
+    //1.通过中括号[]访问单个字符
+    for (int i = 0; i < str1.size(); ++i){
+        cout << str1[i] << " ";
+    }
+    cout << endl;
+
+    //2.通过at方式访问单个字符
+    for (int i = 0; i < str1.size(); ++i){
+        cout << str1.at(i) << " ";
+    }
+    cout << endl;
+
+    //修改单个字符
+    str1[0] = 'x';
+    // xello
+    cout << "str1 = " << str1 << endl;
+
+    str1.at(1) = 'x';
+    // xxllo
+    cout << "str1 = " << str1 << endl;
+}
+
+int main(){
+
+    test01();
+    
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+//字符串 插入和删除
+void test01(){
+    string str = "Hello";
+
+    //插入
+    str.insert(1, "111");
+    // he111ello
+    cout << "str = " << str << endl;
+
+    //删除
+    str.erase(1, 3);
+    cout << "str = " << str << endl;
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
