@@ -1,0 +1,122 @@
+long randNumber;
+ 
+void setup(){
+  Serial.begin(9600);
+}
+ 
+void loop(){
+  randNumber = random(0, 300);  //产生0-300间的随机数
+  Serial.println(randNumber);
+  delay(50);
+}
+
+
+long randNumber;
+ 
+void setup(){
+  Serial.begin(9600);
+  randomSeed(analogRead(A0)); 
+  //将引脚A0放空，每次程序启动时所读取的数值都是不同的。
+  //这么做可以产生真正的随机种子值，从而产生随机数值。
+}
+ 
+void loop(){
+  randNumber = random(300);  // 产生随机数
+  Serial.println(randNumber);
+ 
+  delay(50);
+}
+
+
+
+/*
+analogWrite()示例程序
+v1.0
+Created 2016
+by 太极创客
+www.taichi-maker.com
+ 
+说明：
+本程序旨在演示如何使用analogWrite()
+程序将A0引脚所读取到的数值转换为 0-255之间的数值，
+并通过这一数值控制引脚3的LED亮度。
+ 
+获得具体连接电路图，请参阅太极创客网站。
+  
+This example code is in the public domain.
+*/
+ 
+// 引脚3连接LED
+int ledPin = 3;      
+ 
+//变量val用来存储模拟输入信号
+int val = 0; 
+ 
+void setup()
+{
+ // 将连接LED的引脚设置为输出模式
+  pinMode(ledPin, OUTPUT);
+}
+ 
+void loop()
+{
+  //读取引脚A0的输入信号，并将该数值赋给变量val
+  val = analogRead(A0);  
+ 
+ // 将引脚A0读取的数值转换为0-255之间
+ // 并将该数值写入引脚3
+  analogWrite(ledPin, val / 4); 
+}
+
+
+
+boolean pushButton1;   //创建布尔型变量用来存储开关1的电平状态
+boolean pushButton2;   //创建布尔型变量用来存储开关2的电平状态
+int ledPin = 9;        //LED引脚号
+int brightness = 128;  //LED亮度参数
+
+void setup() {
+  pinMode(2, INPUT_PULLUP); //将引脚2设置为输入上拉模式
+  pinMode(8, INPUT_PULLUP); //将引脚8设置为输入上拉模式
+  pinMode(ledPin, OUTPUT); //将LED引脚设置为输出模式
+  Serial.begin(9600); //启动串口通讯
+}
+
+void loop() {
+  pushButton1 = digitalRead(2); //读取引脚2电平状态并将其赋值给布尔变量
+  pushButton2 = digitalRead(8); //读取引脚8电平状态并将其赋值给布尔变量
+
+  if (!pushButton1 && brightness > 0){//当按下开关1并且LED亮度参数大于0
+    brightness--; //减小LED亮度
+  }
+  else if (!pushButton2 && brightness < 255){
+    brightness++;
+  }
+
+  analogWrite(ledPin, brightness);  //模拟输入控制LED灯亮度
+  Serial.println(brightness);       //将LED亮度显示在串口监视器上
+  delay(10);
+}
+
+
+
+void setup() {
+  pinMode(9, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  //LED由暗到明
+  for (int brightness = 1; brightness <= 255; brightness++){
+    analogWrite(9, brightness);
+    Serial.println(brightness);
+    delay(5);
+  }
+
+  //LED由明到暗
+  for (int brightness = 255; brightness > 0; brightness--){
+    analogWrite(9, brightness);
+    Serial.println(brightness);
+    delay(5);
+  }
+}
