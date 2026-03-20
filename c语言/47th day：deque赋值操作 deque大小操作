@@ -1,0 +1,86 @@
+#include <iostream>
+#include <deque>
+using namespace std;
+
+void printDeq(const deque<int> &deq){
+    for (deque<int>::const_iterator it = deq.begin(); it != deq.end(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+
+void test01(){
+    deque<int> d1;
+    for (int i = 0; i < 10; ++i){
+        d1.push_back(i);
+    }
+    printDeq(d1);
+
+    //operator= 赋值
+    deque<int> d2;
+    d2 = d1;
+    printDeq(d2);
+
+    //assign 赋值
+    deque<int> d3;
+    d3.assign(d1.begin(), d1.end());
+    printDeq(d3);
+
+    deque<int> d4;
+    d4.assign(10, 100);
+    printDeq(d4);
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+#include <deque>
+using namespace std;
+
+void printDeq(const deque<int> &deq){
+    for (deque<int>::const_iterator it = deq.begin(); it != deq.end(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+
+//deque容器大小操作
+void test01(){
+    deque<int> d1;
+    for (int i = 0; i < 10; ++i){
+        d1.push_back(i);
+    }
+    printDeq(d1);
+
+    if (d1.empty()){
+        cout << "d1容器为空" << endl;
+    }
+    else {
+        cout << "d1容器不为空" << endl;
+        cout << "d1的大小为: " << d1.size() << endl;
+        //deque容器没有容量概念
+    }
+    //重新指定大小
+    // d1.resize(16);
+    d1.resize(16, 6);
+    printDeq(d1);
+
+    d1.resize(5);
+    printDeq(d1);
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
