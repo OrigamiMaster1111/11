@@ -1,3 +1,4 @@
+
 include_directories(${PROJECT_SOURCE_DIR}/include)      #找寻头文件对应的路径而非指定头文件#endif
 add_library(calc SHARED ${SRC})                         #动态库的制作
 add_library(calc STATIC ${SRC})                         #静态库的制作
