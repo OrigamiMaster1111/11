@@ -1,0 +1,121 @@
+#include <iostream>
+#include <string>
+#include <set>
+using namespace std;
+
+//pair对组创建
+
+void test01(){
+    //第一种方式
+    pair<string, int> p("Tom", 20);
+
+    cout << "name: " << p.first << " age: " << p.second << endl;
+
+    //第二种方式
+    pair<string, int> p2 = make_pair("Jerry", 30);
+    cout << "name: " << p2.first << " age: " << p2.second << endl;
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+#include <iostream>
+#include <set>
+using namespace std;
+
+//set容器排序
+class MyCompare{
+    public:
+        bool operator()(int v1, int v2) const {
+            return v1 > v2;
+        }
+};
+
+void test01(){
+    set<int> s1;
+    s1.insert(2);
+    s1.insert(6);
+    s1.insert(5);
+    s1.insert(3);
+    for (auto it = s1.begin(); it != s1.end(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    //指定排序规则为从大到小
+    set<int, MyCompare> s2;
+    s2.insert(2);
+    s2.insert(6);
+    s2.insert(5);
+    s2.insert(3);
+    for (auto it = s2.begin(); it != s2.end(); ++it){
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+#include <iostream>
+#include <string>
+#include <set>
+using namespace std;
+
+class Person{
+    public:
+        Person(string n, int a): name(n), age(a){}
+
+        string name;
+        int age;
+
+};
+
+class ComparePerson{
+    public:
+        bool operator()(const Person &p1, const Person &p2) const {
+            //按照年龄降序
+            return p1.age > p2.age;
+        }
+};
+
+void test01(){
+
+    //自定义数据类型 都需要指定排序规则
+    set<Person, ComparePerson> s;
+    
+    //创建Person对象
+    Person p1("a", 4);
+    Person p2("b", 3);
+    Person p3("c", 2);
+    Person p4("d", 1);
+
+    s.insert(p1);
+    s.insert(p2);
+    s.insert(p3);
+    s.insert(p4);
+
+    for (auto it = s.begin(); it != s.end(); ++it){
+        cout << "name: " << it->name << " age: " << it->age << endl;
+    }
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
