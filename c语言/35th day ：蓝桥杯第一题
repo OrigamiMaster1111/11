@@ -5,6 +5,7 @@ int main(){
     int x = code / 1000;
 
     for ( ; x > 0 && cnt != 3; x /= 10, cnt++){
+
         front_CodeSum += x%10;
     }
 
