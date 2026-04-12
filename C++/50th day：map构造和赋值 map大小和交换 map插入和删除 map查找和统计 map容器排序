@@ -1,0 +1,220 @@
+#include <iostream>
+#include <map>
+using namespace std;
+
+void printMap(const map<int, int> &m){
+    for (map<int, int>::const_iterator it = m.begin(); it != m.end(); ++it){
+        cout << "key = " << it->first << " value = " << it->second << endl;
+    }
+}
+
+void test01(){
+    //创建map容器
+    map<int, int> m;
+
+    m.insert(pair<int, int>(1, 10));
+    m.insert(pair<int, int>(2, 20));
+    m.insert(pair<int, int>(3, 30));
+    m.insert(pair<int, int>(4, 40));
+
+    printMap(m);
+
+    //拷贝构造
+    map<int, int> m2(m);
+    printMap(m2);
+
+    //赋值
+    map<int, int> m3 = m2;
+    printMap(m3);
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+#include <map>
+using namespace std;
+
+void printMap(const map<int, int> &m){
+    for (map<int, int>::const_iterator it = m.begin(); it != m.end(); ++it){
+        cout << "key = " << it->first << " value = " << it->second << endl;
+    }
+}
+
+void test01(){
+    map<int, int> m;
+    m.insert(pair<int, int>(1, 10));
+    m.insert(pair<int, int>(2, 20));
+    m.insert(pair<int, int>(3, 30));
+    m.insert(pair<int, int>(4, 40));
+
+    if (m.empty()){
+        cout << "is Empty" << endl;
+    }
+    else {
+        cout << "isn't Empty" << endl;
+        cout << "m's size is " << m.size() << endl;
+    }
+}
+
+void test02(){
+    map<int, int> m;
+    m.insert(pair<int, int>(1, 10));
+    m.insert(pair<int, int>(2, 20));
+    m.insert(pair<int, int>(3, 30));
+    m.insert(pair<int, int>(4, 40));
+
+    map<int, int> m2;
+    m2.insert(pair<int, int>(5, 50));
+    m2.insert(pair<int, int>(6, 60));
+    m2.insert(pair<int, int>(7, 70));
+    m2 .insert(pair<int, int>(8, 80));
+
+    m.swap(m2);
+    printMap(m);
+    printMap(m2);
+}
+
+int main(){
+
+    test01();
+    test02();
+    return 0;
+}
+
+
+
+
+
+
+#include <iostream>
+#include <map>
+using namespace std;
+
+void printMap(const map<int, int> &m){
+    for (map<int, int>::const_iterator it = m.begin(); it != m.end(); ++it){
+        cout << "key = " << it->first << " value = " << it->second << endl;
+    }
+}
+
+void test01(){
+    map<int, int> m;
+
+    //插入
+    //第一种
+    m.insert(pair<int, int>(1, 10));
+
+    //第二种
+    m.insert(make_pair(2, 20));
+
+    //第三种
+    m.insert(map<int, int>::value_type(3, 30));
+
+    //第四种
+    m[4] = 40;
+
+    //不建议用[]插入，可以用key访问value
+    cout << m[5] << endl;
+
+    printMap(m);
+
+    //删除
+    m.erase(m.begin());
+    printMap(m);
+    m.erase(3);// 按照key删除
+    printMap(m);
+
+    //清空
+    m.erase(m.begin(), m.end());
+    m.clear();
+    printMap(m);
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+#include <map>
+using namespace std;
+
+void test01(){
+    //查找
+    map<int, int> m;
+    m.insert(pair<int, int>(1, 10));
+    m.insert(pair<int, int>(2, 20));
+    m.insert(pair<int, int>(3, 30));
+    m.insert(pair<int, int>(3, 40));
+
+    map<int, int>::iterator pos = m.find(3);
+
+    if (pos != m.end()){
+        cout << "found the value, key is " << pos->first << "value = " << pos->second << endl;
+    }
+    else {
+        cout << "didin't find the value" << endl;
+    }
+
+    //统计
+    //map不允许插入重复的元素key，count统计而言 结果要么是0要么是1
+    int count = m.count(3);
+    cout << "num = " << count <<endl;
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
+
+
+
+
+
+#include <iostream>
+#include <map>
+using namespace std;
+
+class Mycompare{
+    public:
+        bool operator()(int v1, int v2) const {
+            //降序
+            return v1 > v2;
+        }
+};
+
+void test01(){
+    map<int, int, Mycompare> m;
+    m.insert(make_pair(1, 10));
+    m.insert(make_pair(2, 20));
+    m.insert(make_pair(3, 30));
+    m.insert(make_pair(4, 40));
+    m.insert(make_pair(5, 50));
+
+    for (auto it = m.begin(); it != m.end(); ++it){
+        cout << "key = " << it->first << " value = " << it->second << endl;
+    }
+}
+
+int main(){
+
+    test01();
+
+    return 0;
+}
