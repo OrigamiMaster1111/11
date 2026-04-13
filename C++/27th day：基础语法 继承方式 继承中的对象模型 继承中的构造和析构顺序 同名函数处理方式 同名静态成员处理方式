@@ -17,6 +17,7 @@ class Java{
 };
 
 
+
 //继承实现页面
 //公共页面
 class BasePage{
