@@ -1,1 +1,47 @@
-continue
+#include "beep.h"
+
+void setup() {
+  beep_init();
+}
+
+void loop() {
+  BEEP_TOGGLE();
+  delay(3000);
+}
+
+
+
+
+
+
+#ifndef __BEEP_H
+#define __BEEP_H
+
+#include "Arduino.h"
+
+#define BEEP_PIN 2
+#define BEEP(x)  digitalWrite(BEEP_PIN, x)
+/*
+  这段代码类似于这种函数形式
+  void BEEP(int x) {
+    digitalWrite(BEEP_PIN, x);
+  }
+*/
+#define BEEP_TOGGLE() digitalWrite(BEEP_PIN, !digitalRead(BEEP_PIN))
+
+void beep_init(void);
+
+#endif
+
+
+
+
+
+
+
+#include "beep.h"
+
+void beep_init(){
+  pinMode(BEEP_PIN, OUTPUT);
+  digitalWrite(BEEP_PIN, HIGH);
+}
