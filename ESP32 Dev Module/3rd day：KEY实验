@@ -1,0 +1,66 @@
+#include "key.h"
+#include "LED.h"
+
+void setup() {
+  Serial.begin(115200);  // 开启串口打印
+  led_init();
+  key_init();
+}
+
+void loop() {
+  Serial.print("GPIO0 电平：");
+  Serial.println(KEY);  // 打印真实值
+
+  /* #define KEY digitalRead(KEY_PIN) */
+  if (KEY == 0){/*是否按下按钮*/
+    delay(100);
+    if (KEY == 0){/*软件消抖*/
+      LED(0); /*LED亮*/
+    }
+  }
+  else {
+    LED(1);/*LED不亮*/
+  }
+}
+
+#include "LED.h"
+
+void led_init(){
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, HIGH);
+}
+#ifndef __LED_H
+#define __LED_H
+
+#include "Arduino.h"
+
+#define LED_PIN 2
+#define LED(x)  digitalWrite(LED_PIN, x)
+/*
+  这段代码类似于这种函数形式
+  void BEEP(int x) {
+    digitalWrite(BEEP_PIN, x);
+  }
+*/
+#define LED_TOGGLE() digitalWrite(LED_PIN, !digitalRead(LED_PIN))
+
+void led_init(void);
+
+#endif
+#include "key.h"
+
+void key_init(){
+  pinMode(KEY_PIN, INPUT_PULLUP);/* 按键没有按下时，检测到的是高电平 */
+}
+#ifndef __KEY_H
+#define __KEY_H
+
+#include "Arduino.h"
+
+#define KEY_PIN   0
+
+#define KEY digitalRead(KEY_PIN)
+
+void key_init(void);
+
+#endif
