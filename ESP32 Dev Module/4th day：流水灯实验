@@ -1,0 +1,21 @@
+uint8_t led_pin[5] = {2, 4, 5, 18, 19};
+uint8_t led_num = sizeof(led_pin) / sizeof(led_pin[0]);
+
+void flow_led_f(uint8_t ms){
+  for (uint8_t i: led_pin){
+    digitalWrite(i, HIGH); // 改这里：先拉高 -> 点亮
+    delay(ms);
+    digitalWrite(i, LOW);  // 改这里：再拉低 -> 熄灭
+  }
+}
+
+void setup() {
+  for (int i: led_pin){
+    pinMode(i, OUTPUT);
+    digitalWrite(i, LOW); // 默认熄灭
+  }
+}
+
+void loop() {
+  flow_led_f(200);
+}
