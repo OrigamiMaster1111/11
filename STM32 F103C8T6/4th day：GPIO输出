@@ -1,0 +1,57 @@
+#include "stm32f10x.h"
+#include "Delay.h"
+
+uint8_t KeyNum;
+
+uint8_t Key_GetNum(void){
+    uint8_t KeyNum = 0;
+    if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0){
+        Delay_ms(20);
+        while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0);
+        Delay_ms(20);
+        KeyNum = 1;
+    }
+
+    if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11) == 0){
+        Delay_ms(20);
+        while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11) == 0);
+        Delay_ms(20);
+        KeyNum = 2;
+    }
+
+    return KeyNum;
+}
+
+int main(){
+
+    // LED
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    GPIO_InitTypeDef GPIOA_InitStructure = {
+        .GPIO_Mode = GPIO_Mode_Out_PP,
+        .GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2,
+        .GPIO_Speed = GPIO_Speed_50MHz,
+    };
+    GPIO_Init(GPIOA, &GPIOA_InitStructure);
+
+    GPIO_SetBits(GPIOA, GPIO_Pin_1 | GPIO_Pin_2);
+
+
+    // BEEP
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    GPIO_InitTypeDef GPIOB_InitStructure = {
+        .GPIO_Mode = GPIO_Mode_IPU,
+        .GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_11,
+        .GPIO_Speed = GPIO_Speed_50MHz,
+    };
+    GPIO_Init(GPIOB, &GPIOB_InitStructure);
+
+    while(1){
+        KeyNum = Key_GetNum();
+        if (KeyNum == 1){
+            GPIO_ResetBits(GPIOA, GPIO_Pin_1);
+        } 
+        else if (KeyNum == 2){
+            GPIO_ResetBits(GPIOA, GPIO_Pin_2);
+        }
+    }
+}
