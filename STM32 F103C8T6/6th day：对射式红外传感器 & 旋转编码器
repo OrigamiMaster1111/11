@@ -1,0 +1,173 @@
+#include "stm32f10x.h"
+#include "Delay.h"
+#include "OLED_I2C.h"
+#include "CountSensor.h"
+
+int main(){
+
+    OLED_Init();
+    OLED_ShowString(1, 3, "HelloWorld");
+
+    CountSensor_Init();
+
+    OLED_Clear();
+
+    while (1){
+
+    }
+}
+
+#ifndef __COUNT_SNESOR_H
+#define __COUNT_SNESOR_H
+
+void CountSensor_Init(void);
+
+#endif
+
+#include "stm32f10x.h"
+#define EXTI15_10_IRQn 40
+
+void CountSensor_Init(){
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+    // GPIO初始化
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .GPIO_Mode = GPIO_Mode_IPU,
+        .GPIO_Pin = GPIO_Pin_14,
+        .GPIO_Speed = GPIO_Speed_50MHz,
+    };
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    // AFIO初始化
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource14);
+
+    // EXTI初始化
+    EXTI_InitTypeDef EXTI_InitStructure = {
+        .EXTI_Line = EXTI_Line14,
+        .EXTI_LineCmd = ENABLE,
+        .EXTI_Mode = EXTI_Mode_Interrupt,
+        .EXTI_Trigger = EXTI_Trigger_Falling,
+    };
+    EXTI_Init(&EXTI_InitStructure);
+
+    // NVIC初始化
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // NVIC分组，2抢占位2响应位
+    NVIC_InitTypeDef NVIC_InitStructure = {
+        .NVIC_IRQChannel = EXTI15_10_IRQn,
+        .NVIC_IRQChannelCmd = ENABLE,
+        .NVIC_IRQChannelPreemptionPriority = 0, // 抢占优先级
+        .NVIC_IRQChannelSubPriority = 0,        // 响应优先级
+    };
+    NVIC_Init(&NVIC_InitStructure);
+}
+
+void EXTI15_10_IRQHandler(void){
+    if (EXTI_GetITStatus(EXTI_Line14) == SET){
+        EXTI_ClearITPendingBit(EXTI_Line14);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+#include "stm32f10x.h"
+#include "Delay.h"
+#include "OLED_I2C.h"
+#include "Encoder.h"
+
+int16_t Num = 0;
+
+int main(){
+
+    OLED_Init();
+    
+    Encoder_Init();
+    
+    OLED_ShowString(1, 3, "HelloWorld");
+    
+    while (1){
+        Num += Encoder_get();
+        OLED_ShowSignedNum(1, 5, Num, 5);
+    }
+}
+
+#include "stm32f10x.h"
+
+int16_t Encoder_count = 0;
+
+void Encoder_Init(void){
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+    // GPIO初始化
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .GPIO_Mode = GPIO_Mode_IPU,
+        .GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1,
+        .GPIO_Speed = GPIO_Speed_50MHz,
+    };
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    // AFIO初始化
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource0);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource1);
+
+    // EXTI初始化
+    EXTI_InitTypeDef EXTI_InitStructure = {
+        .EXTI_Line = EXTI_Line0 | EXTI_Line1,
+        .EXTI_LineCmd = ENABLE,
+        .EXTI_Mode = EXTI_Mode_Interrupt,
+        .EXTI_Trigger = EXTI_Trigger_Falling,
+    };
+    EXTI_Init(&EXTI_InitStructure);
+
+    // NVIC初始化
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // NVIC分组，2抢占位2响应位
+    
+    NVIC_InitTypeDef NVIC_InitStructure = {
+        .NVIC_IRQChannel = EXTI0_IRQn,
+        .NVIC_IRQChannelCmd = ENABLE,
+        .NVIC_IRQChannelPreemptionPriority = 0, // 抢占优先级
+        .NVIC_IRQChannelSubPriority = 0,        // 响应优先级
+    };
+    NVIC_Init(&NVIC_InitStructure);
+
+    NVIC_InitStructure = (NVIC_InitTypeDef){
+        .NVIC_IRQChannel = EXTI1_IRQn,
+        .NVIC_IRQChannelCmd = ENABLE,
+        .NVIC_IRQChannelPreemptionPriority = 0, // 抢占优先级
+        .NVIC_IRQChannelSubPriority = 1,        // 响应优先级
+    };
+    NVIC_Init(&NVIC_InitStructure);
+}
+
+int16_t Encoder_get(void){
+    int16_t temp = 0;
+    temp = Encoder_count;
+    Encoder_count = 0;
+    return temp;
+}
+
+void EXTI0_IRQHandler(void){
+    if (EXTI_GetITStatus(EXTI_Line0) == SET){
+        if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0){
+            Encoder_count--;
+        }
+        EXTI_ClearITPendingBit(EXTI_Line0);
+    }
+}
+void EXTI1_IRQHandler(void){
+    if (EXTI_GetITStatus(EXTI_Line1) == SET){
+        if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0) == 0){
+            Encoder_count++;
+        }
+        EXTI_ClearITPendingBit(EXTI_Line1);
+    }
+}
