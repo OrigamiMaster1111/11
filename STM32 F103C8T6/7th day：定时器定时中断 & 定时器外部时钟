@@ -1,0 +1,136 @@
+定时器定时中断
+Timer.c
+
+#include "stm32f10x.h"
+
+#define TIM2_IRQn 28
+// extern int16_t Num;
+
+void Timer_Init(void){
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+
+    TIM_InternalClockConfig(TIM2); // 不写此步，默认调用内部时钟
+
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure = {
+        .TIM_ClockDivision = TIM_CKD_DIV1, // 配置分频，与信号的滤波相关
+        .TIM_CounterMode = TIM_CounterMode_Up, // 向上计数
+        .TIM_Period = 10000 - 1, // ARR自动重装器的值
+        .TIM_Prescaler = 7200 - 1, // PSC预分频器值
+        .TIM_RepetitionCounter = 0, // 重复计数器值，高级计时器才需具体配置，此时可0
+    };
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure); // 初始化时基单元
+
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update);
+    TIM_ITConfig(TIM2, TIM_IT_Update/*更新中断*/, ENABLE);
+
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+
+    NVIC_InitTypeDef NVIC_InitStructure = {
+        .NVIC_IRQChannel  = TIM2_IRQn,
+        .NVIC_IRQChannelCmd = ENABLE,
+        .NVIC_IRQChannelPreemptionPriority = 2,
+        .NVIC_IRQChannelSubPriority = 1,
+    };
+    NVIC_Init(&NVIC_InitStructure);
+
+    TIM_Cmd(TIM2, ENABLE);
+}
+
+// void TIM2_IRQHandler(void){
+//     if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET){
+//         Num++;
+//         TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+//     }
+// }
+
+
+
+main.c
+
+#include "stm32f10x.h"
+#include "Delay.h"
+#include "OLED_I2C.h"
+#include "Encoder.h"
+#include "Timer.h"
+
+int16_t Num = 0;
+
+int main(){
+
+    OLED_Init();
+    Timer_Init();
+    
+    
+    OLED_ShowString(1, 3, "HelloWorld");
+    
+    while (1){
+        OLED_ShowNum(1, 5, Num, 5);
+        OLED_ShowNum(1, 5, TIM_GetCounter(TIM2), 5);
+    }
+}
+
+void TIM2_IRQHandler(void){
+    if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET){
+        Num++;
+        TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+    }
+}
+
+
+
+定时器外部时钟
+Timer.c
+#include "stm32f10x.h"
+
+#define TIM2_IRQn 28
+// extern int16_t Num;
+
+void Timer_Init(void){
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .GPIO_Mode = GPIO_Mode_IPU,
+        .GPIO_Pin = GPIO_Pin_0,
+        .GPIO_Speed = GPIO_Speed_50MHz,
+    };
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+
+    TIM_ETRClockMode2Config(TIM2, TIM_ExtTRGPSC_OFF/*澶栭儴瑙﹀彂棰勫垎棰戝櫒*/, TIM_ExtTRGPolarity_NonInverted/*楂樼數骞虫垨涓婂崌娌挎湁鏁�*/, 0x00); // 閫氳繃ETR寮曡剼鐨勫閮ㄦ椂閽熸ā寮�2閰嶇疆
+
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure = {
+        .TIM_ClockDivision = TIM_CKD_DIV1, // 锟斤拷锟矫凤拷频锟斤拷锟斤拷锟脚号碉拷锟剿诧拷锟斤拷锟�
+        .TIM_CounterMode = TIM_CounterMode_Up, // 锟斤拷锟较硷拷锟斤拷
+        .TIM_Period = 10 - 1, // ARR锟皆讹拷锟斤拷装锟斤拷锟斤拷值
+        .TIM_Prescaler = 1 - 1, // PSC预锟斤拷频锟斤拷值
+        .TIM_RepetitionCounter = 0, // 锟截革拷锟斤拷锟斤拷锟斤拷值锟斤拷锟竭硷拷锟斤拷时锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷茫锟斤拷锟绞憋拷锟�0
+    };
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure); // 锟斤拷始锟斤拷时锟斤拷锟斤拷元
+
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update);
+    TIM_ITConfig(TIM2, TIM_IT_Update/*锟斤拷锟斤拷锟叫讹拷*/, ENABLE);
+
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+
+    NVIC_InitTypeDef NVIC_InitStructure = {
+        .NVIC_IRQChannel  = TIM2_IRQn,
+        .NVIC_IRQChannelCmd = ENABLE,
+        .NVIC_IRQChannelPreemptionPriority = 2,
+        .NVIC_IRQChannelSubPriority = 1,
+    };
+    NVIC_Init(&NVIC_InitStructure);
+
+    TIM_Cmd(TIM2, ENABLE);
+}
+
+uint16_t Timer_GetCounter(void){
+    return TIM_GetCounter(TIM2);
+}
+
+// void TIM2_IRQHandler(void){
+//     if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET){
+//         Num++;
+//         TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+//     }
+// }
