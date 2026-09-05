@@ -1,0 +1,148 @@
+#include "stm32f10x.h"
+#include "Delay.h"
+#include "OLED_I2C.h"
+#include "Motor.h"
+#include "Key.h"
+
+int16_t KeyNum;
+int8_t Speed;
+
+int main(){
+
+    OLED_Init();
+    Key_Init();
+    Motor_Init();
+
+    OLED_ShowString(1, 1, "Speed: ");
+
+    Motor_SetSpeed(50);
+
+    while (1){
+        KeyNum = Key_GetNum();
+        if (KeyNum == 1){
+            Speed += 20;
+            if (Speed > 100){
+                Speed = -100;
+            }
+        }
+        Motor_SetSpeed(Speed);
+        OLED_ShowSignedNum(1, 7, Speed, 3);
+    }
+}
+
+
+
+#include "stm32f10x.h"
+#include "Delay.h"
+
+void Key_Init(void){
+    
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); // 开启GPIOB的时钟
+
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .GPIO_Mode = GPIO_Mode_IPU,
+        .GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_11,
+        .GPIO_Speed = GPIO_Speed_50MHz,
+    };
+    GPIO_Init(GPIOB, &GPIO_InitStructure); // 将PB1和PB11引脚初始化为上拉输入
+}
+
+uint16_t Key_GetNum(void){
+    
+    uint8_t KeyNum = 0; // 定义变量，默认键码值为0
+    
+    if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0){ // 读PB1输入寄存器的状态，如果为0，则代表按键1按下
+        
+        Delay_ms(20); // 延迟消抖
+        while(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 0); // 按键松手程序继续
+        Delay_ms(20);
+        KeyNum = 1;
+    }
+
+    if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11) == 0){ // 读PB1输入寄存器的状态，如果为0，则代表按键1按下
+        
+        Delay_ms(20); // 延迟消抖
+        while(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11) == 0); // 按键松手程序继续
+        Delay_ms(20);
+        KeyNum = 2;
+    }
+
+    return KeyNum;
+}
+
+
+
+
+#include "stm32f10x.h"
+#include "PWM.h"
+
+void Motor_Init(void){
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .GPIO_Mode = GPIO_Mode_Out_PP,
+        .GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5,
+        .GPIO_Speed = GPIO_Speed_50MHz,
+    };
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    PWM_Init();
+}
+
+void Motor_SetSpeed(int8_t Speed){
+    if (Speed >= 0){
+        GPIO_SetBits(GPIOA, GPIO_Pin_4);
+        GPIO_ResetBits(GPIOA, GPIO_Pin_5);
+        PWM_SetCompare3(Speed);
+    }
+    else if (Speed < 0){
+        GPIO_SetBits(GPIOA, GPIO_Pin_4);
+        GPIO_ResetBits(GPIOA, GPIO_Pin_5);
+        PWM_SetCompare3(-Speed);
+    }
+}
+
+
+
+
+
+
+#include "stm32f10x.h"
+
+void PWM_Init(void){
+
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .GPIO_Mode = GPIO_Mode_AF_PP,
+        .GPIO_Pin = GPIO_Pin_2,
+        .GPIO_Speed = GPIO_Speed_50MHz,
+    };
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    TIM_InternalClockConfig(TIM2);
+
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure = {
+        .TIM_ClockDivision = TIM_CKD_DIV1,
+        .TIM_CounterMode = TIM_CounterMode_Up,
+        .TIM_Period = 20000 - 1,
+        .TIM_Prescaler = 72 - 1,
+        .TIM_RepetitionCounter = 0,
+    };
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructure);
+
+    TIM_OCInitTypeDef TIM_OCInitStructure;
+    TIM_OCStructInit(&TIM_OCInitStructure);
+    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; // 输出比较的模式 小于设定比较值时输出有效电平状态，大于时输出无效电平状态
+    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; // 输出比较的极性
+    TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable; // 输出使能
+    TIM_OCInitStructure.TIM_Pulse = 0; // 设置CCR
+    TIM_OC3Init(TIM2, &TIM_OCInitStructure);
+
+    TIM_Cmd(TIM2, ENABLE);
+}
+
+void PWM_SetCompare3(uint16_t Compare){
+    TIM_SetCompare3(TIM2, Compare);
+}
